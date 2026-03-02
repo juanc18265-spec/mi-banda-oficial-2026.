@@ -1,0 +1,13 @@
+# Archivos locales y temporales
+node_modules/
+.DS_Store
+Thumbs.db
+
+# Directorios de Agente/IA
+.gemini/
+.agent/
+brain/
+implementation_plan*.md
+task.md
+walkthrough.md
+*.log
