@@ -4322,12 +4322,7 @@
         onclick="loginAdmin()">ENTRAR</button>
       <button class="bbg" style="width:100%;margin-top:5px;"
         onclick="document.getElementById('m-admin-login').style.display='none'">Cancelar</button>
-      <div style="margin-top:20px; text-align:center; border-top:1px solid #eee; padding-top:15px;">
-        <span style="font-size:10px; color:#aaa; display:block; margin-bottom:5px;">¿PROBLEMAS DE ACCESO?</span>
-        <button onclick="restablecerAdmin()"
-          style="background:none; border:none; color:var(--ro); font-size:12px; font-weight:900; cursor:pointer; text-decoration:underline;">BORRAR
-          ADMINISTRADOR Y EMPEZAR DE CERO</button>
-      </div>
+
     </div>
   </div>
 
@@ -5592,6 +5587,9 @@
       rAsist(); rHist(); rAlumnos(); rProc();
     }
 
+    // Correo único autorizado como administrador
+    const ADMIN_EMAIL_AUTORIZADO = 'joliortizo@gmail.com';
+
     function loginAdmin() {
       console.log('🔑 Intentando iniciar sesión admin...');
       const u = document.getElementById('admin-user').value.trim();
@@ -5599,6 +5597,12 @@
       const recordar = document.getElementById('admin-recordar').checked;
 
       if (!u || !p) return alert('Por favor, completa todos los campos.');
+
+      // Verificar que el correo sea el autorizado
+      if (u.toLowerCase() !== ADMIN_EMAIL_AUTORIZADO.toLowerCase()) {
+        alert('❌ Acceso denegado. Este correo no está autorizado.');
+        return;
+      }
 
       const admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
       const found = admins.find(a => a.u.toLowerCase() === u.toLowerCase() && a.p === p);
@@ -5624,6 +5628,12 @@
       const u = document.getElementById('setup-user').value.trim();
       const p = document.getElementById('setup-pass').value.trim();
       if (!u || !p) return alert('Completa ambos campos');
+
+      // Solo el correo autorizado puede ser administrador
+      if (u.toLowerCase() !== ADMIN_EMAIL_AUTORIZADO.toLowerCase()) {
+        alert('❌ Acceso denegado. Solo el correo autorizado puede ser administrador.');
+        return;
+      }
 
       console.log("🚀 Creando Maestro:", u);
       const newAdmin = { u, p, id: u, role: 'maestro', created: Date.now() };
