@@ -1,0 +1,23 @@
+{
+  "name": "Banda Sinfónica ENS",
+  "short_name": "BandaENS",
+  "description": "Aplicación oficial de la Banda Sinfónica ENS",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icon-512.png.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
