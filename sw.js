@@ -1,9 +1,9 @@
-const CACHE_NAME = 'banda-ens-v5';
+const CACHE_NAME = 'banda-ens-v6';
 const ASSETS = [
     './',
     './index.html',
     './manifest.json',
-    './icon-512.png.jpeg'
+    './icon-512.png'
 ];
 
 self.addEventListener('install', event => {
