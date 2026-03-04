@@ -5626,6 +5626,9 @@
         adminLogueado = found.u;
         if (recordar) localStorage.setItem(KADMIN_SESSION, found.u);
         document.getElementById('m-admin-login').style.display = 'none';
+        // Ocultar botón de restablecer una vez el admin ha ingresado
+        const btnRest = document.querySelector('#m-admin-login [onclick=\"resetearAccesoAdmin()\"]');
+        if (btnRest) btnRest.closest('div').style.display = 'none';
         irAdmin();
       } else {
         alert('❌ Usuario o contraseña incorrectos.\n\nAsegúrate de ingresar exactamente el correo y contraseña registrados.');
