@@ -4303,7 +4303,9 @@
   <div id="m-admin-login" class="ov" style="z-index:100000 !important;"
     onclick="if(event.target.id=='m-admin-login')this.style.display='none'">
     <div class="mb" style="max-width:350px;">
-      <h2 style="margin:0 0 10px 0;color:var(--az);font-size:22px;text-align:center;font-weight:900;">🔐 LOGIN ADMIN
+      <h2 id="admin-login-titulo"
+        style="margin:0 0 10px 0;color:var(--az);font-size:22px;text-align:center;font-weight:900;cursor:default;user-select:none;"
+        title="">🔐 LOGIN ADMIN
         <span style="font-size:10px; opacity:0.3; font-weight:normal;">v4</span>
       </h2>
       <div class="fg"><label>Usuario / Correo:</label><input type="text" id="admin-user" placeholder="Correo o Usuario"
@@ -4593,7 +4595,7 @@
         loginAdmin, cerrarSesionAdmin, crearMaestro, agregarAdmin, elimAdmin, rAdminsTabla,
         generarReporte, descargar, rUsuariosTabla, rAlumnos, abrirModalAlumno,
         editAl, elimAl, guardarAlumno, abrirEditor, cargarEdReg, guardarEdicion,
-        forzarSincronizacionAlumnos, cambiarClaveAdmin,
+        forzarSincronizacionAlumnos, cambiarClaveAdmin, resetearAccesoAdmin,
         rAsist, rHist, rProc, abrirProc, verProcTab, renderProc, agregarItem, elimItem, cambVal, cambNombre,
         guardarCalificacion, abrirModalAviso, togDest, guardarAviso,
         rAvAdmin, rEvAdmin, rMeAdmin, rProyectosAdmin, rMiBandaAdmin, rAccesosPadres,
@@ -5631,14 +5633,20 @@
     }
 
     async function resetearAccesoAdmin() {
-      if (!confirm('⚠️ ¿RESTABLECER ACCESO?\n\nEsto borrará la cuenta de administrador actual (correo + contraseña) para que puedas crear una nueva.\n\nLos datos de alumnos y asistencia NO se borrarán.\n\n¿Continuar?')) return;
+      // Pedir PIN de seguridad antes de restablecer
+      const PIN_MAESTRO = 'ENS2026';
+      const pinIngresado = prompt('🔒 Ingresa el código de seguridad para restablecer el acceso:');
+      if (pinIngresado === null) return;
+      if (pinIngresado.trim() !== PIN_MAESTRO) {
+        alert('❌ Código incorrecto. Acceso denegado.');
+        return;
+      }
+      if (!confirm('⚠️ ¿RESTABLECER ACCESO?\n\nEsto borrará la cuenta de administrador actual para que puedas crear una nueva.\n\nLos datos de alumnos y asistencia NO se borrarán.\n\n¿Continuar?')) return;
 
-      // Borrar de localStorage
       localStorage.removeItem(KADMINS);
       localStorage.removeItem(KADMIN_SESSION);
       adminLogueado = null;
 
-      // Borrar de Firestore también
       if (db) {
         try {
           const snap = await getDocs(collection(db, 'BandaAdmins'));
@@ -5651,7 +5659,7 @@
         }
       }
 
-      alert('✅ Acceso restablecido.\n\nAhora podrás crear un nuevo usuario y contraseña de administrador.');
+      alert('✅ Acceso restablecido.\n\nAhora podrás crear un nuevo administrador.');
       location.reload();
     }
 
