@@ -5587,10 +5587,7 @@
       rAsist(); rHist(); rAlumnos(); rProc();
     }
 
-    // Correo único autorizado como administrador
-    const ADMIN_EMAIL_AUTORIZADO = 'joliortizo@gmail.com';
-
-    function loginAdmin() {
+    async function loginAdmin() {
       console.log('🔑 Intentando iniciar sesión admin...');
       const u = document.getElementById('admin-user').value.trim();
       const p = document.getElementById('admin-pass').value.trim();
@@ -5598,21 +5595,33 @@
 
       if (!u || !p) return alert('Por favor, completa todos los campos.');
 
-      // Verificar que el correo sea el autorizado
-      if (u.toLowerCase() !== ADMIN_EMAIL_AUTORIZADO.toLowerCase()) {
-        alert('❌ Acceso denegado. Este correo no está autorizado.');
-        return;
+      // 1) Buscar primero en localStorage (rápido)
+      let admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
+      let found = admins.find(a => a.u.toLowerCase() === u.toLowerCase() && a.p === p);
+
+      // 2) Si no está localmente, intentar traer de Firestore (otro dispositivo)
+      if (!found && db) {
+        try {
+          const snap = await getDocs(collection(db, 'BandaAdmins'));
+          if (!snap.empty) {
+            let items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            localStorage.setItem(KADMINS, JSON.stringify(items));
+            admins = items;
+            found = admins.find(a => a.u.toLowerCase() === u.toLowerCase() && a.p === p);
+          }
+        } catch (e) {
+          console.warn('⚠️ No se pudo consultar Firestore:', e.message);
+        }
       }
 
-      const admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
-      const found = admins.find(a => a.u.toLowerCase() === u.toLowerCase() && a.p === p);
       if (found) {
         adminLogueado = found.u;
         if (recordar) localStorage.setItem(KADMIN_SESSION, found.u);
         document.getElementById('m-admin-login').style.display = 'none';
         irAdmin();
       } else {
-        alert('❌ Usuario o contraseña incorrectos');
+        alert('❌ Usuario o contraseña incorrectos.\n\nAsegúrate de ingresar exactamente el correo y contraseña registrados.');
       }
     }
 
@@ -5628,12 +5637,6 @@
       const u = document.getElementById('setup-user').value.trim();
       const p = document.getElementById('setup-pass').value.trim();
       if (!u || !p) return alert('Completa ambos campos');
-
-      // Solo el correo autorizado puede ser administrador
-      if (u.toLowerCase() !== ADMIN_EMAIL_AUTORIZADO.toLowerCase()) {
-        alert('❌ Acceso denegado. Solo el correo autorizado puede ser administrador.');
-        return;
-      }
 
       console.log("🚀 Creando Maestro:", u);
       const newAdmin = { u, p, id: u, role: 'maestro', created: Date.now() };
