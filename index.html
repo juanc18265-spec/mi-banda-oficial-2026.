@@ -4322,7 +4322,12 @@
         onclick="loginAdmin()">ENTRAR</button>
       <button class="bbg" style="width:100%;margin-top:5px;"
         onclick="document.getElementById('m-admin-login').style.display='none'">Cancelar</button>
-
+      <div style="text-align:center;margin-top:18px;padding-top:14px;border-top:1px solid #eee;">
+        <p style="font-size:11px;color:#aaa;margin:0 0 8px 0;">¿Olvidaste tu contraseña?</p>
+        <button onclick="resetearAccesoAdmin()"
+          style="background:none;border:none;color:#e74c3c;font-size:12px;font-weight:900;cursor:pointer;text-decoration:underline;">🔄
+          Restablecer acceso de administrador</button>
+      </div>
     </div>
   </div>
 
@@ -5625,12 +5630,33 @@
       }
     }
 
-    function restablecerAdmin() {
-      if (!confirm('⚠️ ¿ESTÁS SEGURO?\n\nEsta acción borrará la cuenta de administrador actual y tendrás que crear una nueva (los datos de alumnos y asistencia NO se borrarán).\n\n¿Deseas continuar?')) return;
+    async function resetearAccesoAdmin() {
+      if (!confirm('⚠️ ¿RESTABLECER ACCESO?\n\nEsto borrará la cuenta de administrador actual (correo + contraseña) para que puedas crear una nueva.\n\nLos datos de alumnos y asistencia NO se borrarán.\n\n¿Continuar?')) return;
+
+      // Borrar de localStorage
       localStorage.removeItem(KADMINS);
       localStorage.removeItem(KADMIN_SESSION);
-      alert('✅ Administrador eliminado. La página se recargará.');
+      adminLogueado = null;
+
+      // Borrar de Firestore también
+      if (db) {
+        try {
+          const snap = await getDocs(collection(db, 'BandaAdmins'));
+          const batch = writeBatch(db);
+          snap.forEach(d => batch.delete(d.ref));
+          await batch.commit();
+          console.log('✅ Admins eliminados de Firestore');
+        } catch (e) {
+          console.warn('⚠️ No se pudo limpiar Firestore:', e.message);
+        }
+      }
+
+      alert('✅ Acceso restablecido.\n\nAhora podrás crear un nuevo usuario y contraseña de administrador.');
       location.reload();
+    }
+
+    function restablecerAdmin() {
+      resetearAccesoAdmin();
     }
 
     async function crearMaestro() {
