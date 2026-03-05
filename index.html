@@ -6076,9 +6076,10 @@
     }
 
     function editAl(id) {
-      const al = banda.find(x => x.id === id);
-      if (!al) return;
-      aEd = id;
+      const nid = Number(id);
+      const al = banda.find(x => Number(x.id) === nid);
+      if (!al) { console.warn('editAl: alumno no encontrado con id', id); return; }
+      aEd = al.id;
       document.getElementById('t-mal').innerText = 'Editar';
       document.getElementById('al-n').value = al.n;
       document.getElementById('al-g').value = al.g || '';
@@ -6089,8 +6090,9 @@
     function guardarAlumno() {
       const n = document.getElementById('al-n').value.trim(), g = document.getElementById('al-g').value.trim(), inst = document.getElementById('al-i').value;
       if (!n || !inst) { alert('Completa campos'); return; }
-      if (aEd) {
-        const i = banda.findIndex(x => x.id === aEd);
+      if (aEd !== null && aEd !== undefined) {
+        const i = banda.findIndex(x => Number(x.id) === Number(aEd));
+        if (i === -1) { alert('Error: alumno no encontrado.'); return; }
         banda[i].n = n;
         banda[i].g = g;
         banda[i].i = inst;
@@ -6340,24 +6342,26 @@
 
     function elimAl(id) {
       if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar alumnos.'); return; }
-      const al = banda.find(x => x.id === id);
+      const nid = Number(id);
+      const al = banda.find(x => Number(x.id) === nid);
+      if (!al) { alert('⚠️ No se encontró el alumno. Recarga la página e intenta de nuevo.'); return; }
       if (!confirm(`¿Eliminar a ${al.n}?`)) return;
-      banda = banda.filter(x => x.id !== id);
+      banda = banda.filter(x => Number(x.id) !== nid);
       localStorage.setItem(KAL, JSON.stringify(banda));
       let pr = JSON.parse(localStorage.getItem(KPR)) || {};
-      delete pr[id];
+      delete pr[id]; delete pr[nid]; delete pr[String(nid)];
       localStorage.setItem(KPR, JSON.stringify(pr));
 
       // LIMPIAR CONTADOR DE VISITAS
       let visitas = JSON.parse(localStorage.getItem(KVISITS)) || {};
-      delete visitas[id];
+      delete visitas[id]; delete visitas[nid]; delete visitas[String(nid)];
       localStorage.setItem(KVISITS, JSON.stringify(visitas));
 
-      // BORRAR TAMBIÉN EN FIRESTORE (para que no vuelva al recargar)
+      // BORRAR TAMBIÉN EN FIRESTORE
       if (db) {
         try {
-          deleteDoc(doc(db, 'BandaAlumnos', String(id)));
-          console.log('✅ Alumno eliminado de Firestore:', id);
+          deleteDoc(doc(db, 'BandaAlumnos', String(nid)));
+          console.log('✅ Alumno eliminado de Firestore:', nid);
         } catch (e) {
           console.warn('⚠️ No se pudo eliminar de Firestore:', e.message);
         }
