@@ -6352,6 +6352,17 @@
       let visitas = JSON.parse(localStorage.getItem(KVISITS)) || {};
       delete visitas[id];
       localStorage.setItem(KVISITS, JSON.stringify(visitas));
+
+      // BORRAR TAMBIÉN EN FIRESTORE (para que no vuelva al recargar)
+      if (db) {
+        try {
+          deleteDoc(doc(db, 'BandaAlumnos', String(id)));
+          console.log('✅ Alumno eliminado de Firestore:', id);
+        } catch (e) {
+          console.warn('⚠️ No se pudo eliminar de Firestore:', e.message);
+        }
+      }
+
       rAlumnos();
       rAsist();
       rProc();
