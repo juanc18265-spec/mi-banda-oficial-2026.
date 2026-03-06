@@ -4709,7 +4709,26 @@
             try { localData = JSON.parse(localRaw) || []; } catch (e) { localData = []; }
 
             // LÓGICA DE PROTECCIÓN Y MIGRACIÓN
-            if (items.length > 0) {
+            if (colName === 'BandaAlumnos' && items.length > 0) {
+              // MERGE INTELIGENTE: detectar alumnos locales que faltan en la nube y subirlos
+              const idsNube = new Set(items.map(x => String(x.id)));
+              const alumnosLocalesNuevos = localData.filter(x => x && !idsNube.has(String(x.id)));
+              if (alumnosLocalesNuevos.length > 0) {
+                console.log('🔄 Sincronizando ' + alumnosLocalesNuevos.length + ' alumno(s) local(es) a la nube...');
+                alumnosLocalesNuevos.forEach(al => {
+                  setDoc(doc(db, 'BandaAlumnos', String(al.id)), al, { merge: true })
+                    .catch(e => console.error('❌ Error subiendo alumno local:', e.message));
+                });
+                // Usar la lista combinada para la UI mientras sube
+                const merged = [...items, ...alumnosLocalesNuevos].sort((a, b) => Number(a.id) - Number(b.id));
+                localStorage.setItem(localKey, JSON.stringify(merged));
+                localStorage.setItem('KAL_VER', 5);
+                actualizarUI(colName, merged);
+              } else {
+                localStorage.setItem(localKey, JSON.stringify(items));
+                actualizarUI(colName, items);
+              }
+            } else if (items.length > 0) {
               // Especial para estructuras de OBJETOS
               const OBJ_KEYS = [KPR, KPIN, KPIN_PADRES, KACCESS_PADRES, KVISITS];
               if (OBJ_KEYS.includes(localKey)) {
@@ -6096,9 +6115,12 @@
         banda[i].n = n;
         banda[i].g = g;
         banda[i].i = inst;
+        // SINCRONIZAR EDICIÓN CON FIREBASE
+        if (window.cloudSave) window.cloudSave('BandaAlumnos', String(banda[i].id), banda[i]);
       } else {
         const nid = banda.length ? Math.max(...banda.map(x => x.id)) + 1 : 1;
-        banda.push({ id: nid, n, g, i: inst });
+        const nuevoAlumno = { id: nid, n, g, i: inst };
+        banda.push(nuevoAlumno);
         let pr = JSON.parse(localStorage.getItem(KPR)) || {};
         pr[nid] = {};
         [1, 2, 3, 4].forEach(p => { pr[nid]['p' + p] = { escalas: [], rep: [], grupo: [] }; });
@@ -6108,8 +6130,12 @@
         let visitas = JSON.parse(localStorage.getItem(KVISITS)) || {};
         visitas[nid] = 0;
         localStorage.setItem(KVISITS, JSON.stringify(visitas));
+
+        // SINCRONIZAR NUEVO ALUMNO CON FIREBASE (crítico para persistencia)
+        if (window.cloudSave) window.cloudSave('BandaAlumnos', String(nid), nuevoAlumno);
       }
       localStorage.setItem(KAL, JSON.stringify(banda));
+      localStorage.setItem('KAL_VER', 5); // Evitar que init() sobrescriba con lista original
       rAlumnos();
       rAsist();
       rProc();
