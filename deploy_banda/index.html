@@ -4296,8 +4296,26 @@
             try { localData = JSON.parse(localRaw) || []; } catch (e) { localData = []; }
 
             // LÓGICA DE PROTECCIÓN Y MIGRACIÓN
-            if (items.length > 0) {
-              // La nube tiene datos: Actualizar local
+            if (colName === 'BandaAlumnos' && items.length > 0) {
+              // MERGE INTELIGENTE: detectar alumnos locales que faltan en la nube y subirlos
+              const idsNube = new Set(items.map(x => String(x.id)));
+              const alumnosLocalesNuevos = localData.filter(x => !idsNube.has(String(x.id)));
+              if (alumnosLocalesNuevos.length > 0) {
+                console.log(`🔄 Sincronizando ${alumnosLocalesNuevos.length} alumno(s) local(es) a la nube...`);
+                alumnosLocalesNuevos.forEach(al => {
+                  setDoc(doc(db, 'BandaAlumnos', String(al.id)), al, { merge: true });
+                });
+                // Mientras sube, usar la lista combinada para la UI
+                const merged = [...items, ...alumnosLocalesNuevos].sort((a, b) => Number(a.id) - Number(b.id));
+                localStorage.setItem(localKey, JSON.stringify(merged));
+                actualizarUI(colName, merged);
+              } else {
+                // No hay diferencias: usar datos de la nube normalmente
+                localStorage.setItem(localKey, JSON.stringify(items));
+                actualizarUI(colName, items);
+              }
+            } else if (items.length > 0) {
+              // Para otras colecciones: comportamiento original
               localStorage.setItem(localKey, JSON.stringify(items));
               actualizarUI(colName, items);
             } else if (snap.empty && localData.length > 0) {
