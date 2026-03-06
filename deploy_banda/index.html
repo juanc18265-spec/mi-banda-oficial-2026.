@@ -5462,9 +5462,12 @@
         banda[i].n = n;
         banda[i].g = g;
         banda[i].i = inst;
+        // SINCRONIZAR EDICIÓN CON FIREBASE
+        if (window.cloudSave) window.cloudSave('BandaAlumnos', String(aEd), banda[i]);
       } else {
         const nid = banda.length ? Math.max(...banda.map(x => x.id)) + 1 : 1;
-        banda.push({ id: nid, n, g, i: inst });
+        const nuevoAlumno = { id: nid, n, g, i: inst };
+        banda.push(nuevoAlumno);
         let pr = JSON.parse(localStorage.getItem(KPR)) || {};
         pr[nid] = {};
         [1, 2, 3, 4].forEach(p => { pr[nid]['p' + p] = { escalas: [], rep: [], grupo: [] }; });
@@ -5474,8 +5477,12 @@
         let visitas = JSON.parse(localStorage.getItem(KVISITS)) || {};
         visitas[nid] = 0;
         localStorage.setItem(KVISITS, JSON.stringify(visitas));
+
+        // SINCRONIZAR CON FIREBASE (crítico para persistencia en la nube)
+        if (window.cloudSave) window.cloudSave('BandaAlumnos', String(nid), nuevoAlumno);
       }
       localStorage.setItem(KAL, JSON.stringify(banda));
+      localStorage.setItem('KAL_VER', 5); // Mantener versión actualizada para evitar reset de init()
       rAlumnos();
       rAsist();
       rProc();
