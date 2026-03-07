@@ -3036,7 +3036,7 @@
         <div class="album-tabs">
           <div class="atab atab-fotos act" onclick="vAlbum('fotos',this)">📷 Fotos</div>
           <div class="atab atab-videos" onclick="vAlbum('videos',this)">🎬 Videos</div>
-          <div class="atab atab-exalumnos" onclick="vAlbum('exalumnos',this)">🎓 Exalumnos</div>
+          <div class="atab atab-exalumnos" onclick="vAlbum('exalumnos',this)">🎓 Egresados</div>
         </div>
         <div class="anio-select" id="anio-tabs"></div>
         <div id="me-render"></div>
@@ -3639,6 +3639,24 @@
               HISTORIAL / ARCHIVADOS</h4>
             <div id="ev-archived-admin"></div>
           </div>
+
+          <!-- REGISTRAR EVENTO HISTÓRICO (PRE-APP) -->
+          <div style="margin-top:25px; border-top:2px dashed #f59e0b; padding-top:20px;">
+            <div
+              style="background:linear-gradient(135deg,#fffbeb,#fef3c7); border:2px solid #f59e0b; border-radius:16px; padding:18px;">
+              <h4 style="font-size:13px; color:#92400e; margin:0 0 6px 0; font-weight:900;">
+                <i class="fas fa-history" style="color:#d97706;"></i> EVENTOS HISTÓRICOS (antes de la app)
+              </h4>
+              <p style="font-size:11px; color:#78350f; margin:0 0 14px 0; line-height:1.5;">
+                Ingresa eventos que ocurrieron <strong>antes de crear la app</strong>. Aparecerán automáticamente en la
+                sección pública de Historial.
+              </p>
+              <button onclick="document.getElementById('m-ev-hist').style.display='flex'"
+                style="width:100%; background:linear-gradient(135deg,#d97706,#b45309); color:white; border:none; padding:14px; border-radius:12px; font-size:13px; font-weight:900; cursor:pointer; box-shadow:0 4px 12px rgba(217,119,6,0.3);">
+                <i class="fas fa-plus-circle"></i> INGRESAR EVENTO PASADO
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- 3. AVISOS -->
@@ -3998,6 +4016,49 @@
     </div>
   </div>
 
+  <!-- MODAL: EVENTO HISTÓRICO (PRE-APP) -->
+  <div id="m-ev-hist" class="ov" onclick="if(event.target.id=='m-ev-hist')this.style.display='none'"
+    style="display:none;">
+    <div class="mb">
+      <div
+        style="background:linear-gradient(135deg,#d97706,#b45309); margin:-20px -20px 20px -20px; padding:18px 20px; border-radius:20px 20px 0 0;">
+        <h2 style="margin:0; color:white; font-size:18px; font-weight:900;">📜 Registrar Evento Histórico</h2>
+        <p style="margin:4px 0 0 0; color:rgba(255,255,255,0.85); font-size:11px;">Eventos ocurridos antes de la app ·
+          aparecerán en el Historial público</p>
+      </div>
+      <div class="fg"><label>Título del evento:</label><input type="text" id="evh-t"
+          placeholder="Ej: Concierto Navideño 2022"></div>
+      <div class="fg"><label>Descripción:</label><textarea id="evh-d"
+          placeholder="Cuéntanos qué pasó en ese evento..."></textarea></div>
+      <div class="fg">
+        <label>📅 Fecha del evento (pasada):</label>
+        <input type="datetime-local" id="evh-f">
+        <p style="font-size:10px; color:#f59e0b; margin:4px 0 0 0; font-weight:700;">⚠️ Ingresa una fecha anterior a hoy
+          para que aparezca en el Historial</p>
+      </div>
+      <div class="fg"><label>📍 Lugar:</label><input type="text" id="evh-l"
+          placeholder="Ej: Parque Principal de Riosucio"></div>
+      <div class="fg"><label>📎 Imagen/Video (opcional):</label><input type="file" id="evh-a" accept="image/*,video/*"
+          style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;"></div>
+      <div class="fg"><label>🔗 URL (YouTube, foto en línea...):</label><input type="text" id="evh-u"
+          placeholder="https://..."></div>
+      <p style="font-size:11px;font-weight:700;color:#888;margin:6px 0 3px 0;">REDES SOCIALES (opcional):</p>
+      <div class="ckg">
+        <div class="fg"><input type="text" id="evh-fb" placeholder="Facebook URL"></div>
+        <div class="fg"><input type="text" id="evh-ig" placeholder="Instagram URL"></div>
+        <div class="fg"><input type="text" id="evh-yt" placeholder="YouTube URL"></div>
+        <div class="fg"><input type="text" id="evh-tk" placeholder="TikTok URL"></div>
+        <div class="fg"><input type="text" id="evh-wa" placeholder="WhatsApp URL"></div>
+      </div>
+      <div style="display:flex;gap:9px;margin-top:16px;">
+        <button class="bbs" style="flex:1; background:linear-gradient(135deg,#d97706,#b45309);"
+          onclick="guardarEventoHistorico()"><i class="fas fa-save"></i> Guardar en Historial</button>
+        <button class="bbg" style="flex:1;" onclick="document.getElementById('m-ev-hist').style.display='none'"><i
+            class="fas fa-times"></i> Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="m-av" class="ov" onclick="if(event.target.id=='m-av')this.style.display='none'">
     <div class="mb">
       <h2 style="margin:0 0 20px 0;color:var(--az);font-size:20px;">📢 Crear Aviso</h2>
@@ -4046,7 +4107,7 @@
         <select id="me-alb">
           <option value="fotos">📷 Fotos Banda</option>
           <option value="videos">🎬 Videos Banda</option>
-          <option value="exalumnos">🎓 Exalumnos</option>
+          <option value="exalumnos">🎓 Egresados</option>
         </select>
       </div>
       <div class="fg"><label>📅 Año:</label><input type="number" id="me-anio" value="2026" min="2000" max="2099">
@@ -6652,6 +6713,51 @@
         r.readAsDataURL(arch);
       } else save();
     }
+
+    function guardarEventoHistorico() {
+      const t = document.getElementById('evh-t').value.trim();
+      const d = document.getElementById('evh-d').value.trim();
+      const f = document.getElementById('evh-f').value;
+      if (!t || !d || !f) { alert('Completa los campos: Título, Descripción y Fecha'); return; }
+      if (new Date(f) >= new Date()) {
+        alert('La fecha debe ser ANTERIOR a hoy para que aparezca en el Historial.\nSi es un evento futuro, usa "Crear Nuevo Evento".');
+        return;
+      }
+      const arch = document.getElementById('evh-a').files[0];
+      if (arch && !checkSize(arch)) return;
+      const u = document.getElementById('evh-u').value.trim();
+      const ne = {
+        t, d, f,
+        lu: document.getElementById('evh-l').value.trim(),
+        mu: u || null, md: null, historico: true,
+        r: {
+          fb: document.getElementById('evh-fb').value.trim(),
+          ig: document.getElementById('evh-ig').value.trim(),
+          yt: document.getElementById('evh-yt').value.trim(),
+          tk: document.getElementById('evh-tk').value.trim(),
+          wa: document.getElementById('evh-wa').value.trim()
+        }
+      };
+      const save = () => {
+        let ev = JSON.parse(localStorage.getItem(KEV)) || [];
+        ev.push(ne);
+        localStorage.setItem(KEV, JSON.stringify(ev));
+        if (typeof rEvHist === 'function') rEvHist();
+        if (typeof rEvAdmin === 'function') rEvAdmin();
+        document.getElementById('m-ev-hist').style.display = 'none';
+        ['evh-t', 'evh-d', 'evh-f', 'evh-l', 'evh-u', 'evh-fb', 'evh-ig', 'evh-yt', 'evh-tk', 'evh-wa'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.value = '';
+        });
+        document.getElementById('evh-a').value = '';
+        alert('Evento histórico guardado. Ya aparece en la sección pública de Historial.');
+      };
+      if (arch) {
+        const r = new FileReader();
+        r.onload = e => { ne.md = e.target.result; save(); };
+        r.readAsDataURL(arch);
+      } else save();
+    }
+    window.guardarEventoHistorico = guardarEventoHistorico;
 
     /* AVISOS */
     function abrirModalAviso() {
