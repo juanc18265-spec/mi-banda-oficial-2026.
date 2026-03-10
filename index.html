@@ -6222,8 +6222,8 @@
       if (!c || !arch) return;
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
 
-      const active = ev.map((e, i) => ({ ...e, i })).filter(e => !e.archived);
-      const archived = ev.map((e, i) => ({ ...e, i })).filter(e => e.archived);
+      const active = ev.map((e, i) => ({ ...e, i })).filter(e => !e.archived && !e.historico);
+      const archived = ev.map((e, i) => ({ ...e, i })).filter(e => e.archived || e.historico);
 
       c.innerHTML = active.length ? active.map(e => `
         <div style="background:#f8f9fa;padding:10px;border-radius:12px;margin-bottom:8px;border-left:4px solid var(--az);display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
@@ -6699,9 +6699,11 @@
       const u = document.getElementById('ev-u').value.trim();
       const ne = { t, d, f, lu: document.getElementById('ev-l').value.trim(), mu: u || null, md: null, r: { fb: document.getElementById('ev-fb').value.trim(), ig: document.getElementById('ev-ig').value.trim(), yt: document.getElementById('ev-yt').value.trim(), tk: document.getElementById('ev-tk').value.trim(), wa: document.getElementById('ev-wa').value.trim() } };
       const save = () => {
+        ne.id = ne.id || ('ev_' + Date.now());
         let ev = JSON.parse(localStorage.getItem(KEV)) || [];
         ev.push(ne);
         localStorage.setItem(KEV, JSON.stringify(ev));
+        if (window.cloudSave) window.cloudSave('BandaEventos', ne.id, ne);
         if (typeof rEv === 'function') rEv();
         if (typeof rEvAdmin === 'function') rEvAdmin();
         document.getElementById('m-ev').style.display = 'none';
@@ -6739,9 +6741,11 @@
         }
       };
       const save = () => {
+        ne.id = ne.id || ('evh_' + Date.now());
         let ev = JSON.parse(localStorage.getItem(KEV)) || [];
         ev.push(ne);
         localStorage.setItem(KEV, JSON.stringify(ev));
+        if (window.cloudSave) window.cloudSave('BandaEventos', ne.id, ne);
         if (typeof rEvHist === 'function') rEvHist();
         if (typeof rEvAdmin === 'function') rEvAdmin();
         document.getElementById('m-ev-hist').style.display = 'none';
@@ -6824,8 +6828,11 @@
       const arch = document.getElementById('av-a').files[0];
       if (!checkSize(arch)) return;
       const save = (md) => {
-        av.push({ tp: document.getElementById('av-ti').value, t, d, f, lu: document.getElementById('av-l').value.trim(), ds, md: md || null });
+        const id = 'av_' + Date.now();
+        const nav = { id, tp: document.getElementById('av-ti').value, t, d, f, lu: document.getElementById('av-l').value.trim(), ds, md: md || null };
+        av.push(nav);
         localStorage.setItem(KAV, JSON.stringify(av));
+        if (window.cloudSave) window.cloudSave('BandaAvisos', id, nav);
         if (typeof rAv === 'function') rAv();
         if (typeof rAvAdmin === 'function') rAvAdmin();
         document.getElementById('m-av').style.display = 'none';
