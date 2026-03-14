@@ -4383,7 +4383,7 @@
           style="position:absolute;right:12px;top:38px;cursor:pointer;color:#888;"></i>
       </div>
       <label style="display:flex;align-items:center;gap:10px;margin:10px 0;cursor:pointer;font-size:12px;color:#555;">
-        <input type="checkbox" id="admin-recordar"> <strong>Recordar sesión en este dispositivo</strong>
+        <input type="checkbox" id="admin-recordar" checked> <strong>Recordar sesión en este dispositivo</strong>
       </label>
       <button class="bbp" style="width:100%;padding:15px;margin-top:10px;font-weight:900;"
         onclick="loginAdmin()">ENTRAR</button>
@@ -7833,7 +7833,7 @@
       document.getElementById('m-mecenas-donante').style.display = 'flex';
     }
 
-    function elimMecenasDonor(id) {
+    window.elimMecenasDonor = function(id) {
       if (!confirm("¿Eliminar este donante del muro de honor?")) return;
       let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
       const item = list.find(x => x.id == id);
