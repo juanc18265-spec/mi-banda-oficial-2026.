@@ -6213,7 +6213,7 @@
     }
 
     /* RENDERERS ADMIN (AJUSTES) - GESTIÓN Y BORRADO */
-    const MAX_MB = 5; // Limite de 5MB para archivos originales
+    var MAX_MB = 5; // Limite de 5MB para archivos originales
     function checkSize(file) {
       if (!file) return true;
       const size = file.size || 0;
