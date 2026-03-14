@@ -7833,12 +7833,12 @@
       document.getElementById('m-mecenas-donante').style.display = 'flex';
     }
 
-    window.elimMecenasDonor = function(id) {
+    function elimMecenasDonor(id) {
       if (!confirm("¿Eliminar este donante del muro de honor?")) return;
       let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
-      const item = list.find(x => x.id == id);
+      const item = list.find(x => String(x.id) === String(id));
       if (!item) return;
-      list = list.filter(x => x.id != id);
+      list = list.filter(x => String(x.id) !== String(id));
       localStorage.setItem(KMEC_LIST, JSON.stringify(list));
 
       // Sincronizar borrado (en una app real usarías deleteDoc, aquí marcamos como null o lo quitamos del sync)
