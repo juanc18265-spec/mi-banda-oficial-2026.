@@ -6213,16 +6213,73 @@
     }
 
     /* RENDERERS ADMIN (AJUSTES) - GESTIÓN Y BORRADO */
-    const MAX_MB = 5; // Limite de 5MB para imagenes y videos
+    const MAX_MB = 5; // Limite de 5MB para archivos originales
     function checkSize(file) {
       if (!file) return true;
       const size = file.size || 0;
       if (size > MAX_MB * 1024 * 1024) {
-        alert(`⚠️ El archivo es demasiado grande (${(size / 1024 / 1024).toFixed(1)}MB).\nEl límite para estabilidad es de ${MAX_MB}MB.`);
+        alert(`⚠️ El archivo es demasiado grande (${(size / 1024 / 1024).toFixed(1)}MB).\nEl límite es de ${MAX_MB}MB.`);
         return false;
       }
       return true;
     }
+
+    // Comprimir imagen antes de guardar en localStorage/Firestore
+    function comprimirImagen(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) { resolve(null); return; }
+        // Si es video, no comprimir, solo convertir a base64
+        if (file.type.startsWith('video')) {
+          if (file.size > 1 * 1024 * 1024) {
+            alert('⚠️ Los videos deben ser menores a 1MB para guardarse.\nPor favor usa un enlace de YouTube en su lugar.');
+            resolve(null);
+            return;
+          }
+          const r = new FileReader();
+          r.onload = e => resolve(e.target.result);
+          r.onerror = () => reject('Error leyendo archivo');
+          r.readAsDataURL(file);
+          return;
+        }
+        // Comprimir imágenes
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = e => {
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_DIM = 800; // max 800px de ancho/alto
+            let w = img.width, h = img.height;
+            if (w > MAX_DIM || h > MAX_DIM) {
+              if (w > h) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+              else { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            const compressed = canvas.toDataURL('image/jpeg', 0.6);
+            console.log('📷 Imagen comprimida:', (compressed.length / 1024).toFixed(0) + 'KB');
+            resolve(compressed);
+          };
+          img.onerror = () => reject('Error procesando imagen');
+          img.src = e.target.result;
+        };
+        reader.onerror = () => reject('Error leyendo archivo');
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Guardar en localStorage con manejo de errores
+    function safeLocalSet(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        alert('⚠️ No hay espacio suficiente en el almacenamiento local.\nIntenta borrar datos antiguos o usar imágenes más pequeñas.');
+        console.error('localStorage lleno:', e);
+        return false;
+      }
+    }
+
 
     function rEvAdmin() {
       const c = document.getElementById('ev-render-admin');
@@ -7069,7 +7126,7 @@
           </div>`;
       }).join('');
     }
-    function guardarProyecto() {
+    async function guardarProyecto() {
       const t = document.getElementById('proy-t').value.trim();
       const d = document.getElementById('proy-d').value.trim();
       const meta = parseInt(document.getElementById('proy-meta').value) || 100000;
@@ -7081,7 +7138,13 @@
       const archV = document.getElementById('proy-v').files[0];
       if (archV && !checkSize(archV)) return;
 
-      const save = (vData, type) => {
+      try {
+        let vData = null, type = null;
+        if (archV) {
+          type = archV.type.startsWith('video') ? 'video' : 'image';
+          vData = await comprimirImagen(archV);
+        }
+
         p.push({
           titulo: t,
           desc: d,
@@ -7092,22 +7155,18 @@
           v: vData || null,
           vType: type || null
         });
-        localStorage.setItem(KPROY, JSON.stringify(p));
+
+        if (!safeLocalSet(KPROY, JSON.stringify(p))) return;
         if (typeof rProyectos === 'function') rProyectos();
         if (typeof rProyectosAdmin === 'function') rProyectosAdmin();
         document.getElementById('m-proyecto').style.display = 'none';
         alert('✅ Proyecto creado');
-      };
-
-      if (archV) {
-        const r = new FileReader();
-        const type = archV.type.startsWith('video') ? 'video' : 'image';
-        r.onload = e => save(e.target.result, type);
-        r.readAsDataURL(archV);
-      } else {
-        save(null, null);
+      } catch (err) {
+        console.error('Error guardando proyecto:', err);
+        alert('❌ Error al guardar proyecto: ' + (err.message || err));
       }
     }
+
     function abrirDonar(i) {
       let p = JSON.parse(localStorage.getItem(KPROY)) || [];
       document.getElementById('don-proy-nom').innerText = 'Proyecto: ' + p[i].titulo;
@@ -7621,14 +7680,25 @@
       c.innerHTML = html;
     }
 
-    function guardarConfigMecenas() {
+    async function guardarConfigMecenas() {
       let oldDataArr = JSON.parse(localStorage.getItem(KMEC_CFG)) || [{}];
       let oldData = oldDataArr[0] || {};
 
       const proyFile = document.getElementById('cfg-mec-proy-file').files[0];
       const muroFile = document.getElementById('cfg-mec-muro-file').files[0];
 
-      const finalize = (proyMediaData, muroMediaData) => {
+      try {
+        // Comprimir imágenes si las hay
+        let proyMediaData = null, muroMediaData = null;
+        if (proyFile) {
+          if (!checkSize(proyFile)) return;
+          proyMediaData = await comprimirImagen(proyFile);
+        }
+        if (muroFile) {
+          if (!checkSize(muroFile)) return;
+          muroMediaData = await comprimirImagen(muroFile);
+        }
+
         let newData = {
           intro: document.getElementById('cfg-mec-intro').value,
           vid: document.getElementById('cfg-mec-vid').value,
@@ -7652,7 +7722,7 @@
         if (oldData.muroVid !== newData.muroVid) cambios.push("Media Muro Honor");
         if (oldData.muroMsg !== newData.muroMsg) cambios.push("Mensaje Muro");
 
-        localStorage.setItem(KMEC_CFG, JSON.stringify([newData]));
+        if (!safeLocalSet(KMEC_CFG, JSON.stringify([newData]))) return;
         if (window.cloudSave) window.cloudSave('BandaMecenasConfig', 'config_v1', newData);
 
         if (cambios.length > 0) {
@@ -7661,30 +7731,15 @@
 
         rConfigMecenas(newData);
         alert("✅ Configuración actualizada con éxito.");
-      };
-
-      // Manejo de carga de archivos asíncrona
-      if (proyFile || muroFile) {
-        let proyData = null, muroData = null;
-        let pending = (proyFile ? 1 : 0) + (muroFile ? 1 : 0);
-
-        if (proyFile) {
-          const r = new FileReader();
-          r.onload = e => { proyData = e.target.result; pending--; if (pending === 0) finalize(proyData, muroData); };
-          r.readAsDataURL(proyFile);
-        }
-        if (muroFile) {
-          const r = new FileReader();
-          r.onload = e => { muroData = e.target.result; pending--; if (pending === 0) finalize(proyData, muroData); };
-          r.readAsDataURL(muroFile);
-        }
-      } else {
-        finalize(null, null);
+      } catch (err) {
+        console.error('Error guardando config mecenas:', err);
+        alert('❌ Error al guardar: ' + (err.message || err));
       }
     }
 
+
     // GESTIÓN DE DONANTES (MECENAS)
-    function guardarMecenasItem() {
+    async function guardarMecenasItem() {
       const id = document.getElementById('edit-mec-id').value;
       const nombre = document.getElementById('mec-don-nom').value.trim();
       const mensaje = document.getElementById('mec-don-msg').value.trim();
@@ -7692,7 +7747,13 @@
 
       if (!nombre) return alert("El nombre es obligatorio");
 
-      const save = (logoData) => {
+      try {
+        let logoData = null;
+        if (file) {
+          if (!checkSize(file)) return;
+          logoData = await comprimirImagen(file);
+        }
+
         let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
         const item = {
           id: id || Date.now(),
@@ -7708,7 +7769,7 @@
           list.unshift(item);
         }
 
-        localStorage.setItem(KMEC_LIST, JSON.stringify(list));
+        if (!safeLocalSet(KMEC_LIST, JSON.stringify(list))) return;
         if (window.cloudSave) window.cloudSave('BandaMecenasDonors', String(item.id), item);
 
         registrarCambioMecenas(id ? "Editar Donante" : "Nuevo Donante", nombre);
@@ -7721,16 +7782,12 @@
 
         rMecenasAdmin();
         rMecenasPublic();
-      };
-
-      if (file) {
-        const r = new FileReader();
-        r.onload = e => save(e.target.result);
-        r.readAsDataURL(file);
-      } else {
-        save(null);
+      } catch (err) {
+        console.error('Error guardando mecenas:', err);
+        alert('❌ Error al guardar mecenas: ' + (err.message || err));
       }
     }
+
 
     function rMecenasAdmin() {
       const c = document.getElementById('mecenas-list-admin');
