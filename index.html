@@ -5638,8 +5638,18 @@
     function irAdmin() {
       console.log('🔘 Intentando entrar a zona Admin...');
       const admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
-      if (admins.length === 0 && db) {
-        // Consultar Firestore directamente para evitar condición de carrera
+
+      // 1. Si ya tiene sesión recordada, dejarlo entrar directo
+      if (adminLogueado) {
+        console.log('--- SESIÓN RECORDADA DETECTADA: ENTRANDO DIRECTO ---');
+      } 
+      // 2. Si hay base de datos cargada pero no hay sesión, pedir clave
+      else if (admins.length > 0) {
+        document.getElementById('m-admin-login').style.display = 'flex';
+        return;
+      } 
+      // 3. Si no hay admins locales ni sesión, ir a la nube o setup
+      else if (admins.length === 0 && db) {
         getDocs(collection(db, 'BandaAdmins')).then(snap => {
           if (snap.empty) {
             document.getElementById('m-admin-setup').style.display = 'flex';
@@ -5647,20 +5657,19 @@
             let items = [];
             snap.forEach(d => items.push({ id: d.id, ...d.data() }));
             localStorage.setItem(KADMINS, JSON.stringify(items));
-            irAdmin(); // Re-intentar con datos de la nube
+            document.getElementById('m-admin-login').style.display = 'flex';
           }
         }).catch(() => {
           document.getElementById('m-admin-setup').style.display = 'flex';
         });
         return;
-      } else if (admins.length === 0) {
+      } 
+      // 4. Último recurso (falta internet y no hay datos locales)
+      else if (admins.length === 0) {
         document.getElementById('m-admin-setup').style.display = 'flex';
         return;
       }
-      if (!adminLogueado) {
-        document.getElementById('m-admin-login').style.display = 'flex';
-        return;
-      }
+
       console.log('--- ENTRANDO A ZONA ADMIN ---');
       // Cerrar cualquier modal abierto antes de entrar
       document.querySelectorAll('.ov').forEach(m => m.style.display = 'none');
