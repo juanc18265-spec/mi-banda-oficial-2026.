@@ -7540,6 +7540,8 @@
       // Mezcla robusta: cualquier valor falsy (null, undefined, "") se reemplaza por el default
       cfg = { ...DEFAULT_MEC_CFG, ...Object.fromEntries(Object.entries(cfg || {}).filter(([_, v]) => v)) };
 
+      let html = '';
+
       // Función robusta para sacar el ID de YouTube
       const extraerYtId = (url) => {
         if (!url) return null;
