@@ -3611,11 +3611,22 @@
               PASADAS</button>
           </div>
 
-          <div class="pc" style="margin-top:20px; border-left:5px solid #00CED1;">
-            <h4 style="margin:0 0 13px 0;color:#00CED1;font-size:15px;"><i class="fas fa-key"></i> CONTROL ACCESO PADRES
-              (PINs)</h4>
-            <div id="padres-render-admin"
-              style="max-height:400px;overflow-y:auto;border:1px solid #eee;border-radius:15px;padding:10px; background:white;">
+          <div class="pc" style="margin-top:20px; border-left:5px solid var(--az);">
+            <h4 style="margin:0 0 13px 0;color:var(--az);font-size:15px;"><i class="fas fa-list"></i> LISTADO DETALLADO (PINs y Visitas)</h4>
+            <div style="overflow-x:auto;">
+              <table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:10px;">
+                <thead>
+                  <tr style="background:#eee;">
+                    <th style="padding:10px;text-align:left;">Alumno</th>
+                    <th style="padding:10px;text-align:center;">PIN Est.</th>
+                    <th style="padding:10px;text-align:center;">PIN Padre</th>
+                    <th style="padding:10px;text-align:center;">Visitas</th>
+                    <th style="padding:10px;text-align:center;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="usuarios-tabla-render">
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -4731,6 +4742,9 @@
     } catch (fbErr) {
       console.warn('⚠️ Firebase no disponible, app funciona en modo local:', fbErr.message);
     }    // MAPA DE COLECCIONES PARA SINCRONIZACIÓN AUTOMÁTICA (ColName -> LocalKey)
+    // List of IDs that have been deleted locally to prevent sync race conditions
+    const deletedAlumnosIds = new Set();
+
     const SYNC_MAP = {
       'BandaEventos': KEV,
       'BandaAvisos': KAV,
@@ -4761,6 +4775,7 @@
 
             // SORT: Forzar orden numérico para alumnos (evita desorden en la nube)
             if (colName === 'BandaAlumnos') {
+              items = items.filter(al => !deletedAlumnosIds.has(String(al.id)));
               items.sort((a, b) => Number(a.id) - Number(b.id));
             }
 
@@ -5359,10 +5374,10 @@
               </div>
             </div>
             <div class="sg" style="margin-top:10px;gap:4px;">
-              <div class="sb" style="background:var(--ve);padding:6px 2px;"><span style="font-size:14px;display:block;">${p}</span><small style="font-size:8px;">P</small></div>
-              <div class="sb" style="background:var(--ro);padding:6px 2px;"><span style="font-size:14px;display:block;">${au}</span><small style="font-size:8px;">A</small></div>
-              <div class="sb" style="background:var(--na);padding:6px 2px;"><span style="font-size:14px;display:block;">${t}</span><small style="font-size:8px;">T</small></div>
-              <div class="sb" style="background:var(--ce);padding:6px 2px;"><span style="font-size:14px;display:block;">${e}</span><small style="font-size:8px;">E</small></div>
+              <div class="sb" style="background:var(--ve);padding:6px 2px;"><span style="font-size:14px;display:block;">${p}</span><small style="font-size:8px;">Presente</small></div>
+              <div class="sb" style="background:var(--ro);padding:6px 2px;"><span style="font-size:14px;display:block;">${au}</span><small style="font-size:8px;">Ausente</small></div>
+              <div class="sb" style="background:var(--na);padding:6px 2px;"><span style="font-size:14px;display:block;">${t}</span><small style="font-size:8px;">Tarde</small></div>
+              <div class="sb" style="background:var(--ce);padding:6px 2px;"><span style="font-size:14px;display:block;">${e}</span><small style="font-size:8px;">Excusa</small></div>
             </div>
           </div>
         `;
@@ -5487,13 +5502,6 @@
       var perActual = obtenerPeriodoActual();
       var perKey = 'p' + perActual;
 
-      // Mostrar info del periodo actual
-      var lbl = document.getElementById('periodo-actual-lbl');
-      if (lbl) {
-        var pd = PER[perActual];
-        lbl.textContent = '📅 ' + pd.n + ' (' + pd.i + ' → ' + pd.f + ')';
-      }
-
       var pins = JSON.parse(localStorage.getItem(KPIN)) || {};
       var pinsPadres = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
       var visitas = JSON.parse(localStorage.getItem(KVISITS)) || {};
@@ -5510,28 +5518,28 @@
         return `
           <tr style="border-bottom:1px solid #eee;">
             <td style="padding:10px;">
-              <div style="font-weight:900;font-size:22px;color:var(--az);">${al.n}</div>
+              <div style="font-weight:900;font-size:18px;color:var(--az);">${al.n}</div>
               <div style="font-size:11px;color:#888;">${al.i} | GRADO: ${al.g || '—'}</div>
             </td>
             <td style="padding:10px;text-align:center;">
               <input type="text" id="pin-${al.id}" value="${pin}" style="width:50px;text-align:center;font-size:10px;padding:3px;border:1px solid #ddd;border-radius:4px;">
-              <button onclick="editPin(${al.id})" style="background:var(--ve);color:white;border:none;padding:3px 6px;border-radius:4px;font-size:9px;margin-top:2px;">OK</button>
+              <button onclick="editPin('${al.id}')" style="background:var(--ve);color:white;border:none;padding:3px 6px;border-radius:4px;font-size:9px;margin-top:2px;">OK</button>
             </td>
             <td style="padding:10px;text-align:center;">
               <input type="text" id="pinp-${al.id}" value="${pinPadre}" style="width:50px;text-align:center;font-size:10px;padding:3px;border:1px solid #ddd;border-radius:4px;">
-              <button onclick="editPinPadre(${al.id})" style="background:var(--or);color:white;border:none;padding:3px 6px;border-radius:4px;font-size:9px;margin-top:2px;">OK</button>
+              <button onclick="editPinPadre('${al.id}')" style="background:var(--or);color:white;border:none;padding:3px 6px;border-radius:4px;font-size:9px;margin-top:2px;">OK</button>
             </td>
             <td style="padding:10px;text-align:center;">
               <div style="font-size:10px;color:#555;">Est: <strong>${v}</strong></div>
               <div style="font-size:10px;color:#888;">Pad: <strong>${ap}</strong></div>
             </td>
             <td style="padding:10px;text-align:center;">
-              <button onclick="abrirModalAlumno(${al.id})" style="background:var(--az);color:white;border:none;padding:6px;border-radius:6px;font-size:10px;"><i class="fas fa-edit"></i></button>
-              <button onclick="elimAl(${al.id})" style="background:var(--ro);color:white;border:none;padding:6px;border-radius:6px;font-size:10px;margin-top:2px;"><i class="fas fa-trash"></i></button>
+              <button onclick="editAl('${al.id}')" style="background:var(--az);color:white;border:none;padding:6px;border-radius:6px;font-size:14px;"><i class="fas fa-edit"></i></button>
+              <button onclick="elimAl('${al.id}')" style="background:var(--ro);color:white;border:none;padding:6px;border-radius:6px;font-size:14px;margin-top:2px;"><i class="fas fa-trash"></i></button>
             </td>
           </tr>
         `;
-      }).join('') || '<tr><td colspan="3" style="text-align:center; padding:20px; color:#aaa;">Sin alumnos</td></tr>';
+      }).join('') || '<tr><td colspan="5" style="text-align:center; padding:20px; color:#aaa;">Sin alumnos</td></tr>';
     }
 
     function asignarPinPadre(id, pin) {
@@ -6143,7 +6151,7 @@
     function rAlumnos() {
       const c = document.getElementById('al-render');
       if (!c) return;
-      c.innerHTML = banda.map(al => `<div class="alit"><div style="flex:1;"><div class="ann">${al.n}</div><div class="ain">${al.i} | GRADO: ${al.g || '—'}</div></div><div style="display:flex;gap:7px;"><button onclick="editAl(${al.id})" style="background:var(--na);color:white;border:none;padding:7px 11px;border-radius:8px;cursor:pointer;"><i class="fas fa-edit"></i></button><button onclick="elimAl(${al.id})" style="background:var(--ro);color:white;border:none;padding:7px 11px;border-radius:8px;cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`).join('') || '<p style="text-align:center;color:#aaa;">Sin alumnos</p>';
+      c.innerHTML = banda.map(al => `<div class="alit"><div style="flex:1;"><div class="ann">${al.n}</div><div class="ain">${al.i} | GRADO: ${al.g || '—'}</div></div><div style="display:flex;gap:7px;"><button onclick="editAl('${al.id}')" style="background:var(--na);color:white;border:none;padding:7px 11px;border-radius:8px;cursor:pointer;"><i class="fas fa-edit"></i></button><button onclick="elimAl('${al.id}')" style="background:var(--ro);color:white;border:none;padding:7px 11px;border-radius:8px;cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`).join('') || '<p style="text-align:center;color:#aaa;">Sin alumnos</p>';
     }
 
     function abrirModalAlumno() {
@@ -6433,6 +6441,11 @@
       const al = banda.find(x => Number(x.id) === nid);
       if (!al) { alert('⚠️ No se encontró el alumno. Recarga la página e intenta de nuevo.'); return; }
       if (!confirm(`¿Eliminar a ${al.n}?`)) return;
+
+      // Mark as deleted locally to prevent sync restoring it before cloud deletion
+      deletedAlumnosIds.add(String(nid));
+      setTimeout(() => deletedAlumnosIds.delete(String(nid)), 10000); // Remove from filter after 10s
+
       banda = banda.filter(x => Number(x.id) !== nid);
       localStorage.setItem(KAL, JSON.stringify(banda));
       let pr = JSON.parse(localStorage.getItem(KPR)) || {};
@@ -6455,6 +6468,7 @@
       }
 
       rAlumnos();
+      rUsuariosTabla();
       rAsist();
       rProc();
     }
