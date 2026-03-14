@@ -7699,18 +7699,22 @@
           muroMediaData = await comprimirImagen(muroFile);
         }
 
+        // Prioridad: 1. Archivo nuevo, 2. URL/Texto nuevo, 3. Dato anterior
+        let finalProyMedia = proyMediaData || document.getElementById('cfg-mec-proy-media').value.trim() || oldData.proyMedia || '';
+        let finalMuroVid = muroMediaData || document.getElementById('cfg-mec-muro-vid').value.trim() || oldData.muroVid || '';
+
         let newData = {
-          intro: document.getElementById('cfg-mec-intro').value,
-          vid: document.getElementById('cfg-mec-vid').value,
-          vaki: document.getElementById('cfg-mec-vaki').value,
-          nequi: document.getElementById('cfg-mec-nequi').value,
-          davi: document.getElementById('cfg-mec-davi').value,
-          banco: document.getElementById('cfg-mec-banco').value,
-          proyDesc: document.getElementById('cfg-mec-proy-desc').value,
-          proyMedia: proyMediaData || document.getElementById('cfg-mec-proy-media').value,
-          muroVid: muroMediaData || document.getElementById('cfg-mec-muro-vid').value,
-          muroMsg: document.getElementById('cfg-mec-muro-msg').value,
-          transparencia: document.getElementById('cfg-mec-transparencia').value,
+          intro: document.getElementById('cfg-mec-intro').value.trim() || oldData.intro || '',
+          vid: document.getElementById('cfg-mec-vid').value.trim() || oldData.vid || '',
+          vaki: document.getElementById('cfg-mec-vaki').value.trim() || oldData.vaki || '',
+          nequi: document.getElementById('cfg-mec-nequi').value.trim() || oldData.nequi || '',
+          davi: document.getElementById('cfg-mec-davi').value.trim() || oldData.davi || '',
+          banco: document.getElementById('cfg-mec-banco').value.trim() || oldData.banco || '',
+          proyDesc: document.getElementById('cfg-mec-proy-desc').value.trim() || oldData.proyDesc || '',
+          proyMedia: finalProyMedia,
+          muroVid: finalMuroVid,
+          muroMsg: document.getElementById('cfg-mec-muro-msg').value.trim() || oldData.muroMsg || '',
+          transparencia: document.getElementById('cfg-mec-transparencia').value.trim() || oldData.transparencia || '',
           updatedAt: new Date().toISOString()
         };
 
