@@ -6213,7 +6213,7 @@
     }
 
     /* RENDERERS ADMIN (AJUSTES) - GESTIÓN Y BORRADO */
-    const MAX_MB = 0.8; // Firestore limit per doc is 1MB, we use 0.8MB for safety
+    const MAX_MB = 5; // Limite de 5MB para imagenes y videos
     function checkSize(file) {
       if (!file) return true;
       const size = file.size || 0;
@@ -7073,8 +7073,9 @@
       const t = document.getElementById('proy-t').value.trim();
       const d = document.getElementById('proy-d').value.trim();
       const meta = parseInt(document.getElementById('proy-meta').value) || 100000;
-      const vaki = document.getElementById('proy-vaki').value ? document.getElementById('proy-vaki').value.trim() : '';
-      const vakiExtra = document.getElementById('proy-vaki-extra').value.trim();
+      const vakiEl = document.getElementById('proy-vaki');
+      const vaki = vakiEl ? vakiEl.value.trim() : '';
+      const vakiExtra = document.getElementById('proy-vaki-extra') ? document.getElementById('proy-vaki-extra').value.trim() : '';
       if (!t || !d) { alert('Completa campos'); return; }
       let p = JSON.parse(localStorage.getItem(KPROY)) || [];
       const archV = document.getElementById('proy-v').files[0];
