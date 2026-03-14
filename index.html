@@ -7540,7 +7540,26 @@
       // Mezcla robusta: cualquier valor falsy (null, undefined, "") se reemplaza por el default
       cfg = { ...DEFAULT_MEC_CFG, ...Object.fromEntries(Object.entries(cfg || {}).filter(([_, v]) => v)) };
 
-      let html = '';
+      // Función robusta para sacar el ID de YouTube
+      const extraerYtId = (url) => {
+        if (!url) return null;
+        if (url.length === 11 && !url.includes('/') && !url.includes('.')) return url; // Es un ID directo
+        let match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})/);
+        return match && match[1] ? match[1] : null;
+      };
+
+      // Función para renderizar el media final (YouTube, Imagen, o Video Base64)
+      const renderMedia = (srcString, isMuro = false) => {
+        let yid = extraerYtId(srcString);
+        let marginBottom = isMuro ? "30px" : "20px";
+        if (yid) {
+          return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff; margin-bottom:${marginBottom};"><iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/${yid}" allowfullscreen></iframe></div>`;
+        } else if (srcString.startsWith('data:video/')) {
+          return `<video src="${srcString}" controls style="width:100%; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff; margin-bottom:${marginBottom};"></video>`;
+        } else {
+          return `<img src="${srcString}" style="width:100%; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff; object-fit:cover; margin-bottom:${marginBottom};">`;
+        }
+      };
 
       // 1. ENCABEZADO
       if (cfg.intro) {
@@ -7552,21 +7571,13 @@
 
       // 2. NUESTRO PROYECTO (VIDEO)
       if (cfg.vid) {
-        let vMediaHtml = '';
-        if (cfg.vid.includes('youtube.com') || cfg.vid.includes('youtu.be') || cfg.vid.length < 15) {
-          let yid = cfg.vid.includes('=') ? cfg.vid.split('=')[1].split('&')[0] : cfg.vid.split('/').pop();
-          vMediaHtml = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff;"><iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/${yid}" allowfullscreen></iframe></div>`;
-        } else {
-          vMediaHtml = `<img src="${cfg.vid}" style="width:100%; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff; object-fit:cover;">`;
-        }
-
         html += `
           <div style="padding: 35px 0; background: #fff;">
             <p style="text-align:center; font-weight:900; color:var(--az); font-size:14px; margin-bottom:20px; letter-spacing:3px; text-transform:uppercase;">
               <i class="fas fa-play-circle"></i> NUESTRO PROYECTO
             </p>
             <div style="width:92%; margin:0 auto;">
-              ${vMediaHtml}
+              ${renderMedia(cfg.vid)}
             </div>
           </div>`;
       }
@@ -7598,22 +7609,12 @@
 
       // 4. PROYECTO ACTUAL (DINÁMICO)
       if (cfg.proyDesc || cfg.proyMedia) {
-        let mediaHtml = '';
-        if (cfg.proyMedia) {
-          if (cfg.proyMedia.includes('youtube.com') || cfg.proyMedia.includes('youtu.be') || cfg.proyMedia.length < 15) {
-            let yid = cfg.proyMedia.includes('=') ? cfg.proyMedia.split('=')[1].split('&')[0] : cfg.proyMedia.split('/').pop();
-            mediaHtml = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:15px; margin-bottom:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2);"><iframe src="https://www.youtube.com/embed/${yid}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe></div>`;
-          } else {
-            mediaHtml = `<img src="${cfg.proyMedia}" style="width:100%; border-radius:15px; margin-bottom:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2); object-fit:cover;">`;
-          }
-        }
-
         html += `
           <div style="padding:40px 20px; background:#f8fafc;">
             <h3 style="text-align:center; color:#ea580c; font-weight:900; letter-spacing:2px; font-size:13px; margin-bottom:25px; text-transform:uppercase;">
                <i class="fas fa-star"></i> PROYECTO ACTUAL
             </h3>
-            ${mediaHtml}
+            ${cfg.proyMedia ? renderMedia(cfg.proyMedia) : ''}
             <div style="background:#fff; padding:25px; border-radius:20px; border:1px solid #e2e8f0; font-family:'Montserrat', sans-serif; line-height:1.6; color:#334155; font-size:15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
               ${cfg.proyDesc}
             </div>
@@ -7628,14 +7629,7 @@
           </h3>`;
 
       if (cfg.muroVid) {
-        let mMedia = '';
-        if (cfg.muroVid.includes('youtube.com') || cfg.muroVid.includes('youtu.be') || cfg.muroVid.length < 15) {
-          let yid = cfg.muroVid.includes('=') ? cfg.muroVid.split('=')[1].split('&')[0] : cfg.muroVid.split('/').pop();
-          mMedia = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:15px; margin-bottom:30px; box-shadow:0 10px 25px rgba(0,0,0,0.2);"><iframe src="https://www.youtube.com/embed/${yid}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe></div>`;
-        } else {
-          mMedia = `<img src="${cfg.muroVid}" style="width:100%; border-radius:15px; margin-bottom:30px; box-shadow:0 10px 25px rgba(0,0,0,0.2); object-fit:cover;">`;
-        }
-        html += mMedia;
+        html += renderMedia(cfg.muroVid, true);
       }
 
       if (cfg.muroMsg) {
