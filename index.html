@@ -6494,7 +6494,7 @@
       if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), pin: val.trim() });
     }
 
-    function elimAl(id) {
+    async function elimAl(id) {
       if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar alumnos.'); return; }
       const nid = Number(id);
       const al = banda.find(x => Number(x.id) === nid);
@@ -6503,10 +6503,10 @@
 
       // Mark as deleted locally to prevent sync restoring it before cloud deletion
       deletedAlumnosIds.add(String(nid));
-      setTimeout(() => deletedAlumnosIds.delete(String(nid)), 10000); // Remove from filter after 10s
 
       banda = banda.filter(x => Number(x.id) !== nid);
       localStorage.setItem(KAL, JSON.stringify(banda));
+      localStorage.setItem('KAL_VER', 5);
       let pr = JSON.parse(localStorage.getItem(KPR)) || {};
       delete pr[id]; delete pr[nid]; delete pr[String(nid)];
       localStorage.setItem(KPR, JSON.stringify(pr));
@@ -6516,15 +6516,19 @@
       delete visitas[id]; delete visitas[nid]; delete visitas[String(nid)];
       localStorage.setItem(KVISITS, JSON.stringify(visitas));
 
-      // BORRAR TAMBIÉN EN FIRESTORE
+      // BORRAR TAMBIÉN EN FIRESTORE (AWAIT para asegurar persistencia)
       if (db) {
         try {
-          deleteDoc(doc(db, 'BandaAlumnos', String(nid)));
+          await deleteDoc(doc(db, 'BandaAlumnos', String(nid)));
           console.log('✅ Alumno eliminado de Firestore:', nid);
         } catch (e) {
           console.warn('⚠️ No se pudo eliminar de Firestore:', e.message);
+          alert('⚠️ El alumno se borró localmente pero hubo un error en la nube. Intenta de nuevo con conexión a internet.');
         }
       }
+
+      // Mantener filtro activo por 30s para evitar que el sync lo restaure
+      setTimeout(() => deletedAlumnosIds.delete(String(nid)), 30000);
 
       rAlumnos();
       rUsuariosTabla();
