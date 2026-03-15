@@ -4795,6 +4795,7 @@
     }    // MAPA DE COLECCIONES PARA SINCRONIZACIÓN AUTOMÁTICA (ColName -> LocalKey)
     // List of IDs that have been deleted locally to prevent sync race conditions
     const deletedAlumnosIds = new Set();
+    const deletedDonorIds = new Set();
 
     const SYNC_MAP = {
       'BandaEventos': KEV,
@@ -4827,6 +4828,11 @@
             if (colName === 'BandaAlumnos') {
               items = items.filter(al => !deletedAlumnosIds.has(String(al.id)));
               items.sort((a, b) => Number(a.id) - Number(b.id));
+            }
+
+            // Filtrar donantes recién eliminados para evitar efecto zombie
+            if (colName === 'BandaMecenasDonors') {
+              items = items.filter(d => !deletedDonorIds.has(String(d.id)));
             }
 
             const localKey = SYNC_MAP[colName];
@@ -7981,20 +7987,30 @@
       let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
       const item = list.find(x => String(x.id) === String(id));
       if (!item) return;
-      
-      // Borrar de Firestore
-      if (db) {
-          try {
-              await deleteDoc(doc(db, 'BandaMecenasDonors', String(id)));
-          } catch(e) { console.warn("Error eliminando donante de nube:", e); }
-      }
 
+      // Marcar como eliminado para que onSnapshot no lo resucite
+      deletedDonorIds.add(String(id));
+
+      // Borrar de localStorage y actualizar UI inmediatamente
       list = list.filter(x => String(x.id) !== String(id));
       localStorage.setItem(KMEC_LIST, JSON.stringify(list));
-
       registrarCambioMecenas("Eliminar Donante", item.n);
       rMecenasAdmin();
       rMecenasPublic();
+
+      // Borrar de Firestore (en segundo plano)
+      if (db) {
+        try {
+          await deleteDoc(doc(db, 'BandaMecenasDonors', String(id)));
+          console.log('✅ Donante eliminado de la nube:', item.n);
+        } catch(e) {
+          console.error('❌ Error eliminando donante de nube:', e);
+          alert('⚠️ Error al eliminar en la nube. Intente de nuevo.');
+        }
+      }
+
+      // Limpiar la protección después de 30 segundos
+      setTimeout(() => deletedDonorIds.delete(String(id)), 30000);
     }
 
     function registrarCambioMecenas(accion, detalle) {
