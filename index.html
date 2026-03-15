@@ -6484,11 +6484,28 @@
       }
     }
 
-    function eliminarContenido(key, idx) {
+    async function eliminarContenido(key, idx) {
       if (!confirm('¿ELIMINAR PERMANENTEMENTE? Esta acción no se puede deshacer.')) return;
       let data = JSON.parse(localStorage.getItem(key)) || [];
+      const itemToDel = data[idx];
       data.splice(idx, 1);
       localStorage.setItem(key, JSON.stringify(data));
+      
+      // Borrar de Firestore
+      if (db && itemToDel && itemToDel.id) {
+        let colName = '';
+        if (key === KEV) colName = 'BandaEventos';
+        if (key === KME) colName = 'BandaMultimedia';
+        if (key === KPROY) colName = 'BandaProyectos';
+        if (key === KAV) colName = 'BandaAvisos';
+        
+        if (colName) {
+          try {
+            await deleteDoc(doc(db, colName, String(itemToDel.id)));
+          } catch (e) { console.warn('Aviso: No se pudo borrar de Firestore (quizás no existía):', e); }
+        }
+      }
+
       // Refrescar vistas
       if (key === KEV) { rEvAdmin(); if (typeof rEv === 'function') rEv(); }
       if (key === KME) { rMeAdmin(); if (typeof rMe === 'function') rMe(); }
@@ -7020,7 +7037,7 @@
         html += '<div class="mgrid">';
         grupos[fecha].forEach(x => {
           const idx = m.indexOf(x);
-          const cont = x.t === 'vid' ? `<video controls><source src="${x.d}"></video>` : `<img src="${x.d}" class="zoomable-img" alt="">`;
+          const cont = x.t === 'vid' ? `<video controls><source src="${x.d}"></video>` : `<img src="${x.d}" class="zoomable-img" alt="" onclick="abrirLightbox(this.src, 'img')">`;
           html += `<div class="mi">${cont}</div>`;
         });
         html += '</div>';
@@ -7370,7 +7387,7 @@
           if (m.t === 'vid') {
             mediaTag = `<video src="${m.d}" class="mb-post-img" controls></video>`;
           } else {
-            mediaTag = `<img src="${m.d}" class="mb-post-img zoomable-img" alt="Foto">`;
+            mediaTag = `<img src="${m.d}" class="mb-post-img zoomable-img" alt="Foto" onclick="abrirLightbox(this.src, 'img')">`;
           }
         }
 
