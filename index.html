@@ -4712,6 +4712,7 @@
         guardarCalificacion, abrirModalAviso, togDest, guardarAviso,
         rAvAdmin, rEvAdmin, rMeAdmin, rProyectosAdmin, rMiBandaAdmin, rAccesosPadres,
         archivarContenido, eliminarContenido,
+        abrirLightbox, cerrarLightbox, editMecenasDonor,
         verSubAjuste, volverHubAjustes,
         enviarPushGlobal, rTablon,
         togglePassword: (id, eyeId) => {
@@ -7964,7 +7965,7 @@
         `).join('');
     }
 
-    window.editMecenasDonor = function (id) {
+    function editMecenasDonor(id) {
       let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
       const item = list.find(x => x.id == id);
       if (!item) return;
@@ -8615,12 +8616,12 @@
     }
     window.instalarAppPWA = instalarAppPWA;
 
-    // REGISTRO DE SERVICE WORKER v11 (Network First)
+    // REGISTRO DE SERVICE WORKER v12 (Network First)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=11')
+        navigator.serviceWorker.register('./sw.js?v=12')
           .then(reg => {
-             console.log('✅ Service Worker v11 registrado', reg.scope);
+             console.log('✅ Service Worker v12 registrado', reg.scope);
              reg.update(); 
           })
           .catch(err => console.error('❌ Error al registrar Service Worker:', err));
@@ -8655,7 +8656,7 @@
         }
     };
 
-    console.log('🎺 Módulo de la app v1.9 completamente cargado.');
+    console.log('🎺 Módulo de la app v2.0 completamente cargado.');
   </script>
 
   <!-- PWA Install Banner (hidden by default, shown by JS after 5s) -->
