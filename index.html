@@ -1708,6 +1708,48 @@
       font-size: 13px;
     }
 
+    /* LIGHTBOX */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,.92);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .25s ease;
+      cursor: pointer;
+    }
+    .lightbox-overlay.show { opacity: 1; }
+    .lightbox-overlay img, .lightbox-overlay video {
+      max-width: 94vw;
+      max-height: 90vh;
+      border-radius: 14px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.6);
+      object-fit: contain;
+      cursor: default;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 18px; right: 18px;
+      background: rgba(255,255,255,.15);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      transition: background .2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.3); }
+    .mi img { cursor: pointer; }
+    .mb-post-img { cursor: pointer; }
+
     .fecha-grupo {
       font-weight: 900;
       color: var(--az);
@@ -6978,8 +7020,8 @@
         html += '<div class="mgrid">';
         grupos[fecha].forEach(x => {
           const idx = m.indexOf(x);
-          const cont = x.t === 'vid' ? `<video controls><source src="${x.d}"></video>` : `<img src="${x.d}" alt="">`;
-          html += `<div class="mi">${cont}<button class="mdel" onclick="elimMe(${idx})">×</button></div>`;
+          const cont = x.t === 'vid' ? `<video controls><source src="${x.d}"></video>` : `<img src="${x.d}" alt="" onclick="abrirLightbox(this.src,'img')">`;
+          html += `<div class="mi">${cont}</div>`;
         });
         html += '</div>';
         html += `<div class="com-caja"><div class="com-tit">💬 Comentarios (${comentarios.length})</div>${comentarios.length ? comentarios.map(c => `<div class="com-item"><div class="com-autor">${c.a} • ${c.ts || ''}</div>${c.t}</div>`).join('') : '<div style="font-size:11px;color:#bbb;">Ninguno...</div>'}<div class="com-input"><input type="text" id="ci-${key}" placeholder="Comentar..." style="flex:1;"><button class="bbp" style="padding:9px 13px;margin:0;font-size:12px;" onclick="addCom('${fecha}','${key}')"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
@@ -7070,12 +7112,25 @@
         r.readAsDataURL(f);
       });
     }
-    function elimMe(i) {
-      if (!confirm('¿Eliminar?')) return;
+    async function elimMe(i) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar multimedia.'); return; }
+      if (!confirm('¿Eliminar permanentemente?')) return;
       let m = JSON.parse(localStorage.getItem(KME)) || [];
+      const item = m[i];
       m.splice(i, 1);
       localStorage.setItem(KME, JSON.stringify(m));
+      // Borrar también de Firestore
+      if (db && item && item.id) {
+        try {
+          await deleteDoc(doc(db, 'BandaMultimedia', String(item.id)));
+          console.log('✅ Multimedia eliminada de Firestore:', item.id);
+        } catch (e) {
+          console.warn('⚠️ Error eliminando de Firestore:', e.message);
+        }
+      }
       rMe();
+      if (typeof rMeAdmin === 'function') rMeAdmin();
+      if (typeof rMiBanda === 'function') rMiBanda();
     }
 
     /* MECENAS */
@@ -7297,7 +7352,7 @@
           if (m.t === 'vid') {
             mediaTag = `<video src="${m.d}" class="mb-post-img" controls></video>`;
           } else {
-            mediaTag = `<img src="${m.d}" class="mb-post-img" alt="Foto">`;
+            mediaTag = `<img src="${m.d}" class="mb-post-img" alt="Foto" onclick="abrirLightbox(this.src,'img')">`;
           }
         }
 
@@ -7331,6 +7386,47 @@
     function compartirMedia(idx) {
       alert('¡Enlace copiado al portapapeles! Reacciona para apoyar a la banda.');
     }
+
+    /* LIGHTBOX — Zoom foto a pantalla completa */
+    function abrirLightbox(src, tipo) {
+      if (!src) return;
+      // Remover lightbox existente si hay
+      cerrarLightbox();
+      const overlay = document.createElement('div');
+      overlay.className = 'lightbox-overlay';
+      overlay.id = 'lightbox-active';
+      overlay.onclick = function(e) { if (e.target === overlay) cerrarLightbox(); };
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'lightbox-close';
+      closeBtn.innerHTML = '&times;';
+      closeBtn.onclick = cerrarLightbox;
+      overlay.appendChild(closeBtn);
+      if (tipo === 'vid') {
+        const vid = document.createElement('video');
+        vid.src = src; vid.controls = true; vid.autoplay = true;
+        vid.style.maxWidth = '94vw'; vid.style.maxHeight = '85vh';
+        overlay.appendChild(vid);
+      } else {
+        const img = document.createElement('img');
+        img.src = src; img.alt = 'Foto ampliada';
+        overlay.appendChild(img);
+      }
+      document.body.appendChild(overlay);
+      requestAnimationFrame(() => overlay.classList.add('show'));
+      // Cerrar con Escape
+      document.addEventListener('keydown', lightboxEsc);
+    }
+    function cerrarLightbox() {
+      const el = document.getElementById('lightbox-active');
+      if (el) {
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 250);
+      }
+      document.removeEventListener('keydown', lightboxEsc);
+    }
+    function lightboxEsc(e) { if (e.key === 'Escape') cerrarLightbox(); }
+    window.abrirLightbox = abrirLightbox;
+    window.cerrarLightbox = cerrarLightbox;
     let hidePanelTimers = {};
     function showReactPanel(idx, el) {
       clearTimeout(hidePanelTimers[idx]);
