@@ -1,7 +1,6 @@
-const CACHE_NAME = 'banda-ens-v8';
+const CACHE_NAME = 'banda-ens-v9';
 const ASSETS = [
     './',
-    './index.html',
     './manifest.json',
     './icon-512.png'
 ];
@@ -16,15 +15,13 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
     event.waitUntil(
-        Promise.all([
-            clients.claim(),
-            caches.keys().then(keys => {
-                return Promise.all(
-                    keys.filter(key => key !== CACHE_NAME)
-                        .map(key => caches.delete(key))
-                );
-            })
-        ])
+        caches.keys().then(keys => {
+            return Promise.all(
+                keys.map(key => {
+                    if (key !== CACHE_NAME) return caches.delete(key);
+                })
+            );
+        }).then(() => self.clients.claim())
     );
 });
 

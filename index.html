@@ -3591,6 +3591,21 @@
             <span>Anuncios para Estudiantes</span>
           </div>
 
+          <!-- 6. Mecenas -->
+          <div class="banner-admin" style="background: linear-gradient(135deg, #15803d, #22c55e);"
+            onclick="verSubAjuste('v-gestion-mecenas')">
+            <i class="fas fa-hand-holding-heart"></i>
+            <strong>Mecenas (Donantes)</strong>
+            <span>Muro de Honor y Configuración</span>
+          </div>
+
+          <!-- 7. Sistema (Nuevo) -->
+          <div class="banner-admin" style="background: linear-gradient(135deg, #475569, #64748b);"
+            onclick="forzarActualizacionApp()">
+            <i class="fas fa-sync-alt"></i>
+            <strong>Sistema v1.8</strong>
+            <span>Limpiar Caché y Actualizar App</span>
+          </div>
           <!-- 4. Multimedia -->
           <div class="banner-admin" style="background: linear-gradient(135deg, #1e293b, #334155);"
             onclick="verSubAjuste('v-gestion-multimedia')">
@@ -4712,7 +4727,8 @@
           if (!x || !e) return;
           if (x.type === 'password') { x.type = 'text'; e.classList.replace('fa-eye', 'fa-eye-slash'); }
           else { x.type = 'password'; e.classList.replace('fa-eye-slash', 'fa-eye'); }
-        }
+        },
+        forzarActualizacionApp: () => window.forzarActualizacionApp()
       });
       console.log('✅ Funciones globales expuestas correctamente (hoisting).');
     } catch (err) {
@@ -4744,7 +4760,7 @@
         Notification.requestPermission().then((permission) => {
           if (permission === 'granted') {
             console.log('✅ Permiso concedido.');
-            getToken(messaging, { vapidKey: 'BEt7zVMdAByWUTgxUtSBsoLvAgCj1i5eS48aHHxPrYx8vMB0t-PH87UWRmO1YxkQapFbTlOAf4xc7xFhOCaoE5I' }).then((currentToken) => {
+            getToken(messaging, { vapidKey: 'BEt7zVMdAByWUTgxUtSBsoLvAgCj1i5eS48aHHxPrYx8vMB0t-PH87UWRmO1YxkQapFbTlAf4xc7xFhOCaoE5I' }).then((currentToken) => {
               if (currentToken) {
                 console.log('🎫 Token FCM:', currentToken);
                 // Guardar token en Firestore
@@ -4805,7 +4821,6 @@
             let items = [];
             snap.forEach(d => items.push({ id: d.id, ...d.data() }));
 
-            // SORT: Forzar orden numérico para alumnos (evita desorden en la nube)
             if (colName === 'BandaAlumnos') {
               items = items.filter(al => !deletedAlumnosIds.has(String(al.id)));
               items.sort((a, b) => Number(a.id) - Number(b.id));
@@ -4816,28 +4831,21 @@
             let localData = [];
             try { localData = JSON.parse(localRaw) || []; } catch (e) { localData = []; }
 
-            // LÓGICA DE PROTECCIÓN Y MIGRACIÓN
             if (colName === 'BandaAlumnos' && items.length > 0) {
-              // MERGE INTELIGENTE: detectar alumnos locales que faltan en la nube y subirlos
               const idsNube = new Set(items.map(x => String(x.id)));
               const alumnosLocalesNuevos = localData.filter(x => x && !idsNube.has(String(x.id)));
               if (alumnosLocalesNuevos.length > 0) {
-                console.log('🔄 Sincronizando ' + alumnosLocalesNuevos.length + ' alumno(s) local(es) a la nube...');
                 alumnosLocalesNuevos.forEach(al => {
-                  setDoc(doc(db, 'BandaAlumnos', String(al.id)), al, { merge: true })
-                    .catch(e => console.error('❌ Error subiendo alumno local:', e.message));
+                  setDoc(doc(db, 'BandaAlumnos', String(al.id)), al, { merge: true }).catch(e => console.error(e));
                 });
-                // Usar la lista combinada para la UI mientras sube
                 const merged = [...items, ...alumnosLocalesNuevos].sort((a, b) => Number(a.id) - Number(b.id));
                 localStorage.setItem(localKey, JSON.stringify(merged));
-                localStorage.setItem('KAL_VER', 5);
                 actualizarUI(colName, merged);
               } else {
                 localStorage.setItem(localKey, JSON.stringify(items));
                 actualizarUI(colName, items);
               }
             } else if (items.length > 0) {
-              // Especial para estructuras de OBJETOS
               const OBJ_KEYS = [KPR, KPIN, KPIN_PADRES, KACCESS_PADRES, KVISITS];
               if (OBJ_KEYS.includes(localKey)) {
                 let rebuilt = {};
@@ -4848,70 +4856,22 @@
                       rebuilt[doc.alumnoId][doc.periodo] = (localKey === KPR ? doc.datos : doc.v);
                     }
                   });
-                } else if (localKey === KPIN || localKey === KPIN_PADRES || localKey === KACCESS_PADRES) {
+                } else {
                   items.forEach(doc => { if (doc.alumnoId) rebuilt[doc.alumnoId] = (localKey === KPIN || localKey === KPIN_PADRES ? doc.pin : doc.v); });
                 }
                 localStorage.setItem(localKey, JSON.stringify(rebuilt));
               } else {
-                // Estructura normal de ARRAY
                 localStorage.setItem(localKey, JSON.stringify(items));
               }
               actualizarUI(colName, items);
-            } else if (snap.empty && (localRaw && localRaw !== '[]' && localRaw !== '{}')) {
-              // La nube está vacía pero tenemos datos locales: ¡MIGRAR A LA NUBE!
-              console.log(`☁️ Migrando datos locales de ${colName} a la nube...`);
-
-              let toMigrate = [];
-              if (Array.isArray(localData)) {
-                toMigrate = localData;
-              } else if (localData && typeof localData === 'object') {
-                if (localKey === KPR || localKey === KVISITS) {
-                  Object.keys(localData).forEach(alId => {
-                    const sub = localData[alId];
-                    if (sub && typeof sub === 'object') {
-                      Object.keys(sub).forEach(per => {
-                        let docObj = { alumnoId: String(alId), periodo: per };
-                        if (localKey === KPR) { docObj.id = `proc_${alId}_${per}`; docObj.datos = sub[per]; }
-                        else { docObj.id = `v_${alId}_${per}`; docObj.v = sub[per]; }
-                        toMigrate.push(docObj);
-                      });
-                    }
-                  });
-                } else {
-                  Object.keys(localData).forEach(id => {
-                    let docObj = { alumnoId: String(id), id: String(id) };
-                    if (localKey === KPIN) { docObj.id = `pin_${id}`; docObj.pin = localData[id]; }
-                    else if (localKey === KPIN_PADRES) { docObj.id = `pin_padre_${id}`; docObj.pin = localData[id]; }
-                    else { docObj.v = localData[id]; }
-                    toMigrate.push(docObj);
-                  });
-                }
-              }
-
-              toMigrate.forEach((item, idx) => {
-                if (!item) return;
-                const docId = item.id ? String(item.id) : `loc_${Date.now()}_${idx}`;
-
-                // Verificación preventiva de tamaño (Firestore limite 1MB ~ 1,048,576 bytes)
-                const s = JSON.stringify(item);
-                if (s.length > 1000000) {
-                  console.warn(`⚠️ Saltando migración de ${colName}/${docId} ("${item.titulo || 'Sin título'}"): Imagen/Video demasiado pesado para la nube (Límite 1MB).`);
-                  return;
-                }
-
-                setDoc(doc(db, colName, docId), { ...item, id: docId }, { merge: true })
-                  .catch(e => console.error(`❌ Error migrando ${colName}/${docId}:`, e.message));
-              });
-            } else if (snap.empty && (!localRaw || localRaw === '[]')) {
-              // Ambos vacíos: Solo asegurar que local sea []
-              localStorage.setItem(localKey, JSON.stringify([]));
-              actualizarUI(colName, []);
+            } else if (snap.empty) {
+                // EVITAR EFECTO ZOMBIE: Si la nube está vacía, vaciamos local (excepto si hay error de red)
+                localStorage.setItem(localKey, Array.isArray(localData) ? '[]' : '{}');
+                actualizarUI(colName, []);
             }
           });
         });
-      } catch (e) {
-        console.error("Error in Firebase Listeners:", e);
-      }
+      } catch (e) { console.error("Error listeners:", e); }
     }
 
     function actualizarUI(colName, items) {
@@ -8643,13 +8603,12 @@
     }
     window.instalarAppPWA = instalarAppPWA;
 
-    // REGISTRO DE SERVICE WORKER
+    // REGISTRO DE SERVICE WORKER v9 (Network First)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=8')
+        navigator.serviceWorker.register('./sw.js?v=9')
           .then(reg => {
-             console.log('✅ Service Worker registrado para PWA:', reg.scope);
-             // Forzar actualización inmediata si hay una nueva versión
+             console.log('✅ Service Worker v9 registrado', reg.scope);
              reg.update(); 
           })
           .catch(err => console.error('❌ Error al registrar Service Worker:', err));
@@ -8663,7 +8622,27 @@
       });
     }
 
-    console.log('🎺 Módulo de la app v4 completamente cargado.');
+    window.forzarActualizacionApp = async function() {
+        if (!confirm("Se limpiará la memoria de la aplicación y se forzará la descarga de la última versión (v1.8). ¿Continuar?")) return;
+        try {
+            if ('serviceWorker' in navigator) {
+                const regs = await navigator.serviceWorker.getRegistrations();
+                for(let registration of regs) { await registration.unregister(); }
+            }
+            if ('caches' in window) {
+                const keys = await caches.keys();
+                for(let key of keys) { await caches.delete(key); }
+            }
+            localStorage.clear(); // Limpiamos todo para asegurar inicio limpio
+            alert("Memoria limpiada. La aplicación se reiniciará ahora.");
+            window.location.reload(true);
+        } catch(e) {
+            console.error("Error en forzarActualizacion:", e);
+            window.location.reload(true);
+        }
+    };
+
+    console.log('🎺 Módulo de la app v1.8 completamente cargado.');
   </script>
 
   <!-- PWA Install Banner (hidden by default, shown by JS after 5s) -->
