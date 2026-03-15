@@ -8013,15 +8013,22 @@
       document.getElementById('m-mecenas-donante').style.display = 'flex';
     }
 
-    function elimMecenasDonor(id) {
+    async function elimMecenasDonor(id) {
       if (!confirm("¿Eliminar este donante del muro de honor?")) return;
       let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
       const item = list.find(x => String(x.id) === String(id));
       if (!item) return;
+      
+      // Borrar de Firestore
+      if (db) {
+          try {
+              await deleteDoc(doc(db, 'BandaMecenasDonors', String(id)));
+          } catch(e) { console.warn("Error eliminando donante de nube:", e); }
+      }
+
       list = list.filter(x => String(x.id) !== String(id));
       localStorage.setItem(KMEC_LIST, JSON.stringify(list));
 
-      // Sincronizar borrado (en una app real usarías deleteDoc, aquí marcamos como null o lo quitamos del sync)
       registrarCambioMecenas("Eliminar Donante", item.n);
       rMecenasAdmin();
       rMecenasPublic();
@@ -8640,8 +8647,19 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js?v=8')
-          .then(reg => console.log('✅ Service Worker registrado para PWA:', reg.scope))
+          .then(reg => {
+             console.log('✅ Service Worker registrado para PWA:', reg.scope);
+             // Forzar actualización inmediata si hay una nueva versión
+             reg.update(); 
+          })
           .catch(err => console.error('❌ Error al registrar Service Worker:', err));
+      });
+
+      // Si el usuario vuelve a la app después de un tiempo, forzamos chequeo de versión
+      window.addEventListener('focus', () => {
+          navigator.serviceWorker.getRegistration().then(reg => {
+              if (reg) reg.update();
+          });
       });
     }
 
