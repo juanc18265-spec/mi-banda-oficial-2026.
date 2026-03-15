@@ -1712,19 +1712,16 @@
     .lightbox-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,.92);
+      background: rgba(0,0,0,.95);
       z-index: 99999;
       display: flex;
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      transition: opacity .25s ease;
       cursor: pointer;
     }
-    .lightbox-overlay.show { opacity: 1; }
     .lightbox-overlay img, .lightbox-overlay video {
-      max-width: 94vw;
-      max-height: 90vh;
+      max-width: 96vw;
+      max-height: 94vh;
       border-radius: 14px;
       box-shadow: 0 8px 40px rgba(0,0,0,.6);
       object-fit: contain;
@@ -6391,10 +6388,11 @@
       if (!c || !arch) return;
       let m = JSON.parse(localStorage.getItem(KME)) || [];
 
-      const active = m.map((e, i) => ({ ...e, i })).filter(e => !e.archived);
-      const archived = m.map((e, i) => ({ ...e, i })).filter(e => e.archived);
+      // Sort by id descending so the newest are at the top
+      const active = m.map((e, i) => ({ ...e, i })).filter(e => !e.archived).sort((a,b) => (b.id||0) - (a.id||0));
+      const archived = m.map((e, i) => ({ ...e, i })).filter(e => e.archived).sort((a,b) => (b.id||0) - (a.id||0));
 
-      c.innerHTML = active.length ? active.slice(-8).reverse().map(x => {
+      c.innerHTML = active.length ? active.slice(0, 50).map(x => {
         let rSum = x.reacciones ? `<div style="display:flex;gap:5px;margin-top:5px;font-size:10px;font-weight:700;">
             <span title="Love">❤️ ${(x.reacciones['❤️'] || []).length}</span>
             <span title="Like">👍 ${(x.reacciones['👍'] || []).length}</span>
@@ -7453,15 +7451,13 @@
         overlay.appendChild(img);
       }
       document.body.appendChild(overlay);
-      requestAnimationFrame(() => overlay.classList.add('show'));
       // Cerrar con Escape
       document.addEventListener('keydown', lightboxEsc);
     }
     function cerrarLightbox() {
       const el = document.getElementById('lightbox-active');
       if (el) {
-        el.classList.remove('show');
-        setTimeout(() => el.remove(), 250);
+        el.remove();
       }
       document.removeEventListener('keydown', lightboxEsc);
     }
