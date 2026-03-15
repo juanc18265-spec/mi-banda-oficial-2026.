@@ -7381,10 +7381,12 @@
 
     /* LIGHTBOX — Zoom foto a pantalla completa */
     document.addEventListener('click', function(e) {
-      if (e.target && e.target.classList && e.target.classList.contains('zoomable-img')) {
-        abrirLightbox(e.target.src, e.target.tagName.toLowerCase() === 'video' ? 'vid' : 'img');
+      if (e.target && e.target.tagName === 'IMG' && e.target.closest('.mi')) {
+        e.preventDefault();
+        e.stopPropagation();
+        abrirLightbox(e.target.src, 'img');
       }
-    });
+    }, true);
 
     function abrirLightbox(src, tipo) {
       if (!src) return;
@@ -7973,6 +7975,7 @@
     }
 
     async function elimMecenasDonor(id) {
+      console.log('🗑️ elimMecenasDonor llamada con id:', id);
       if (!confirm("¿Eliminar este donante del muro de honor?")) return;
       let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
       const item = list.find(x => String(x.id) === String(id));
@@ -8632,6 +8635,7 @@
     }
 
     window.forzarActualizacionApp = async function() {
+        console.log('🔧 forzarActualizacionApp llamada');
         if (!confirm("Se limpiará la memoria de la aplicación y se forzará la descarga de la última versión (v1.9). ¿Continuar?")) return;
         try {
             if ('serviceWorker' in navigator) {
