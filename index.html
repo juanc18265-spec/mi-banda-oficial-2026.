@@ -3603,7 +3603,7 @@
           <div class="banner-admin" style="background: linear-gradient(135deg, #475569, #64748b);"
             onclick="forzarActualizacionApp()">
             <i class="fas fa-sync-alt"></i>
-            <strong>Sistema v1.8</strong>
+            <strong>Sistema v1.9</strong>
             <span>Limpiar Caché y Actualizar App</span>
           </div>
           <!-- 4. Multimedia -->
@@ -3938,6 +3938,9 @@
             <button class="bbp bf" onclick="abrirSubirMedia()"
               style="background: linear-gradient(135deg, #9a3412, #ea580c); padding:18px; font-size:15px;"><i
                 class="fas fa-camera"></i> PUBLICAR NUEVO MOMENTO</button>
+            <p style="font-size:11px; color:#888; font-weight:900; margin-top:5px; background:#eee; padding:5px 10px; border-radius:30px; display:inline-block; border:1px solid #ddd;" onclick="forzarActualizacionApp()">
+              <i class="fas fa-microchip"></i> Sistema v1.9 - Limpiar Caché y Forzar Actualización
+            </p>
           </div>
 
           <div class="pc" style="margin-top:20px; border-left:5px solid #FFD700;">
@@ -4886,7 +4889,7 @@
         rConfigMecenas(cfg);
       }
       if (colName === 'BandaMecenasHistory') rHistoryMecenas();
-      if (colName === 'BandaMecenasDonors') rMecenasAdmin();
+      if (colName === 'BandaMecenasDonors') { rMecenasAdmin(); rMecenasPublic(); }
       if (colName === 'BandaAdmins') {
         const foundJuan = items.find(a => a.u && a.u.toLowerCase() === 'juan');
         if (foundJuan) {
