@@ -7449,6 +7449,40 @@
         const img = document.createElement('img');
         img.src = src; img.alt = 'Foto ampliada';
         overlay.appendChild(img);
+
+        // Lógica de Pinch-to-Zoom
+        let pDist = 0, scale = 1, minS = 1, maxS = 4;
+        let startX = 0, startY = 0, tX = 0, tY = 0, lX = 0, lY = 0;
+
+        img.addEventListener('touchstart', e => {
+          if (e.touches.length === 2) {
+            pDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+          } else if (e.touches.length === 1) {
+            startX = e.touches[0].pageX - lX;
+            startY = e.touches[0].pageY - lY;
+          }
+        }, { passive: false });
+
+        img.addEventListener('touchmove', e => {
+          if (scale > 1) e.preventDefault();
+          if (e.touches.length === 2) {
+            e.preventDefault();
+            const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+            scale = Math.min(Math.max(minS, scale * (dist / pDist)), maxS);
+            pDist = dist;
+            img.style.transform = `translate(${tX}px, ${tY}px) scale(${scale})`;
+          } else if (e.touches.length === 1 && scale > 1) {
+            e.preventDefault();
+            tX = e.touches[0].pageX - startX;
+            tY = e.touches[0].pageY - startY;
+            img.style.transform = `translate(${tX}px, ${tY}px) scale(${scale})`;
+          }
+        }, { passive: false });
+
+        img.addEventListener('touchend', e => {
+          lX = tX; lY = tY;
+          if (scale === 1) { tX = 0; tY = 0; lX = 0; lY = 0; img.style.transform = ''; }
+        });
       }
       document.body.appendChild(overlay);
       // Cerrar con Escape
