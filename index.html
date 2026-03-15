@@ -3614,14 +3614,6 @@
             <span>Administrar Fotos y Videos</span>
           </div>
 
-          <!-- 5. Mecenas -->
-          <div class="banner-admin" style="background: linear-gradient(135deg, #065f46, #10b981);"
-            onclick="verSubAjuste('v-gestion-mecenas')">
-            <i class="fas fa-hand-holding-heart"></i>
-            <strong>Mecenas</strong>
-            <span>Proyectos y Mosaico</span>
-          </div>
-
           <!-- 6. Sistema -->
           <div class="banner-admin" style="background: linear-gradient(135deg, #111827, #374151);"
             onclick="verSubAjuste('v-gestion-sistema')">
@@ -3938,9 +3930,7 @@
             <button class="bbp bf" onclick="abrirSubirMedia()"
               style="background: linear-gradient(135deg, #9a3412, #ea580c); padding:18px; font-size:15px;"><i
                 class="fas fa-camera"></i> PUBLICAR NUEVO MOMENTO</button>
-            <p style="font-size:11px; color:#888; font-weight:900; margin-top:5px; background:#eee; padding:5px 10px; border-radius:30px; display:inline-block; border:1px solid #ddd;" onclick="forzarActualizacionApp()">
-              <i class="fas fa-microchip"></i> Sistema v1.9 - Limpiar Caché y Forzar Actualización
-            </p>
+
           </div>
 
           <div class="pc" style="margin-top:20px; border-left:5px solid #FFD700;">
@@ -8622,12 +8612,12 @@
     }
     window.instalarAppPWA = instalarAppPWA;
 
-    // REGISTRO DE SERVICE WORKER v9 (Network First)
+    // REGISTRO DE SERVICE WORKER v11 (Network First)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=9')
+        navigator.serviceWorker.register('./sw.js?v=11')
           .then(reg => {
-             console.log('✅ Service Worker v9 registrado', reg.scope);
+             console.log('✅ Service Worker v11 registrado', reg.scope);
              reg.update(); 
           })
           .catch(err => console.error('❌ Error al registrar Service Worker:', err));
@@ -8661,7 +8651,7 @@
         }
     };
 
-    console.log('🎺 Módulo de la app v1.8 completamente cargado.');
+    console.log('🎺 Módulo de la app v1.9 completamente cargado.');
   </script>
 
   <!-- PWA Install Banner (hidden by default, shown by JS after 5s) -->
