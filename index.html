@@ -7020,7 +7020,7 @@
         html += '<div class="mgrid">';
         grupos[fecha].forEach(x => {
           const idx = m.indexOf(x);
-          const cont = x.t === 'vid' ? `<video controls><source src="${x.d}"></video>` : `<img src="${x.d}" alt="" onclick="abrirLightbox(this.src,'img')">`;
+          const cont = x.t === 'vid' ? `<video controls><source src="${x.d}"></video>` : `<img src="${x.d}" class="zoomable-img" alt="">`;
           html += `<div class="mi">${cont}</div>`;
         });
         html += '</div>';
@@ -7083,34 +7083,52 @@
         `;
       }).join('');
     }
-    function guardarMedia() {
+    async function guardarMedia() {
       const fs = document.getElementById('me-a').files;
       if (!fs.length) { alert('Selecciona archivos'); return; }
-      const totalSize = Array.from(fs).reduce((acc, f) => acc + f.size, 0);
-      if (!checkSize({ size: totalSize })) return;
+      const mbBtn = document.getElementById('m-me');
+      if(mbBtn) mbBtn.style.opacity = '0.6';
+      
       const alb = document.getElementById('me-alb').value;
       const anio = String(document.getElementById('me-anio').value || '2026');
       const com = document.getElementById('me-com').value.trim();
       const fecha = new Date().toLocaleDateString('es-CO');
       let m = JSON.parse(localStorage.getItem(KME)) || [];
-      let pend = fs.length;
-      Array.from(fs).forEach((f, i) => {
-        const r = new FileReader();
-        r.onload = e => {
-          m.push({ d: e.target.result, t: f.type.startsWith('image/') ? 'img' : 'vid', alb, anio, fecha, comentario: i === 0 ? com : '' });
-          pend--;
-          if (!pend) {
-            localStorage.setItem(KME, JSON.stringify(m));
-            albumActual = alb;
-            if (typeof rMe === 'function') rMe();
-            if (typeof rMeAdmin === 'function') rMeAdmin();
-            if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
-            document.getElementById('m-me').style.display = 'none';
-            alert('✅ Subido');
+      
+      let subidos = 0;
+      for (let i = 0; i < fs.length; i++) {
+        const f = fs[i];
+        const isVid = f.type.startsWith('video');
+        if (isVid && f.size > 1.5 * 1024 * 1024) {
+          alert('⚠️ Video muy grande. Límite: 1.5MB');
+          continue;
+        }
+        try {
+          const base64Data = await comprimirImagen(f);
+          if (!base64Data) continue;
+          const id = Date.now() + i;
+          const item = { id: id, d: base64Data, t: isVid ? 'vid' : 'img', alb, anio, fecha, comentario: i === 0 ? com : '' };
+          m.push(item);
+          if (window.cloudSave) {
+            await window.cloudSave('BandaMultimedia', String(item.id), item);
           }
-        };
-        r.readAsDataURL(f);
-      });
+          subidos++;
+        } catch (e) {
+          console.error('Error procesando multimedia:', e);
+        }
+      }
+      
+      if(mbBtn) mbBtn.style.opacity = '1';
+      document.getElementById('m-me').style.display = 'none';
+      if (subidos > 0) {
+        localStorage.setItem(KME, JSON.stringify(m));
+        albumActual = alb;
+        if (typeof rMe === 'function') rMe();
+        if (typeof rMeAdmin === 'function') rMeAdmin();
+        if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
+        if (typeof rMiBanda === 'function') rMiBanda();
+        alert('✅ ' + subidos + ' archivo(s) subido(s) correctamente.');
+      }
     }
     async function elimMe(i) {
       if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar multimedia.'); return; }
@@ -7352,7 +7370,7 @@
           if (m.t === 'vid') {
             mediaTag = `<video src="${m.d}" class="mb-post-img" controls></video>`;
           } else {
-            mediaTag = `<img src="${m.d}" class="mb-post-img" alt="Foto" onclick="abrirLightbox(this.src,'img')">`;
+            mediaTag = `<img src="${m.d}" class="mb-post-img zoomable-img" alt="Foto">`;
           }
         }
 
@@ -7388,6 +7406,12 @@
     }
 
     /* LIGHTBOX — Zoom foto a pantalla completa */
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.classList && e.target.classList.contains('zoomable-img')) {
+        abrirLightbox(e.target.src, e.target.tagName.toLowerCase() === 'video' ? 'vid' : 'img');
+      }
+    });
+
     function abrirLightbox(src, tipo) {
       if (!src) return;
       // Remover lightbox existente si hay
