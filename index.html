@@ -5540,7 +5540,7 @@
         pins[id] = pin.trim();
       }
       localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
-      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), pin: pins[id] || '' });
+      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), alumnoId: String(id), pin: pins[id] || '' });
       rUsuariosTabla();
     }
 
@@ -6505,7 +6505,7 @@
       let pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
       pins[id] = val.trim();
       localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
-      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), pin: val.trim() });
+      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), alumnoId: String(id), pin: val.trim() });
     }
 
     // FIX: Funciones editPin y editPinPadre que faltaban
@@ -6532,14 +6532,14 @@
         let pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
         delete pins[id];
         localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
-        if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), pin: '' });
+        if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), alumnoId: String(id), pin: '' });
         alert('🗑️ PIN de padre eliminado.');
         return;
       }
       let pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
       pins[id] = val;
       localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
-      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), pin: val });
+      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), alumnoId: String(id), pin: val });
       alert('✅ PIN de padre actualizado.');
     }
 
