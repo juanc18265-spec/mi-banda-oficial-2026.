@@ -4692,7 +4692,7 @@
         abrirAccesoAsistencia, mostrarPinPadres, verificarPinPadresModal, cerrarSesionPadres,
         rAsistenciaPadres, rPadresGeneral, abrirPagoCuota, irPagoCuota, verificarPin,
         rAsistenciaPublica, verStats, marcar, guardarDia, borrarReg, limpH, togD,
-        resetVisitasPadres, resetVisitas, guardarPinPadre, asignarPinPadre,
+        resetVisitasPadres, resetVisitas, guardarPinPadre, asignarPinPadre, editPin, editPinPadre,
         verHerramienta, volverMenuH, cambiarBPM, toggleMetronomo,
         tocarNota, pararNota, toggleTunerAguja, toggleTunerVocal, pararTunerAguja, pararTunerVocal,
         setTransposition,
@@ -4785,8 +4785,14 @@
       console.warn('⚠️ Firebase no disponible, app funciona en modo local:', fbErr.message);
     }    // MAPA DE COLECCIONES PARA SINCRONIZACIÓN AUTOMÁTICA (ColName -> LocalKey)
     // List of IDs that have been deleted locally to prevent sync race conditions
-    const deletedAlumnosIds = new Set();
+    // Persistir en localStorage para que sobrevivan recargas de página
+    const _storedDeleted = JSON.parse(localStorage.getItem('ens_deleted_alumnos') || '[]');
+    const deletedAlumnosIds = new Set(_storedDeleted);
     const deletedDonorIds = new Set();
+
+    function persistDeletedIds() {
+      localStorage.setItem('ens_deleted_alumnos', JSON.stringify([...deletedAlumnosIds]));
+    }
 
     const SYNC_MAP = {
       'BandaEventos': KEV,
@@ -4832,19 +4838,10 @@
             try { localData = JSON.parse(localRaw) || []; } catch (e) { localData = []; }
 
             if (colName === 'BandaAlumnos' && items.length > 0) {
-              const idsNube = new Set(items.map(x => String(x.id)));
-              const alumnosLocalesNuevos = localData.filter(x => x && !idsNube.has(String(x.id)));
-              if (alumnosLocalesNuevos.length > 0) {
-                alumnosLocalesNuevos.forEach(al => {
-                  setDoc(doc(db, 'BandaAlumnos', String(al.id)), al, { merge: true }).catch(e => console.error(e));
-                });
-                const merged = [...items, ...alumnosLocalesNuevos].sort((a, b) => Number(a.id) - Number(b.id));
-                localStorage.setItem(localKey, JSON.stringify(merged));
-                actualizarUI(colName, merged);
-              } else {
-                localStorage.setItem(localKey, JSON.stringify(items));
-                actualizarUI(colName, items);
-              }
+              // FIX: Usar la nube como fuente de verdad — NO re-subir alumnos locales
+              // Esto evita el bug de alumnos borrados que reaparecen
+              localStorage.setItem(localKey, JSON.stringify(items));
+              actualizarUI(colName, items);
             } else if (items.length > 0) {
               const OBJ_KEYS = [KPR, KPIN, KPIN_PADRES, KACCESS_PADRES, KVISITS];
               if (OBJ_KEYS.includes(localKey)) {
@@ -6511,6 +6508,41 @@
       if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), pin: val.trim() });
     }
 
+    // FIX: Funciones editPin y editPinPadre que faltaban
+    function editPin(id) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden modificar PINs.'); return; }
+      const input = document.getElementById('pin-' + id);
+      if (!input) { alert('Error: No se encontró el campo de PIN.'); return; }
+      const val = input.value.trim();
+      if (!val) { alert('El PIN no puede estar vacío.'); return; }
+      let pins = JSON.parse(localStorage.getItem(KPIN)) || {};
+      pins[id] = val;
+      localStorage.setItem(KPIN, JSON.stringify(pins));
+      if (window.cloudSave) window.cloudSave('BandaPins', `pin_${id}`, { id: String(id), alumnoId: String(id), pin: val });
+      alert('✅ PIN de alumno actualizado.');
+    }
+
+    function editPinPadre(id) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden modificar PINs.'); return; }
+      const input = document.getElementById('pinp-' + id);
+      if (!input) { alert('Error: No se encontró el campo de PIN de padre.'); return; }
+      const val = input.value.trim();
+      if (!val) {
+        // Si está vacío, eliminar el PIN de padre
+        let pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
+        delete pins[id];
+        localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
+        if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), pin: '' });
+        alert('🗑️ PIN de padre eliminado.');
+        return;
+      }
+      let pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
+      pins[id] = val;
+      localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
+      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), pin: val });
+      alert('✅ PIN de padre actualizado.');
+    }
+
     async function elimAl(id) {
       if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar alumnos.'); return; }
       const nid = Number(id);
@@ -6520,6 +6552,7 @@
 
       // Mark as deleted locally to prevent sync restoring it before cloud deletion
       deletedAlumnosIds.add(String(nid));
+      persistDeletedIds();
 
       banda = banda.filter(x => Number(x.id) !== nid);
       localStorage.setItem(KAL, JSON.stringify(banda));
@@ -6544,8 +6577,8 @@
         }
       }
 
-      // Mantener filtro activo por 30s para evitar que el sync lo restaure
-      setTimeout(() => deletedAlumnosIds.delete(String(nid)), 30000);
+      // Mantener filtro activo por 5 minutos para evitar que el sync lo restaure
+      setTimeout(() => { deletedAlumnosIds.delete(String(nid)); persistDeletedIds(); }, 300000);
 
       rAlumnos();
       rUsuariosTabla();
