@@ -4167,7 +4167,7 @@
 
   <div id="m-me" class="ov" onclick="if(event.target.id=='m-me')this.style.display='none'">
     <div class="mb">
-      <h2 style="margin:0 0 20px 0;color:var(--az);font-size:20px;">📷 Publicar en Mi Banda / Multimedia</h2>
+      <h2 style="margin:0 0 20px 0;color:var(--az);font-size:20px;">📷 Publicar en Galería Multimedia</h2>
       <div class="fg"><label>📁 Álbum:</label>
         <select id="me-alb">
           <option value="fotos">📷 Fotos Banda</option>
@@ -4894,7 +4894,8 @@
       if (colName === 'BandaEventos') { rEv(); if (adminLogueado) rEvAdmin(); }
       if (colName === 'BandaAvisos') { rAv(); if (adminLogueado) rAvAdmin(); }
       if (colName === 'BandaMosaico') rConfigMecenas();
-      if (colName === 'BandaMultimedia') { rMe(); rMiBanda(); if (adminLogueado) { rMeAdmin(); rMiBandaAdmin(); } }
+      if (colName === 'BandaMultimedia') { rMe(); if (adminLogueado) { rMeAdmin(); } }
+      if (colName === 'BandaMiBanda') { rMiBanda(); if (adminLogueado) { rMiBandaAdmin(); } }
       if (colName === 'BandaProyectos') { rProyectos(); if (adminLogueado) rProyectosAdmin(); }
       if (colName === 'BandaMecenasConfig') {
         const cfg = items.find(i => i.id === 'config_v1') || items[0];
@@ -4988,6 +4989,30 @@
           });
         }
         init(); rEv(); rAv(); rMe(); rProyectos(); rConfigMecenas(); rMiBanda(); poblarNombres();
+        
+        // MIGRACIÓN ÚNICA: Mover items de Mi Banda (KME) a su propio almacén (KMB)
+        try {
+          let oldMeds = JSON.parse(localStorage.getItem(KME)) || [];
+          if (oldMeds.some(x => x.destino === 'mibanda')) {
+            console.log("🚀 Migrando datos de Mi Banda a KMB...");
+            let miBandaItems = oldMeds.filter(x => x.destino === 'mibanda');
+            let galeriaItems = oldMeds.filter(x => x.destino !== 'mibanda');
+            
+            let currentKMB = JSON.parse(localStorage.getItem(KMB)) || [];
+            let existingIds = new Set(currentKMB.map(x => x.id));
+            let itemsToMove = miBandaItems.filter(x => !existingIds.has(x.id));
+            
+            if (itemsToMove.length > 0) {
+               currentKMB = [...currentKMB, ...itemsToMove];
+               localStorage.setItem(KMB, JSON.stringify(currentKMB));
+            }
+            
+            // Retirar de KME para evitar duplicados
+            localStorage.setItem(KME, JSON.stringify(galeriaItems));
+            rMiBanda();
+            rMe();
+          }
+        } catch(e) { console.error("Error en migración MIBANDA:", e); }
       });
     } else {
       const b = document.getElementById('btn-asistencia-menu');
@@ -4999,6 +5024,30 @@
         });
       }
       init(); rEv(); rAv(); rMe(); rProyectos(); rConfigMecenas(); rMiBanda(); poblarNombres();
+      
+      // MIGRACIÓN ÚNICA: Mover items de Mi Banda (KME) a su propio almacén (KMB)
+      try {
+        let oldMeds = JSON.parse(localStorage.getItem(KME)) || [];
+        if (oldMeds.some(x => x.destino === 'mibanda')) {
+          console.log("🚀 Migrando datos de Mi Banda a KMB...");
+          let miBandaItems = oldMeds.filter(x => x.destino === 'mibanda');
+          let galeriaItems = oldMeds.filter(x => x.destino !== 'mibanda');
+          
+          let currentKMB = JSON.parse(localStorage.getItem(KMB)) || [];
+          let existingIds = new Set(currentKMB.map(x => x.id));
+          let itemsToMove = miBandaItems.filter(x => !existingIds.has(x.id));
+          
+          if (itemsToMove.length > 0) {
+             currentKMB = [...currentKMB, ...itemsToMove];
+             localStorage.setItem(KMB, JSON.stringify(currentKMB));
+          }
+          
+          // Retirar de KME para evitar duplicados
+          localStorage.setItem(KME, JSON.stringify(galeriaItems));
+          rMiBanda();
+          rMe();
+        }
+      } catch(e) { console.error("Error en migración MIBANDA:", e); }
     }
 
     /* ESCALA 1-5 */
@@ -6401,11 +6450,12 @@
     }
     function reiniciarReacciones(idx) {
       if (!confirm('¿Seguro que deseas reiniciar TODAS las reacciones de esta publicación?')) return;
-      let m = JSON.parse(localStorage.getItem(KME)) || [];
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
       if (m[idx]) {
         m[idx].reacciones = {};
-        localStorage.setItem(KME, JSON.stringify(m));
-        rMeAdmin();
+        localStorage.setItem(KMB, JSON.stringify(m));
+        if (window.cloudSave && m[idx].id) window.cloudSave('BandaMiBanda', String(m[idx].id), m[idx]);
+        rMiBandaAdmin();
         rMiBanda();
         alert('✅ Reacciones reiniciadas.');
       }
@@ -7137,9 +7187,7 @@
         albumActual = alb;
         if (typeof rMe === 'function') rMe();
         if (typeof rMeAdmin === 'function') rMeAdmin();
-        if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
-        if (typeof rMiBanda === 'function') rMiBanda();
-        alert('✅ ' + subidos + ' contenido(s) subido(s) correctamente.');
+        alert('✅ ' + subidos + ' contenido(s) subido(s) a Galería Multimedia.');
       }
     }
     async function elimMe(i) {
@@ -7160,7 +7208,6 @@
       }
       rMe();
       if (typeof rMeAdmin === 'function') rMeAdmin();
-      if (typeof rMiBanda === 'function') rMiBanda();
     }
 
     /* MECENAS */
@@ -7347,9 +7394,9 @@
     function rMiBanda() {
       const c = document.getElementById('mb-feed');
       if (!c) return;
-      let meds = JSON.parse(localStorage.getItem(KME)) || [];
-      // Solo mostrar items destinados a Mi Banda
-      let medsActivos = meds.filter(x => !x.archived && x.destino === 'mibanda');
+      let meds = JSON.parse(localStorage.getItem(KMB)) || [];
+      // Mostrar todos los items de Mi Banda (ya están en su propio almacén)
+      let medsActivos = meds.filter(x => !x.archived);
       if (!medsActivos.length) {
         c.innerHTML = `<div style="text-align:center;padding:50px 20px;">
           <div style="font-size:60px;margin-bottom:16px;">🎺</div>
@@ -7364,7 +7411,7 @@
 
       let html = '';
       msorted.forEach((m) => {
-        const idxOriginal = meds.indexOf(m);
+        const idxOriginal = meds.indexOf(m); // índice dentro de KMB (Mi Banda)
         const ago = m.fecha ? m.fecha : 'Reciente';
         const bg = 'linear-gradient(135deg, #1e293b, #334155)';
         const ini = '🎺';
@@ -7444,7 +7491,7 @@
       alert('¡Enlace copiado al portapapeles! Reacciona para apoyar a la banda.');
     }
 
-    /* GUARDAR MI BANDA — Función dedicada para publicar en Mi Banda */
+    /* GUARDAR MI BANDA — Función dedicada para publicar en Mi Banda (usa KMB/BandaMiBanda) */
     async function guardarMiBanda() {
       const fileInput = document.getElementById('mb-archivo');
       const urlInput = document.getElementById('mb-url-input');
@@ -7455,7 +7502,7 @@
 
       if (!file && !urlVal) { alert('Sube un archivo o pega una URL de video'); return; }
 
-      let m = JSON.parse(localStorage.getItem(KME)) || [];
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
       const fecha = new Date().toLocaleDateString('es-CO');
       const anio = String(new Date().getFullYear());
       let subidos = 0;
@@ -7465,7 +7512,7 @@
         const id = Date.now();
         const item = { id, url: urlVal, t: 'url', alb: 'mibanda', anio, fecha, comentario: desc, destino: 'mibanda' };
         m.push(item);
-        if (window.cloudSave) await window.cloudSave('BandaMultimedia', String(id), item);
+        if (window.cloudSave) await window.cloudSave('BandaMiBanda', String(id), item);
         subidos++;
       }
 
@@ -7481,7 +7528,7 @@
               const id = Date.now() + 1;
               const item = { id, d: base64Data, t: isVid ? 'vid' : 'img', alb: 'mibanda', anio, fecha, comentario: !urlVal ? desc : '', destino: 'mibanda' };
               m.push(item);
-              if (window.cloudSave) await window.cloudSave('BandaMultimedia', String(id), item);
+              if (window.cloudSave) await window.cloudSave('BandaMiBanda', String(id), item);
               subidos++;
             }
           } catch (e) { console.error('Error procesando:', e); }
@@ -7489,7 +7536,7 @@
       }
 
       if (subidos > 0) {
-        localStorage.setItem(KME, JSON.stringify(m));
+        localStorage.setItem(KMB, JSON.stringify(m));
         if (typeof rMiBanda === 'function') rMiBanda();
         if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
         alert('✅ ' + subidos + ' contenido(s) publicado(s) en Mi Banda.');
@@ -7500,33 +7547,33 @@
       if (descInput) descInput.value = '';
     }
 
-    /* ELIMINAR item de Mi Banda */
+    /* ELIMINAR item de Mi Banda (usa KMB/BandaMiBanda) */
     async function elimMiBanda(idx) {
       if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar.'); return; }
       if (!confirm('¿ELIMINAR esta publicación de Mi Banda? No se puede deshacer.')) return;
-      let m = JSON.parse(localStorage.getItem(KME)) || [];
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
       const item = m[idx];
       m.splice(idx, 1);
-      localStorage.setItem(KME, JSON.stringify(m));
+      localStorage.setItem(KMB, JSON.stringify(m));
       if (db && item && item.id) {
-        try { await deleteDoc(doc(db, 'BandaMultimedia', String(item.id))); } catch (e) { console.warn('Error nube:', e); }
+        try { await deleteDoc(doc(db, 'BandaMiBanda', String(item.id))); } catch (e) { console.warn('Error nube:', e); }
       }
       rMiBanda();
       rMiBandaAdmin();
       alert('🗑️ Publicación eliminada de Mi Banda.');
     }
 
-    /* ADMIN: Lista de items de Mi Banda con botón borrar */
+    /* ADMIN: Lista de items de Mi Banda con botón borrar (usa KMB/BandaMiBanda) */
     function rMiBandaAdmin() {
       // Lista con botón borrar
       const lista = document.getElementById('mb-admin-lista');
       if (lista) {
-        let m = JSON.parse(localStorage.getItem(KME)) || [];
-        const mbItems = m.map((x, i) => ({ ...x, idx: i })).filter(x => x.destino === 'mibanda');
+        let m = JSON.parse(localStorage.getItem(KMB)) || [];
+        const mbItems = m.map((x, i) => ({ ...x, idx: i }));
         if (!mbItems.length) {
           lista.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay publicaciones en Mi Banda.</p>';
         } else {
-          lista.innerHTML = mbItems.reverse().map(x => {
+          lista.innerHTML = [...mbItems].reverse().map(x => {
             let preview = '';
             if (x.url) preview = '<i class="fas fa-link" style="color:var(--ce);margin-right:6px;"></i> URL';
             else if (x.t === 'vid') preview = '<i class="fas fa-video" style="color:var(--na);margin-right:6px;"></i> Video';
@@ -7545,8 +7592,8 @@
       // Popular posts
       const c = document.getElementById('mb-popular-render');
       if (!c) return;
-      let m = JSON.parse(localStorage.getItem(KME)) || [];
-      const populares = m.filter(x => x.destino === 'mibanda').map(item => {
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
+      const populares = m.map(item => {
         const reactions = item.reactions || {};
         const total = Object.values(reactions).reduce((a, b) => a + b, 0);
         return { ...item, totalInteractions: total };
@@ -7672,24 +7719,26 @@
       if (panel) panel.classList.toggle('show');
     }
     function reaccionar(idx, emoji) {
-      let meds = JSON.parse(localStorage.getItem(KME)) || [];
+      let meds = JSON.parse(localStorage.getItem(KMB)) || [];
       if (!meds[idx]) return;
       if (!meds[idx].reacciones) meds[idx].reacciones = {};
       if (!meds[idx].reacciones[emoji]) meds[idx].reacciones[emoji] = [];
 
       meds[idx].reacciones[emoji].push(Date.now());
-      localStorage.setItem(KME, JSON.stringify(meds));
+      localStorage.setItem(KMB, JSON.stringify(meds));
+      // Sincronizar reacción con la nube
+      if (window.cloudSave && meds[idx].id) window.cloudSave('BandaMiBanda', String(meds[idx].id), meds[idx]);
 
       // Feedback visual
       const panel = document.getElementById('rp-' + idx);
       if (panel) panel.classList.remove('show');
 
       rMiBanda();
-      if (adminLogueado) rMeAdmin();
+      if (adminLogueado) rMiBandaAdmin();
     }
 
     function rTopPosts() {
-      let meds = JSON.parse(localStorage.getItem(KME)) || [];
+      let meds = JSON.parse(localStorage.getItem(KMB)) || [];
       if (!meds.length) return '<p style="font-size:11px;color:#aaa;">Sin datos.</p>';
 
       let stats = meds.map((m, i) => {
