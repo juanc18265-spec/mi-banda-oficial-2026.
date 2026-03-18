@@ -7072,7 +7072,7 @@
       const c = document.getElementById('me-render');
       if (!c) return;
       let m = JSON.parse(localStorage.getItem(KME)) || [];
-      let filtrado = m.filter(x => !x.archived && x.destino !== 'mibanda' && x.alb === albumActual);
+      let filtrado = m.filter(x => !x.archived && x.destino !== 'mibanda' && (albumActual === 'TODO' || x.alb === albumActual));
       if (anioActual !== 'todos') filtrado = filtrado.filter(x => (x.anio || '2026') === anioActual);
       if (!filtrado.length) {
         c.innerHTML = `<div style="text-align:center;padding:35px;color:#bbb;font-size:13px;background:white;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);"><i class="fas fa-images" style="font-size:45px;margin-bottom:10px;display:block;opacity:.4;"></i>No hay archivos</div>`;
@@ -7098,11 +7098,19 @@
           const idx = m.indexOf(x);
           let cont = '';
           if (x.url) {
-            const ytId = typeof extraerYouTubeId === 'function' ? extraerYouTubeId(x.url) : null;
+            // Extracción robusta del ID de YouTube
+            let ytId = null;
+            let match = x.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})/);
+            if (match && match[1]) {
+              ytId = match[1];
+            } else if (typeof extraerYouTubeId === 'function') {
+              ytId = extraerYouTubeId(x.url);
+            }
+            
             if (ytId) {
-              cont = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`;
+              cont = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:10px;border-radius:12px;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`;
             } else {
-              cont = `<a href="${x.url}" target="_blank" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:20px;border-radius:12px;text-decoration:none;font-weight:700;min-height:100px;"><i class="fas fa-play-circle" style="font-size:24px;margin-right:10px;"></i> Ver Video</a>`;
+              cont = `<a href="${x.url}" target="_blank" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:20px;border-radius:12px;text-decoration:none;font-weight:700;margin-bottom:10px;"><i class="fas fa-play-circle" style="font-size:24px;margin-right:10px;"></i> Ver Video</a>`;
             }
           } else if (x.t === 'vid') {
             cont = `<video controls><source src="${x.d}"></video>`;
