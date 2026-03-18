@@ -4167,6 +4167,10 @@
       </div>
       <div class="fg"><label>📂 Archivos:</label><input type="file" id="me-a" multiple accept="image/*,video/*"
           style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;"></div>
+      <div class="fg"><label>🔗 URL de Video (YouTube, TikTok...):</label><input type="text" id="me-url"
+          placeholder="Pegar URL de video aquí..." style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;">
+        <p style="font-size:10px;color:#888;margin:4px 0 0 0;">Puedes subir archivos O pegar una URL (o ambos)</p>
+      </div>
       <div class="fg"><label>💬 Descripción (se verá en Mi Banda):</label><input type="text" id="me-com"
           placeholder="Descripción de la foto/video...">
       </div>
@@ -7030,7 +7034,19 @@
         html += '<div class="mgrid">';
         grupos[fecha].forEach(x => {
           const idx = m.indexOf(x);
-          const cont = x.t === 'vid' ? `<video controls><source src="${x.d}"></video>` : `<img src="${x.d}" class="zoomable-img" alt="" onclick="abrirLightbox(this.src, 'img')">`;
+          let cont = '';
+          if (x.url) {
+            const ytId = typeof extraerYouTubeId === 'function' ? extraerYouTubeId(x.url) : null;
+            if (ytId) {
+              cont = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`;
+            } else {
+              cont = `<a href="${x.url}" target="_blank" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:20px;border-radius:12px;text-decoration:none;font-weight:700;min-height:100px;"><i class="fas fa-play-circle" style="font-size:24px;margin-right:10px;"></i> Ver Video</a>`;
+            }
+          } else if (x.t === 'vid') {
+            cont = `<video controls><source src="${x.d}"></video>`;
+          } else {
+            cont = `<img src="${x.d}" class="zoomable-img" alt="" onclick="abrirLightbox(this.src, 'img')">`;
+          }
           html += `<div class="mi">${cont}</div>`;
         });
         html += '</div>';
@@ -7095,7 +7111,9 @@
     }
     async function guardarMedia() {
       const fs = document.getElementById('me-a').files;
-      if (!fs.length) { alert('Selecciona archivos'); return; }
+      const urlInput = document.getElementById('me-url');
+      const urlVal = urlInput ? urlInput.value.trim() : '';
+      if (!fs.length && !urlVal) { alert('Selecciona archivos o pega una URL de video'); return; }
       const mbBtn = document.getElementById('m-me');
       if(mbBtn) mbBtn.style.opacity = '0.6';
       
@@ -7106,6 +7124,19 @@
       let m = JSON.parse(localStorage.getItem(KME)) || [];
       
       let subidos = 0;
+
+      // Guardar URL de video si se proporcionó
+      if (urlVal) {
+        const id = Date.now();
+        const item = { id: id, url: urlVal, t: 'url', alb, anio, fecha, comentario: com };
+        m.push(item);
+        if (window.cloudSave) {
+          await window.cloudSave('BandaMultimedia', String(item.id), item);
+        }
+        subidos++;
+      }
+
+      // Guardar archivos subidos
       for (let i = 0; i < fs.length; i++) {
         const f = fs[i];
         const isVid = f.type.startsWith('video');
@@ -7116,8 +7147,8 @@
         try {
           const base64Data = await comprimirImagen(f);
           if (!base64Data) continue;
-          const id = Date.now() + i;
-          const item = { id: id, d: base64Data, t: isVid ? 'vid' : 'img', alb, anio, fecha, comentario: i === 0 ? com : '' };
+          const id = Date.now() + i + 1;
+          const item = { id: id, d: base64Data, t: isVid ? 'vid' : 'img', alb, anio, fecha, comentario: (i === 0 && !urlVal) ? com : '' };
           m.push(item);
           if (window.cloudSave) {
             await window.cloudSave('BandaMultimedia', String(item.id), item);
@@ -7130,6 +7161,8 @@
       
       if(mbBtn) mbBtn.style.opacity = '1';
       document.getElementById('m-me').style.display = 'none';
+      // Limpiar campo de URL
+      if (urlInput) urlInput.value = '';
       if (subidos > 0) {
         localStorage.setItem(KME, JSON.stringify(m));
         albumActual = alb;
@@ -7137,7 +7170,7 @@
         if (typeof rMeAdmin === 'function') rMeAdmin();
         if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
         if (typeof rMiBanda === 'function') rMiBanda();
-        alert('✅ ' + subidos + ' archivo(s) subido(s) correctamente.');
+        alert('✅ ' + subidos + ' contenido(s) subido(s) correctamente.');
       }
     }
     async function elimMe(i) {
@@ -7346,7 +7379,9 @@
       const c = document.getElementById('mb-feed');
       if (!c) return;
       let meds = JSON.parse(localStorage.getItem(KME)) || [];
-      if (!meds.length) {
+      // Filtrar archivados para que no aparezcan en el feed público
+      let medsActivos = meds.filter(x => !x.archived);
+      if (!medsActivos.length) {
         c.innerHTML = `<div style="text-align:center;padding:50px 20px;">
           <div style="font-size:60px;margin-bottom:16px;">🎺</div>
           <h3 style="color:#1a1a3e;font-size:18px;margin:0 0 8px;">¡Bienvenido a Mi Banda!</h3>
@@ -7355,8 +7390,8 @@
         return;
       }
 
-      // Ordenar por fecha (asumiendo que tienen ts o usar reverso para últimos arriba)
-      let msorted = [...meds].reverse();
+      // Ordenar por fecha (últimos arriba)
+      let msorted = [...medsActivos].reverse();
 
       let html = '';
       msorted.forEach((m) => {
@@ -7374,9 +7409,17 @@
         });
         const rResumen = rTotal > 0 ? `<div class="mb-reactions-bar">${rEmojis}<span class="mb-reaction-count">${rTotal}</span></div>` : '';
 
-        // Media Element
+        // Media Element — soporta archivos Y URLs
         let mediaTag = '';
-        if (m.d) {
+        if (m.url) {
+          // URL externa (YouTube, TikTok, etc.)
+          const ytId = extraerYouTubeId(m.url);
+          if (ytId) {
+            mediaTag = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:10px 0;border-radius:12px;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;" src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`;
+          } else {
+            mediaTag = `<a href="${m.url}" target="_blank" style="display:block;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:16px;border-radius:12px;margin:10px 0;text-align:center;text-decoration:none;font-weight:700;"><i class="fas fa-play-circle" style="margin-right:8px;"></i> Ver Video Externo</a>`;
+          }
+        } else if (m.d) {
           if (m.t === 'vid') {
             mediaTag = `<video src="${m.d}" class="mb-post-img" controls></video>`;
           } else {
@@ -7409,6 +7452,23 @@
         </div>`;
       });
       c.innerHTML = html;
+    }
+
+    // Utilidad: extraer ID de YouTube de una URL
+    function extraerYouTubeId(url) {
+      if (!url) return null;
+      try {
+        // youtu.be/XXXX
+        if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split(/[?&#]/)[0];
+        // youtube.com/watch?v=XXXX
+        if (url.includes('youtube.com')) {
+          const u = new URL(url);
+          return u.searchParams.get('v') || null;
+        }
+        // youtube.com/shorts/XXXX
+        if (url.includes('/shorts/')) return url.split('/shorts/')[1].split(/[?&#]/)[0];
+      } catch(e) {}
+      return null;
     }
 
     function compartirMedia(idx) {
