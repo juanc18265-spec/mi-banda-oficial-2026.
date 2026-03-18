@@ -3926,13 +3926,25 @@
 
           <div class="pc" style="border-left:5px solid #ea580c;">
             <h4 style="margin:0 0 13px 0;color:#9a3412;font-size:15px;"><i class="fas fa-plus-circle"></i> PUBLICAR
-              CONTENIDO OFICIAL</h4>
-            <p style="font-size:12px; color:#666; margin-bottom:15px;">Comparte fotos y videos nuevos que aparecerán
-              automáticamente en el feed social de los alumnos.</p>
-            <button class="bbp bf" onclick="abrirSubirMedia()"
-              style="background: linear-gradient(135deg, #9a3412, #ea580c); padding:18px; font-size:15px;"><i
-                class="fas fa-camera"></i> PUBLICAR NUEVO MOMENTO</button>
+              CONTENIDO EN MI BANDA</h4>
+            <p style="font-size:12px; color:#666; margin-bottom:15px;">Lo que subas aquí aparecerá SOLO en la sección pública <strong>MI BANDA</strong> (NO en Galería).</p>
+            <div class="fg"><label>📸 Archivo (foto/video):</label><input type="file" id="mb-archivo" accept="image/*,video/*"
+                style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;"></div>
+            <div class="fg"><label>🔗 URL de Video (YouTube, TikTok...):</label><input type="text" id="mb-url-input"
+                placeholder="Pegar URL de video aquí..." style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;">
+              <p style="font-size:10px;color:#888;margin:4px 0 0 0;">Puedes subir archivo O pegar URL (o ambos)</p>
+            </div>
+            <div class="fg"><label>💬 Descripción:</label><input type="text" id="mb-desc-input"
+                placeholder="Descripción de la publicación..." style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;"></div>
+            <button class="bbp bf" onclick="guardarMiBanda()"
+              style="background: linear-gradient(135deg, #9a3412, #ea580c); padding:18px; font-size:15px; margin-top:15px;"><i
+                class="fas fa-paper-plane"></i> PUBLICAR EN MI BANDA</button>
+          </div>
 
+          <div class="pc" style="margin-top:20px; border-left:5px solid var(--ro);">
+            <h4 style="margin:0 0 13px 0;color:var(--ro);font-size:15px;"><i class="fas fa-list"></i> PUBLICACIONES DE MI BANDA</h4>
+            <p style="font-size:11px; color:#888; margin-bottom:15px;">Aquí puedes ver y BORRAR las publicaciones de Mi Banda.</p>
+            <div id="mb-admin-lista"></div>
           </div>
 
           <div class="pc" style="margin-top:20px; border-left:5px solid #FFD700;">
@@ -4704,7 +4716,7 @@
         setTransposition,
         prepararJuegoSimon, presionarPad,
         renderCirculo, verArmonia, actualizarLeaderboard,
-        vAlbum, vAnio, abrirSubirMedia, guardarMedia, elimMe, addCom,
+        vAlbum, vAnio, abrirSubirMedia, guardarMedia, guardarMiBanda, elimMiBanda, elimMe, addCom,
         vEvTab, guardarEvento, rEv, rEvHist,
         copiarDatoMec, verDatosBanco, guardarConfigMecenas, rProyectos,
         guardarProyecto, abrirDonar, selMonto, irMetodo, rConfigMecenas,
@@ -6998,7 +7010,7 @@
     }
     function rMe() {
       let m = JSON.parse(localStorage.getItem(KME)) || [];
-      const filtered = m.filter(x => !x.archived && (albumActual === 'TODO' || x.alb === albumActual));
+      const filtered = m.filter(x => !x.archived && x.destino !== 'mibanda' && (albumActual === 'TODO' || x.alb === albumActual));
       const anios = [...new Set(filtered.map(x => x.anio || '2026'))].sort().reverse();
       const at = document.getElementById('anio-tabs');
       if (anios.length) {
@@ -7010,7 +7022,7 @@
       const c = document.getElementById('me-render');
       if (!c) return;
       let m = JSON.parse(localStorage.getItem(KME)) || [];
-      let filtrado = m.filter(x => !x.archived && x.alb === albumActual);
+      let filtrado = m.filter(x => !x.archived && x.destino !== 'mibanda' && x.alb === albumActual);
       if (anioActual !== 'todos') filtrado = filtrado.filter(x => (x.anio || '2026') === anioActual);
       if (!filtrado.length) {
         c.innerHTML = `<div style="text-align:center;padding:35px;color:#bbb;font-size:13px;background:white;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);"><i class="fas fa-images" style="font-size:45px;margin-bottom:10px;display:block;opacity:.4;"></i>No hay archivos</div>`;
@@ -7065,50 +7077,7 @@
       renderGaleria();
     }
 
-    function rMiBandaAdmin() {
-      const c = document.getElementById('mb-popular-render');
-      if (!c) return;
-      let m = JSON.parse(localStorage.getItem(KME)) || [];
 
-      // Calcular total de interacciones para cada post
-      const populares = m.map(item => {
-        const reactions = item.reactions || {};
-        const total = Object.values(reactions).reduce((a, b) => a + b, 0);
-        return { ...item, totalInteractions: total };
-      })
-        .filter(item => item.totalInteractions > 0)
-        .sort((a, b) => b.totalInteractions - a.totalInteractions)
-        .slice(0, 5);
-
-      if (!populares.length) {
-        c.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay interacciones aún.</p>';
-        return;
-      }
-
-      c.innerHTML = populares.map((p, i) => {
-        const reactions = p.reactions || {};
-        const reactBadges = Object.entries(reactions)
-          .map(([emoji, count]) => `<span style="background:#eee; padding:2px 6px; border-radius:10px; font-size:10px; margin-right:4px;">${emoji} ${count}</span>`)
-          .join('');
-
-        const preview = p.t === 'vid' ? '<i class="fas fa-video"></i> Video' : `<img src="${p.d}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">`;
-
-        return `
-          <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#fff; border-radius:12px; margin-bottom:10px; border:1px solid #f0f0f0;">
-            <div style="font-weight:900; color:#FFD700; font-size:18px;">#${i + 1}</div>
-            <div style="width:40px; height:40px; background:#f9f9f9; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;">${preview}</div>
-            <div style="flex:1;">
-              <div style="font-size:11px; color:#333; font-weight:700; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.comentario || 'Sin descripción'}</div>
-              <div style="margin-top:4px;">${reactBadges}</div>
-            </div>
-            <div style="text-align:right;">
-              <div style="font-size:14px; font-weight:900; color:var(--az);">${p.totalInteractions}</div>
-              <div style="font-size:8px; color:#999; text-transform:uppercase;">Interacciones</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
     async function guardarMedia() {
       const fs = document.getElementById('me-a').files;
       const urlInput = document.getElementById('me-url');
@@ -7379,8 +7348,8 @@
       const c = document.getElementById('mb-feed');
       if (!c) return;
       let meds = JSON.parse(localStorage.getItem(KME)) || [];
-      // Filtrar archivados para que no aparezcan en el feed público
-      let medsActivos = meds.filter(x => !x.archived);
+      // Solo mostrar items destinados a Mi Banda
+      let medsActivos = meds.filter(x => !x.archived && x.destino === 'mibanda');
       if (!medsActivos.length) {
         c.innerHTML = `<div style="text-align:center;padding:50px 20px;">
           <div style="font-size:60px;margin-bottom:16px;">🎺</div>
@@ -7473,6 +7442,137 @@
 
     function compartirMedia(idx) {
       alert('¡Enlace copiado al portapapeles! Reacciona para apoyar a la banda.');
+    }
+
+    /* GUARDAR MI BANDA — Función dedicada para publicar en Mi Banda */
+    async function guardarMiBanda() {
+      const fileInput = document.getElementById('mb-archivo');
+      const urlInput = document.getElementById('mb-url-input');
+      const descInput = document.getElementById('mb-desc-input');
+      const file = fileInput ? fileInput.files[0] : null;
+      const urlVal = urlInput ? urlInput.value.trim() : '';
+      const desc = descInput ? descInput.value.trim() : '';
+
+      if (!file && !urlVal) { alert('Sube un archivo o pega una URL de video'); return; }
+
+      let m = JSON.parse(localStorage.getItem(KME)) || [];
+      const fecha = new Date().toLocaleDateString('es-CO');
+      const anio = String(new Date().getFullYear());
+      let subidos = 0;
+
+      // Guardar URL
+      if (urlVal) {
+        const id = Date.now();
+        const item = { id, url: urlVal, t: 'url', alb: 'mibanda', anio, fecha, comentario: desc, destino: 'mibanda' };
+        m.push(item);
+        if (window.cloudSave) await window.cloudSave('BandaMultimedia', String(id), item);
+        subidos++;
+      }
+
+      // Guardar archivo
+      if (file) {
+        const isVid = file.type.startsWith('video');
+        if (isVid && file.size > 1.5 * 1024 * 1024) {
+          alert('⚠️ Video muy grande. Límite: 1.5MB. Usa una URL en su lugar.');
+        } else {
+          try {
+            const base64Data = await comprimirImagen(file);
+            if (base64Data) {
+              const id = Date.now() + 1;
+              const item = { id, d: base64Data, t: isVid ? 'vid' : 'img', alb: 'mibanda', anio, fecha, comentario: !urlVal ? desc : '', destino: 'mibanda' };
+              m.push(item);
+              if (window.cloudSave) await window.cloudSave('BandaMultimedia', String(id), item);
+              subidos++;
+            }
+          } catch (e) { console.error('Error procesando:', e); }
+        }
+      }
+
+      if (subidos > 0) {
+        localStorage.setItem(KME, JSON.stringify(m));
+        if (typeof rMiBanda === 'function') rMiBanda();
+        if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
+        alert('✅ ' + subidos + ' contenido(s) publicado(s) en Mi Banda.');
+      }
+      // Limpiar formulario
+      if (fileInput) fileInput.value = '';
+      if (urlInput) urlInput.value = '';
+      if (descInput) descInput.value = '';
+    }
+
+    /* ELIMINAR item de Mi Banda */
+    async function elimMiBanda(idx) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar.'); return; }
+      if (!confirm('¿ELIMINAR esta publicación de Mi Banda? No se puede deshacer.')) return;
+      let m = JSON.parse(localStorage.getItem(KME)) || [];
+      const item = m[idx];
+      m.splice(idx, 1);
+      localStorage.setItem(KME, JSON.stringify(m));
+      if (db && item && item.id) {
+        try { await deleteDoc(doc(db, 'BandaMultimedia', String(item.id))); } catch (e) { console.warn('Error nube:', e); }
+      }
+      rMiBanda();
+      rMiBandaAdmin();
+      alert('🗑️ Publicación eliminada de Mi Banda.');
+    }
+
+    /* ADMIN: Lista de items de Mi Banda con botón borrar */
+    function rMiBandaAdmin() {
+      // Lista con botón borrar
+      const lista = document.getElementById('mb-admin-lista');
+      if (lista) {
+        let m = JSON.parse(localStorage.getItem(KME)) || [];
+        const mbItems = m.map((x, i) => ({ ...x, idx: i })).filter(x => x.destino === 'mibanda');
+        if (!mbItems.length) {
+          lista.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay publicaciones en Mi Banda.</p>';
+        } else {
+          lista.innerHTML = mbItems.reverse().map(x => {
+            let preview = '';
+            if (x.url) preview = '<i class="fas fa-link" style="color:var(--ce);margin-right:6px;"></i> URL';
+            else if (x.t === 'vid') preview = '<i class="fas fa-video" style="color:var(--na);margin-right:6px;"></i> Video';
+            else preview = '<i class="fas fa-image" style="color:var(--ve);margin-right:6px;"></i> Foto';
+            return `<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:12px;border-radius:12px;margin-bottom:8px;border-left:4px solid #ea580c;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <div style="flex:1;overflow:hidden;">
+                <div style="font-weight:900;font-size:12px;color:#333;">${preview} ${x.fecha}</div>
+                <div style="font-size:11px;color:#666;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">${x.comentario || x.url || 'Sin descripción'}</div>
+              </div>
+              <button onclick="elimMiBanda(${x.idx})" style="background:var(--ro);color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0;"><i class="fas fa-trash"></i> BORRAR</button>
+            </div>`;
+          }).join('');
+        }
+      }
+
+      // Popular posts
+      const c = document.getElementById('mb-popular-render');
+      if (!c) return;
+      let m = JSON.parse(localStorage.getItem(KME)) || [];
+      const populares = m.filter(x => x.destino === 'mibanda').map(item => {
+        const reactions = item.reactions || {};
+        const total = Object.values(reactions).reduce((a, b) => a + b, 0);
+        return { ...item, totalInteractions: total };
+      })
+        .filter(item => item.totalInteractions > 0)
+        .sort((a, b) => b.totalInteractions - a.totalInteractions)
+        .slice(0, 5);
+
+      if (!populares.length) {
+        c.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay interacciones aún.</p>';
+        return;
+      }
+
+      c.innerHTML = populares.map((p, i) => {
+        const reactions = p.reactions || {};
+        const reactBadges = Object.entries(reactions)
+          .map(([emoji, count]) => `<span style="background:#eee; padding:2px 6px; border-radius:10px; font-size:10px; margin-right:4px;">${emoji} ${count}</span>`)
+          .join('');
+        const preview = p.t === 'vid' ? '<i class="fas fa-video"></i> Video' : p.url ? '<i class="fas fa-link"></i> URL' : `<img src="${p.d}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">`;
+        return `<div style="display:flex; align-items:center; gap:12px; padding:12px; background:#fff; border-radius:12px; margin-bottom:10px; border:1px solid #f0f0f0;">
+            <div style="font-weight:900; color:#FFD700; font-size:18px;">#${i + 1}</div>
+            <div style="width:40px; height:40px; background:#f9f9f9; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;">${preview}</div>
+            <div style="flex:1;"><div style="font-size:11px; color:#333; font-weight:700;">${p.comentario || 'Sin descripción'}</div><div style="margin-top:4px;">${reactBadges}</div></div>
+            <div style="text-align:right;"><div style="font-size:14px; font-weight:900; color:var(--az);">${p.totalInteractions}</div><div style="font-size:8px; color:#999;">Interacciones</div></div>
+          </div>`;
+      }).join('');
     }
 
     /* LIGHTBOX — Zoom foto a pantalla completa */
