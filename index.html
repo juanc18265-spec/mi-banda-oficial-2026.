@@ -6363,9 +6363,9 @@
       if (!c || !arch) return;
       let m = JSON.parse(localStorage.getItem(KME)) || [];
 
-      // Sort by id descending so the newest are at the top
-      const active = m.map((e, i) => ({ ...e, i })).filter(e => !e.archived).sort((a,b) => (b.id||0) - (a.id||0));
-      const archived = m.map((e, i) => ({ ...e, i })).filter(e => e.archived).sort((a,b) => (b.id||0) - (a.id||0));
+      // Solo mostrar items de Galería (excluir los de Mi Banda)
+      const active = m.map((e, i) => ({ ...e, i })).filter(e => !e.archived && e.destino !== 'mibanda').sort((a,b) => (b.id||0) - (a.id||0));
+      const archived = m.map((e, i) => ({ ...e, i })).filter(e => e.archived && e.destino !== 'mibanda').sort((a,b) => (b.id||0) - (a.id||0));
 
       c.innerHTML = active.length ? active.slice(0, 50).map(x => {
         let rSum = x.reacciones ? `<div style="display:flex;gap:5px;margin-top:5px;font-size:10px;font-weight:700;">
