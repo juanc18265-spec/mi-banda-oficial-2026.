@@ -7097,9 +7097,10 @@
         grupos[fecha].forEach(x => {
           const idx = m.indexOf(x);
           let cont = '';
+          let ytId = null;
+          
           if (x.url) {
             // Extracción robusta del ID de YouTube
-            let ytId = null;
             let match = x.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})/);
             if (match && match[1]) {
               ytId = match[1];
@@ -7117,7 +7118,12 @@
           } else {
             cont = `<img src="${x.d}" class="zoomable-img" alt="" onclick="abrirLightbox(this.src, 'img')">`;
           }
-          html += `<div class="mi">${cont}</div>`;
+          
+          let extraStyle = '';
+          if (ytId) {
+             extraStyle = 'grid-column: 1 / -1; aspect-ratio: auto; box-shadow: none; background: transparent;';
+          }
+          html += `<div class="mi" style="${extraStyle}">${cont}</div>`;
         });
         html += '</div>';
         html += `<div class="com-caja"><div class="com-tit">💬 Comentarios (${comentarios.length})</div>${comentarios.length ? comentarios.map(c => `<div class="com-item"><div class="com-autor">${c.a} • ${c.ts || ''}</div>${c.t}</div>`).join('') : '<div style="font-size:11px;color:#bbb;">Ninguno...</div>'}<div class="com-input"><input type="text" id="ci-${key}" placeholder="Comentar..." style="flex:1;"><button class="bbp" style="padding:9px 13px;margin:0;font-size:12px;" onclick="addCom('${fecha}','${key}')"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
