@@ -4998,30 +4998,6 @@
           });
         }
         init(); rEv(); rAv(); rMe(); rProyectos(); rConfigMecenas(); rMiBanda(); poblarNombres();
-        
-        // MIGRACIÓN ÚNICA: Mover items de Mi Banda (KME) a su propio almacén (KMB)
-        try {
-          let oldMeds = JSON.parse(localStorage.getItem(KME)) || [];
-          if (oldMeds.some(x => x.destino === 'mibanda')) {
-            console.log("🚀 Migrando datos de Mi Banda a KMB...");
-            let miBandaItems = oldMeds.filter(x => x.destino === 'mibanda');
-            let galeriaItems = oldMeds.filter(x => x.destino !== 'mibanda');
-            
-            let currentKMB = JSON.parse(localStorage.getItem(KMB)) || [];
-            let existingIds = new Set(currentKMB.map(x => x.id));
-            let itemsToMove = miBandaItems.filter(x => !existingIds.has(x.id));
-            
-            if (itemsToMove.length > 0) {
-               currentKMB = [...currentKMB, ...itemsToMove];
-               localStorage.setItem(KMB, JSON.stringify(currentKMB));
-            }
-            
-            // Retirar de KME para evitar duplicados
-            localStorage.setItem(KME, JSON.stringify(galeriaItems));
-            rMiBanda();
-            rMe();
-          }
-        } catch(e) { console.error("Error en migración MIBANDA:", e); }
       });
     } else {
       const b = document.getElementById('btn-asistencia-menu');
@@ -5033,30 +5009,6 @@
         });
       }
       init(); rEv(); rAv(); rMe(); rProyectos(); rConfigMecenas(); rMiBanda(); poblarNombres();
-      
-      // MIGRACIÓN ÚNICA: Mover items de Mi Banda (KME) a su propio almacén (KMB)
-      try {
-        let oldMeds = JSON.parse(localStorage.getItem(KME)) || [];
-        if (oldMeds.some(x => x.destino === 'mibanda')) {
-          console.log("🚀 Migrando datos de Mi Banda a KMB...");
-          let miBandaItems = oldMeds.filter(x => x.destino === 'mibanda');
-          let galeriaItems = oldMeds.filter(x => x.destino !== 'mibanda');
-          
-          let currentKMB = JSON.parse(localStorage.getItem(KMB)) || [];
-          let existingIds = new Set(currentKMB.map(x => x.id));
-          let itemsToMove = miBandaItems.filter(x => !existingIds.has(x.id));
-          
-          if (itemsToMove.length > 0) {
-             currentKMB = [...currentKMB, ...itemsToMove];
-             localStorage.setItem(KMB, JSON.stringify(currentKMB));
-          }
-          
-          // Retirar de KME para evitar duplicados
-          localStorage.setItem(KME, JSON.stringify(galeriaItems));
-          rMiBanda();
-          rMe();
-        }
-      } catch(e) { console.error("Error en migración MIBANDA:", e); }
     }
 
     /* ESCALA 1-5 */
@@ -7589,6 +7541,35 @@
       alert('🗑️ Publicación eliminada de Mi Banda.');
     }
 
+    async function eliminarTodoMiBanda() {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar.'); return; }
+      if (!confirm('⚠️ ¿ESTÁS COMPLETAMENTE SEGURO DE QUE DESEAS BORRAR TODO EL HISTORIAL DE MI BANDA? Se perderán todas las interacciones y archivos. Esto NO se puede deshacer.')) return;
+      
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
+      const idsToDelete = m.map(item => String(item.id)).filter(id => id && id !== 'undefined');
+      
+      // Limpiar localmente de inmediato para feedback rápido
+      localStorage.setItem(KMB, JSON.stringify([]));
+      rMiBanda();
+      rMiBandaAdmin();
+
+      // Borrar de Firestore masivamente
+      if (db) {
+        try {
+          // Usar promesas paralelas para borrar de ambas colecciones (en caso de que sean zombies de BandaMultimedia)
+          await Promise.all(
+            idsToDelete.flatMap(id => [
+              deleteDoc(doc(db, 'BandaMiBanda', id)),
+              deleteDoc(doc(db, 'BandaMultimedia', id))
+            ])
+          );
+        } catch (e) {
+          console.warn('Error borrando historial en la nube:', e);
+        }
+      }
+      alert('✅ Todo el historial de Mi Banda ha sido eliminado correctamente.');
+    }
+
     /* ADMIN: Lista de items de Mi Banda con botón borrar (usa KMB/BandaMiBanda) */
     function rMiBandaAdmin() {
       // Lista con botón borrar
@@ -7599,7 +7580,8 @@
         if (!mbItems.length) {
           lista.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay publicaciones en Mi Banda.</p>';
         } else {
-          lista.innerHTML = [...mbItems].reverse().map(x => {
+          let htmlResult = `<button onclick="eliminarTodoMiBanda()" style="width:100%;background:#ef4444;color:white;border:none;padding:12px;border-radius:12px;font-weight:900;margin-bottom:15px;cursor:pointer;box-shadow:0 2px 4px rgba(239,68,68,0.3);"><i class="fas fa-skull-crossbones"></i> VACIAR TODO EL HISTORIAL</button>`;
+          htmlResult += [...mbItems].reverse().map(x => {
             let preview = '';
             if (x.url) preview = '<i class="fas fa-link" style="color:var(--ce);margin-right:6px;"></i> URL';
             else if (x.t === 'vid') preview = '<i class="fas fa-video" style="color:var(--na);margin-right:6px;"></i> Video';
@@ -7612,6 +7594,7 @@
               <button onclick="elimMiBanda(${x.idx})" style="background:var(--ro);color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0;"><i class="fas fa-trash"></i> BORRAR</button>
             </div>`;
           }).join('');
+          lista.innerHTML = htmlResult;
         }
       }
 
@@ -7746,6 +7729,7 @@
     window.addCom = addCom;
     window.guardarMiBanda = guardarMiBanda;
     window.elimMiBanda = elimMiBanda;
+    window.eliminarTodoMiBanda = eliminarTodoMiBanda;
     window.rMiBandaAdmin = rMiBandaAdmin;
     window.rMiBanda = rMiBanda;
     window.showReactPanel = showReactPanel;
