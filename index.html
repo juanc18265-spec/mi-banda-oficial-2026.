@@ -1626,6 +1626,10 @@
       box-shadow: 0 3px 12px rgba(102, 126, 234, .45);
     }
 
+    .atab-todo.act {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+    }
+
     .atab-fotos.act {
       background: linear-gradient(135deg, #ec4899, #db2777);
     }
@@ -3075,7 +3079,8 @@
       <div style="padding:4px;">
         <h3 class="stit">📷 MULTIMEDIA</h3>
         <div class="album-tabs">
-          <div class="atab atab-fotos act" onclick="vAlbum('fotos',this)">📷 Fotos</div>
+          <div class="atab atab-todo act" onclick="vAlbum('TODO',this)">✨ VER TODO</div>
+          <div class="atab atab-fotos" onclick="vAlbum('fotos',this)">📷 Fotos</div>
           <div class="atab atab-videos" onclick="vAlbum('videos',this)">🎬 Videos</div>
           <div class="atab atab-exalumnos" onclick="vAlbum('exalumnos',this)">🎓 Egresados</div>
         </div>
@@ -4674,7 +4679,7 @@
     // ESTADO GLOBAL — INICIALIZADO AL PRINCIPIO PARA EVITAR TDZ
     let adminLogueado = localStorage.getItem(KADMIN_SESSION) || null;
     let banda = [], aT = {}, aEd = null, aPr = null, edIdx = null, eTmp = {};
-    let albumActual = 'fotos', anioActual = 'todos', montoSel = 0, moodSel = '';
+    let albumActual = 'TODO', anioActual = 'todos', montoSel = 0, moodSel = '';
     const PER = { 1: { n: 'Periodo 1', i: '2026-01-19', f: '2026-03-29' }, 2: { n: 'Periodo 2', i: '2026-04-06', f: '2026-06-14' }, 3: { n: 'Periodo 3', i: '2026-07-06', f: '2026-10-11' }, 4: { n: 'Periodo 4', i: '2026-10-12', f: '2026-11-29' } };
 
     // Audio State
