@@ -4886,8 +4886,12 @@
               actualizarUI(colName, items);
             } else if (snap.empty) {
                 // EVITAR EFECTO ZOMBIE: Si la nube está vacía, vaciamos local (excepto si hay error de red)
-                localStorage.setItem(localKey, Array.isArray(localData) ? '[]' : '{}');
-                actualizarUI(colName, []);
+                // IMPORTANTE: Excepto para Multimedia y Mi Banda, que pueden tener muchos datos locales.
+                const NO_WIPE = [KME, KMB];
+                if (!NO_WIPE.includes(localKey)) {
+                  localStorage.setItem(localKey, Array.isArray(localData) ? '[]' : '{}');
+                  actualizarUI(colName, []);
+                }
             }
           });
         });
