@@ -6431,7 +6431,7 @@
         return `<div style="background:#f8f9fa;padding:12px;border-radius:12px;margin-bottom:10px;border-left:4px solid var(--az);box-shadow:0 1px 3px rgba(0,0,0,0.05);">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;">
             <div style="flex:1;overflow:hidden;">
-              <div style="font-weight:900;font-size:13px;color:#333;">${x.alb.toUpperCase()} - ${x.fecha}</div>
+              <div style="font-weight:900;font-size:13px;color:#333;">${(x.alb || 'galeria').toUpperCase()} - ${x.fecha}</div>
               <div style="font-size:11px;color:#666;margin-top:2px;">${x.comentario || 'Sin descripción'}</div>
               ${rSum}
             </div>
@@ -7466,7 +7466,7 @@
           <div class="mb-post-head">
             <div class="mb-avatar" style="background:${bg};">${ini}</div>
             <div class="mb-post-info">
-              <div class="mb-post-name">Publicación Oficial - ${m.alb.toUpperCase()}</div>
+              <div class="mb-post-name">Publicación Oficial - ${(m.alb || 'MIBANDA').toUpperCase()}</div>
               <div class="mb-post-meta">📆 ${ago}</div>
             </div>
           </div>
@@ -7613,8 +7613,10 @@
       if (!c) return;
       let m = JSON.parse(localStorage.getItem(KMB)) || [];
       const populares = m.map(item => {
-        const reactions = item.reactions || {};
-        const total = Object.values(reactions).reduce((a, b) => a + b, 0);
+        let total = 0;
+        if (item.reacciones) {
+          Object.values(item.reacciones).forEach(arr => { if (Array.isArray(arr)) total += arr.length; });
+        }
         return { ...item, totalInteractions: total };
       })
         .filter(item => item.totalInteractions > 0)
@@ -7775,7 +7777,7 @@
 
       return top.map(s => `
             <div style="font-size:11px; margin-bottom:4px; padding:4px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-              <span>${s.alb.toUpperCase()} (${s.date})</span>
+              <span>${(s.alb || 'MIBANDA').toUpperCase()} (${s.date})</span>
               <strong style="color:var(--az);">${s.total} ✨</strong>
             </div>
         `).join('');
