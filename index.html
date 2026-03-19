@@ -7579,7 +7579,10 @@
       m.splice(idx, 1);
       localStorage.setItem(KMB, JSON.stringify(m));
       if (db && item && item.id) {
-        try { await deleteDoc(doc(db, 'BandaMiBanda', String(item.id))); } catch (e) { console.warn('Error nube:', e); }
+        try { 
+          await deleteDoc(doc(db, 'BandaMiBanda', String(item.id))); 
+          await deleteDoc(doc(db, 'BandaMultimedia', String(item.id))); 
+        } catch (e) { console.warn('Error nube:', e); }
       }
       rMiBanda();
       rMiBandaAdmin();
@@ -7727,6 +7730,28 @@
     function lightboxEsc(e) { if (e.key === 'Escape') cerrarLightbox(); }
     window.abrirLightbox = abrirLightbox;
     window.cerrarLightbox = cerrarLightbox;
+
+    // EXPORTAR FUNCIONES AL SCOPE GLOBAL PARA LOS ONCLICK DE HTML
+    window.cancelHidePanel = cancelHidePanel;
+    window.compartirMedia = compartirMedia;
+    window.rTopPosts = rTopPosts;
+    window.guardarMedia = guardarMedia;
+    window.elimMe = elimMe;
+    window.rMe = rMe;
+    window.rMeAdmin = rMeAdmin;
+    window.archivarContenido = archivarContenido;
+    window.eliminarContenido = eliminarContenido;
+    window.vAlbum = vAlbum;
+    window.vAnio = vAnio;
+    window.addCom = addCom;
+    window.guardarMiBanda = guardarMiBanda;
+    window.elimMiBanda = elimMiBanda;
+    window.rMiBandaAdmin = rMiBandaAdmin;
+    window.rMiBanda = rMiBanda;
+    window.showReactPanel = showReactPanel;
+    window.hideReactPanelDelay = hideReactPanelDelay;
+    window.toggleReactPanel = toggleReactPanel;
+    window.reaccionar = reaccionar;
     let hidePanelTimers = {};
     function showReactPanel(idx, el) {
       clearTimeout(hidePanelTimers[idx]);
