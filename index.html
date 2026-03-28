@@ -3079,8 +3079,7 @@
       <div style="padding:4px;">
         <h3 class="stit">📷 MULTIMEDIA</h3>
         <div class="album-tabs">
-          <div class="atab atab-todo act" onclick="vAlbum('TODO',this)">✨ VER TODO</div>
-          <div class="atab atab-fotos" onclick="vAlbum('fotos',this)">📷 Fotos</div>
+          <div class="atab atab-fotos act" onclick="vAlbum('fotos',this)">📷 Fotos</div>
           <div class="atab atab-videos" onclick="vAlbum('videos',this)">🎬 Videos</div>
           <div class="atab atab-exalumnos" onclick="vAlbum('exalumnos',this)">🎓 Egresados</div>
         </div>
@@ -4679,7 +4678,7 @@
     // ESTADO GLOBAL — INICIALIZADO AL PRINCIPIO PARA EVITAR TDZ
     let adminLogueado = localStorage.getItem(KADMIN_SESSION) || null;
     let banda = [], aT = {}, aEd = null, aPr = null, edIdx = null, eTmp = {};
-    let albumActual = 'TODO', anioActual = 'todos', montoSel = 0, moodSel = '';
+    let albumActual = 'fotos', anioActual = 'todos', montoSel = 0, moodSel = '';
     
     /* ===== MI BANDA - RED SOCIAL CONSTANTES ===== */
     const MB_REACCIONES = [
@@ -7057,7 +7056,11 @@
       const anios = [...new Set(filtered.map(x => x.anio || '2026'))].sort().reverse();
       const at = document.getElementById('anio-tabs');
       if (anios.length) {
-        at.innerHTML = `<button class="anio-btn ${anioActual === 'todos' ? 'act' : ''}" onclick="vAnio('todos',this)">Todos</button>` + anios.map(a => `<button class="anio-btn ${anioActual === a ? 'act' : ''}" onclick="vAnio('${a}',this)">${a}</button>`).join('');
+        // Si el año actual no está en la lista (o es 'todos'), seleccionar el primero (más reciente)
+        if (anioActual === 'todos' || !anios.includes(anioActual)) {
+          anioActual = anios[0];
+        }
+        at.innerHTML = anios.map(a => `<button class="anio-btn ${anioActual === a ? 'act' : ''}" onclick="vAnio('${a}',this)">${a}</button>`).join('');
       } else at.innerHTML = '';
       renderGaleria();
     }
