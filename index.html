@@ -2406,6 +2406,24 @@
       background: #f0f0f0;
     }
 
+    .mb-date-header {
+      position: sticky;
+      top: 0;
+      background: rgba(26, 26, 62, 0.95);
+      backdrop-filter: blur(5px);
+      color: #FFD700;
+      padding: 12px;
+      z-index: 100;
+      font-weight: 900;
+      font-size: 14px;
+      text-transform: uppercase;
+      text-align: center;
+      margin: 10px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
     /* Nuevo color para 6to tab del menú */
     .ni:nth-child(6) .ib {
       background: linear-gradient(135deg, #e91e63, #c2185b);
@@ -7390,8 +7408,26 @@
       let msorted = [...medsActivos].reverse();
 
       let html = '';
+      let currentHeader = '';
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
       msorted.forEach((m) => {
-        const idxOriginal = meds.indexOf(m); // índice dentro de KMB (Mi Banda)
+        const idxOriginal = meds.indexOf(m); 
+        
+        // Lógica de Cabecera por Mes/Año
+        if (m.fecha) {
+            const parts = m.fecha.split('/');
+            if (parts.length === 3) {
+                const month = monthNames[parseInt(parts[1]) - 1];
+                const year = parts[2];
+                const header = `${month} ${year}`;
+                if (header !== currentHeader) {
+                    currentHeader = header;
+                    html += `<div class="mb-date-header"><i class="fas fa-calendar-alt"></i> ${header}</div>`;
+                }
+            }
+        }
+
         const ago = m.fecha ? m.fecha : 'Reciente';
         const bg = 'linear-gradient(135deg, #1e293b, #334155)';
         const ini = '🎺';
@@ -7586,12 +7622,30 @@
           lista.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay publicaciones en Mi Banda.</p>';
         } else {
           let htmlResult = `<button onclick="eliminarTodoMiBanda()" style="width:100%;background:#ef4444;color:white;border:none;padding:12px;border-radius:12px;font-weight:900;margin-bottom:15px;cursor:pointer;box-shadow:0 2px 4px rgba(239,68,68,0.3);"><i class="fas fa-skull-crossbones"></i> VACIAR TODO EL HISTORIAL</button>`;
+          
+          let currentHeaderAdmin = '';
+          const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
           htmlResult += [...mbItems].reverse().map(x => {
+            let headerHtml = '';
+            if (x.fecha) {
+                const parts = x.fecha.split('/');
+                if (parts.length === 3) {
+                    const month = monthNames[parseInt(parts[1]) - 1];
+                    const year = parts[2];
+                    const header = `${month} ${year}`;
+                    if (header !== currentHeaderAdmin) {
+                        currentHeaderAdmin = header;
+                        headerHtml = `<div style="background:#1e293b; color:#fbbf24; padding:8px 12px; border-radius:10px; font-weight:900; font-size:12px; margin:15px 0 10px 0; text-align:center;"><i class="fas fa-calendar-day"></i> ${header}</div>`;
+                    }
+                }
+            }
+
             let preview = '';
             if (x.url) preview = '<i class="fas fa-link" style="color:var(--ce);margin-right:6px;"></i> URL';
             else if (x.t === 'vid') preview = '<i class="fas fa-video" style="color:var(--na);margin-right:6px;"></i> Video';
             else preview = '<i class="fas fa-image" style="color:var(--ve);margin-right:6px;"></i> Foto';
-            return `<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:12px;border-radius:12px;margin-bottom:8px;border-left:4px solid #ea580c;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            return headerHtml + `<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:12px;border-radius:12px;margin-bottom:8px;border-left:4px solid #ea580c;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
               <div style="flex:1;overflow:hidden;">
                 <div style="font-weight:900;font-size:12px;color:#333;">${preview} ${x.fecha}</div>
                 <div style="font-size:11px;color:#666;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">${x.comentario || x.url || 'Sin descripción'}</div>
