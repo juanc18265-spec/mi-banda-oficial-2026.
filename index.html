@@ -1754,6 +1754,7 @@
     .mb-post-img { cursor: pointer; }
 
     .fecha-grupo {
+      display: none !important;
       font-weight: 900;
       color: var(--az);
       font-size: 12px;
@@ -6436,7 +6437,7 @@
         return `<div style="background:#f8f9fa;padding:12px;border-radius:12px;margin-bottom:10px;border-left:4px solid var(--az);box-shadow:0 1px 3px rgba(0,0,0,0.05);">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;">
             <div style="flex:1;overflow:hidden;">
-              <div style="font-weight:900;font-size:13px;color:#333;">${(x.alb || 'galeria').toUpperCase()} - ${x.fecha}</div>
+              <div style="font-weight:900;font-size:13px;color:#333;">${(x.alb || 'galeria').toUpperCase()}</div>
               <div style="font-size:11px;color:#666;margin-top:2px;">${x.comentario || 'Sin descripción'}</div>
               ${rSum}
             </div>
