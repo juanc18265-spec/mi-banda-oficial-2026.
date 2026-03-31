@@ -6854,8 +6854,9 @@
       const c = document.getElementById('ev-prox');
       if (!c) return;
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
-      const now = new Date();
-      const prox = ev.filter(e => !e.archived && new Date(e.f) >= now);
+      const nowLimit = new Date();
+      nowLimit.setHours(nowLimit.getHours() - 12);
+      const prox = ev.filter(e => !e.archived && new Date(e.f) >= nowLimit);
       if (!prox.length) {
         c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:25px;font-size:13px;">No hay eventos próximos</p>';
         return;
@@ -6865,8 +6866,9 @@
     function rEvHist() {
       const c = document.getElementById('ev-hist-render');
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
-      const now = new Date();
-      const hist = [...ev].filter(e => !e.archived && new Date(e.f) < now).reverse();
+      const nowLimit = new Date();
+      nowLimit.setHours(nowLimit.getHours() - 12);
+      const hist = [...ev].filter(e => !e.archived && new Date(e.f) < nowLimit).reverse();
       if (!hist.length) {
         c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:25px;font-size:13px;">Sin eventos pasados</p>';
         return;
@@ -6895,7 +6897,16 @@
         if (ev.r.wa) r += `<a href="${ev.r.wa}" target="_blank" class="rl rwa"><i class="fab fa-whatsapp"></i></a>`;
         r += '</div>';
       }
-      return `<div class="evc ${past ? 'ev-hist-card' : ''}"><h3 style="margin:0 0 7px 0;color:var(--az);font-size:16px;">${ev.t}</h3>${med}<p style="color:#666;font-size:12px;margin:7px 0;">${ev.d}</p><div style="font-size:11px;color:#aaa;">📅 ${f}${ev.lu ? `<br>📍 ${ev.lu}` : ''}</div>${r}</div>`;
+      return `<div class="evc ${past ? 'ev-hist-card' : ''}" style="background:#fff;border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 6px 15px rgba(0,0,0,0.08);border-left:8px solid var(--az);">
+        <h3 style="margin:0 0 12px 0;color:var(--az);font-size:22px;font-weight:900;letter-spacing:-0.5px;">${ev.t}</h3>
+        ${med}
+        <p style="color:#444;font-size:16px;line-height:1.6;margin:15px 0;">${ev.d}</p>
+        <div style="background:#f0f7ff;padding:12px;border-radius:12px;margin-bottom:15px;">
+          <div style="font-size:15px;color:var(--az);font-weight:800;margin-bottom:4px;"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i> ${f}</div>
+          ${ev.lu ? `<div style="font-size:14px;color:#666;font-weight:600;"><i class="fas fa-map-marker-alt" style="margin-right:6px;color:#e74c3c;"></i> ${ev.lu}</div>` : ''}
+        </div>
+        ${r}
+      </div>`;
     }
     function guardarEvento() {
       const t = document.getElementById('ev-t').value.trim(), d = document.getElementById('ev-d').value.trim(), f = document.getElementById('ev-f').value;
