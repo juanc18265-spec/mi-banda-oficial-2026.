@@ -6282,9 +6282,9 @@
           let vid = ev.mu.includes('youtu.be') ? ev.mu.split('/').pop() : '';
           try { if (!vid) vid = new URL(ev.mu).searchParams.get('v'); } catch (_) { }
           if (vid) med = `<iframe class="evid" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe>`;
-        } else med = `<img src="${ev.mu}" class="eimg" onerror="this.style.display='none'">`;
+        } else med = `<img src="${ev.mu}" class="eimg" onerror="this.style.display='none'" onclick="abrirLightbox(this.src,'img')" style="cursor:pointer;">`;
       } else if (ev.md) {
-        med = ev.md.startsWith('data:image') ? `<img src="${ev.md}" class="eimg">` : `<video controls class="evid"><source src="${ev.md}"></video>`;
+        med = ev.md.startsWith('data:image') ? `<img src="${ev.md}" class="eimg" onclick="abrirLightbox(this.src,'img')" style="cursor:pointer;">` : `<video controls class="evid"><source src="${ev.md}"></video>`;
       }
       let r = '';
       if (ev.r) {
@@ -6322,6 +6322,7 @@
         r.readAsDataURL(arch);
       } else save();
     }
+    window.guardarEvento = guardarEvento;
 
     /* AVISOS */
     function abrirModalAviso() {
