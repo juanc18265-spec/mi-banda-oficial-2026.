@@ -6317,9 +6317,17 @@
         alert('✅ Publicado');
       };
       if (arch) {
-        const r = new FileReader();
-        r.onload = e => { ne.md = e.target.result; save(); };
-        r.readAsDataURL(arch);
+        comprimirImagen(arch).then(md => {
+          if (!md && arch.type.startsWith('image/')) {
+            alert('⚠️ No se pudo procesar la imagen.');
+            return;
+          }
+          if (md) ne.md = md;
+          save();
+        }).catch(err => {
+          console.error(err);
+          alert('Error al leer archivo');
+        });
       } else save();
     }
     window.guardarEvento = guardarEvento;

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'banda-ens-v3';
+const CACHE_NAME = 'banda-ens-v4';
 const ASSETS = [
     './',
     './index.html',
