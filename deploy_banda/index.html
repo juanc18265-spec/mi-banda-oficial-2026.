@@ -6213,12 +6213,18 @@
           m.push({ d: e.target.result, t: f.type.startsWith('image/') ? 'img' : 'vid', alb, anio, fecha, comentario: i === 0 ? com : '' });
           pend--;
           if (!pend) {
-            localStorage.setItem(KME, JSON.stringify(m));
+            try {
+              localStorage.setItem(KME, JSON.stringify(m));
+            } catch (e) {
+              alert('⚠️ No hay espacio suficiente en el almacenamiento local. Intenta usar fotos más pequeñas.');
+              console.error('Error de localStorage lleno:', e);
+            }
             albumActual = alb;
             if (typeof rMe === 'function') rMe();
             if (typeof rMeAdmin === 'function') rMeAdmin();
             if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
             document.getElementById('m-me').style.display = 'none';
+            if (document.getElementById('me-a')) document.getElementById('me-a').value = '';
             alert('✅ Subido');
           }
         };

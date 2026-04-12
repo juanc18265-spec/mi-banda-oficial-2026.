@@ -7232,6 +7232,7 @@
           subidos++;
         } catch (e) {
           console.error('Error procesando multimedia:', e);
+          alert('⚠️ Error procesando la foto o video: ' + (e || 'Intenta con un formato diferente o archivo más pequeño.'));
         }
       }
       
@@ -7240,12 +7241,13 @@
       // Limpiar campo de URL
       if (urlInput) urlInput.value = '';
       if (subidos > 0) {
-        localStorage.setItem(KME, JSON.stringify(m));
+        safeLocalSet(KME, JSON.stringify(m));
         albumActual = alb;
         if (typeof rMe === 'function') rMe();
         if (typeof rMeAdmin === 'function') rMeAdmin();
         alert('✅ ' + subidos + ' contenido(s) subido(s) a Galería Multimedia.');
       }
+      if (document.getElementById('me-a')) document.getElementById('me-a').value = '';
     }
     async function elimMe(i) {
       if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar multimedia.'); return; }
