@@ -6541,7 +6541,7 @@
       let data = JSON.parse(localStorage.getItem(key)) || [];
       if (data[idx]) {
         data[idx].archived = archived;
-        localStorage.setItem(key, JSON.stringify(data));
+        safeLocalSet(key, JSON.stringify(data));
         // Refrescar vistas
         if (key === KEV) { rEvAdmin(); if (typeof rEv === 'function') rEv(); }
         if (key === KME) { rMeAdmin(); if (typeof rMe === 'function') rMe(); }
@@ -6556,7 +6556,7 @@
       let data = JSON.parse(localStorage.getItem(key)) || [];
       const itemToDel = data[idx];
       data.splice(idx, 1);
-      localStorage.setItem(key, JSON.stringify(data));
+      safeLocalSet(key, JSON.stringify(data));
       
       // Borrar de Firestore
       if (db && itemToDel && itemToDel.id) {
