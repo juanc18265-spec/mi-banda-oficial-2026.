@@ -4888,6 +4888,17 @@
     };
 
     // SINCRONIZACIÓN REAL-TIME NATIVA v9
+    window.GLOBAL_MEMORY_CACHE = {}; // Cache RAM para evitar límite de 5MB en UI
+
+    // Proxy para lectura de LocalStorage usando RAM (evita pérdida visual de archivos por límite offline)
+    const _originalGetItem = localStorage.getItem.bind(localStorage);
+    localStorage.getItem = function(key) {
+        if (window.GLOBAL_MEMORY_CACHE && window.GLOBAL_MEMORY_CACHE[key]) {
+            return JSON.stringify(window.GLOBAL_MEMORY_CACHE[key]);
+        }
+        return _originalGetItem(key);
+    };
+
     if (db) {
       try {
         Object.keys(SYNC_MAP).forEach(colName => {
@@ -4940,8 +4951,14 @@
                 const NO_WIPE = [KME, KMB];
                 if (!NO_WIPE.includes(localKey)) {
                   safeLocalSet(localKey, Array.isArray(localData) ? '[]' : '{}');
+                  if (window.GLOBAL_MEMORY_CACHE) window.GLOBAL_MEMORY_CACHE[localKey] = Array.isArray(localData) ? [] : {};
                   actualizarUI(colName, []);
                 }
+            }
+            
+            // Guardar en RAM para rebasar límite visual de LocalStorage
+            if (window.GLOBAL_MEMORY_CACHE) {
+               window.GLOBAL_MEMORY_CACHE[localKey] = (OBJ_KEYS.includes(localKey) ? rebuilt : items);
             }
           });
         });
@@ -6346,6 +6363,9 @@
 
     // Guardar en localStorage con manejo de errores
     function safeLocalSet(key, value) {
+      if (window.GLOBAL_MEMORY_CACHE) {
+          try { window.GLOBAL_MEMORY_CACHE[key] = JSON.parse(value); } catch(e) {}
+      }
       try {
         localStorage.setItem(key, value);
         return true;
