@@ -4929,9 +4929,9 @@
                 } else {
                   items.forEach(doc => { if (doc.alumnoId) rebuilt[doc.alumnoId] = (localKey === KPIN || localKey === KPIN_PADRES ? doc.pin : doc.v); });
                 }
-                localStorage.setItem(localKey, JSON.stringify(rebuilt));
+                safeLocalSet(localKey, JSON.stringify(rebuilt));
               } else {
-                localStorage.setItem(localKey, JSON.stringify(items));
+                safeLocalSet(localKey, JSON.stringify(items));
               }
               actualizarUI(colName, items);
             } else if (snap.empty) {
@@ -4939,7 +4939,7 @@
                 // IMPORTANTE: Excepto para Multimedia y Mi Banda, que pueden tener muchos datos locales.
                 const NO_WIPE = [KME, KMB];
                 if (!NO_WIPE.includes(localKey)) {
-                  localStorage.setItem(localKey, Array.isArray(localData) ? '[]' : '{}');
+                  safeLocalSet(localKey, Array.isArray(localData) ? '[]' : '{}');
                   actualizarUI(colName, []);
                 }
             }
@@ -6350,8 +6350,21 @@
         localStorage.setItem(key, value);
         return true;
       } catch (e) {
-        alert('⚠️ No hay espacio suficiente en el almacenamiento local.\nIntenta borrar datos antiguos o usar imágenes más pequeñas.');
-        console.error('localStorage lleno:', e);
+        try {
+          let arr = JSON.parse(value);
+          if (Array.isArray(arr) && arr.length > 2) {
+            while (arr.length > 2) {
+              arr = arr.slice(-Math.floor(arr.length / 1.5)); 
+              try {
+                localStorage.setItem(key, JSON.stringify(arr));
+                console.warn('⚡ Cache local reducido para estabilizar la memoria (' + key + ')');
+                return true;
+              } catch(e2) {}
+            }
+          }
+        } catch(e3) {}
+        console.error('localStorage lleno irreparable:', e);
+        if (key !== KME && key !== KMB) alert('⚠️ Memoria del navegador completamente llena. Es recomendable borrar un par de fotos viejas o limpiar caché.');
         return false;
       }
     }

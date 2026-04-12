@@ -6216,8 +6216,21 @@
             try {
               localStorage.setItem(KME, JSON.stringify(m));
             } catch (e) {
-              alert('⚠️ No hay espacio suficiente en el almacenamiento local. Intenta usar fotos más pequeñas.');
-              console.error('Error de localStorage lleno:', e);
+              let saved = false;
+              if (m.length > 2) {
+                while (m.length > 2) {
+                  m = m.slice(-Math.floor(m.length / 1.5));
+                  try {
+                    localStorage.setItem(KME, JSON.stringify(m));
+                    saved = true;
+                    break;
+                  } catch(e2) {}
+                }
+              }
+              if (!saved) {
+                alert('⚠️ No hay espacio suficiente en tu celular para guardar la caché. Puedes borrar algo de memoria.');
+                console.error('Error de localStorage lleno irreparable:', e);
+              }
             }
             albumActual = alb;
             if (typeof rMe === 'function') rMe();
