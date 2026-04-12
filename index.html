@@ -6569,8 +6569,16 @@
         if (colName) {
           try {
             await deleteDoc(doc(db, colName, String(itemToDel.id)));
-          } catch (e) { console.warn('Aviso: No se pudo borrar de Firestore (quizás no existía):', e); }
+            alert('✅ Eliminado permanentemente.');
+          } catch (e) { 
+            console.warn('Aviso: Bloqueo de borrado en Firestore, usando soft-delete:', e);
+            itemToDel.archived = true;
+            if (window.cloudSave) await window.cloudSave(colName, String(itemToDel.id), itemToDel);
+            alert('✅ Eliminado (archivado forzoso).');
+          }
         }
+      } else {
+         alert('⚠️ Esta foto aún no tiene conexión a nube o no tiene ID.');
       }
 
       // Refrescar vistas
@@ -7293,10 +7301,15 @@
       if (db && item && item.id) {
         try {
           await deleteDoc(doc(db, 'BandaMultimedia', String(item.id)));
-          console.log('✅ Multimedia eliminada de Firestore:', item.id);
+          alert('✅ Eliminado de la base de datos.');
         } catch (e) {
-          console.warn('⚠️ Error eliminando de Firestore:', e.message);
+          console.warn('⚠️ Error eliminando, intentando archivado:', e.message);
+          item.archived = true;
+          if (window.cloudSave) await window.cloudSave('BandaMultimedia', String(item.id), item);
+          alert('✅ Archivo borrado de la vista principal.');
         }
+      } else {
+        alert('⚠️ Ítem sin ID, borrado únicamente local.');
       }
       rMe();
       if (typeof rMeAdmin === 'function') rMeAdmin();
