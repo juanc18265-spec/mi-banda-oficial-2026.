@@ -6497,7 +6497,7 @@
       let m = JSON.parse(localStorage.getItem(KMB)) || [];
       if (m[idx]) {
         m[idx].reacciones = {};
-        localStorage.setItem(KMB, JSON.stringify(m));
+        safeLocalSet(KMB, JSON.stringify(m));
         if (window.cloudSave && m[idx].id) window.cloudSave('BandaMiBanda', String(m[idx].id), m[idx]);
         rMiBandaAdmin();
         rMiBanda();
@@ -7288,7 +7288,7 @@
       let m = JSON.parse(localStorage.getItem(KME)) || [];
       const item = m[i];
       m.splice(i, 1);
-      localStorage.setItem(KME, JSON.stringify(m));
+      safeLocalSet(KME, JSON.stringify(m));
       // Borrar también de Firestore
       if (db && item && item.id) {
         try {
@@ -7616,7 +7616,7 @@
       }
 
       if (subidos > 0) {
-        localStorage.setItem(KMB, JSON.stringify(m));
+        safeLocalSet(KMB, JSON.stringify(m));
         if (typeof rMiBanda === 'function') rMiBanda();
         if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
         alert('✅ ' + subidos + ' contenido(s) publicado(s) en Mi Banda.');
@@ -7634,7 +7634,7 @@
       let m = JSON.parse(localStorage.getItem(KMB)) || [];
       const item = m[idx];
       m.splice(idx, 1);
-      localStorage.setItem(KMB, JSON.stringify(m));
+      safeLocalSet(KMB, JSON.stringify(m));
       if (db && item && item.id) {
         try { 
           await deleteDoc(doc(db, 'BandaMiBanda', String(item.id))); 
@@ -7654,7 +7654,7 @@
       const idsToDelete = m.map(item => String(item.id)).filter(id => id && id !== 'undefined');
       
       // Limpiar localmente de inmediato para feedback rápido
-      localStorage.setItem(KMB, JSON.stringify([]));
+      safeLocalSet(KMB, JSON.stringify([]));
       rMiBanda();
       rMiBandaAdmin();
 
@@ -7882,7 +7882,7 @@
       if (!meds[idx].reacciones[emoji]) meds[idx].reacciones[emoji] = [];
 
       meds[idx].reacciones[emoji].push(Date.now());
-      localStorage.setItem(KMB, JSON.stringify(meds));
+      safeLocalSet(KMB, JSON.stringify(meds));
       // Sincronizar reacción con la nube
       if (window.cloudSave && meds[idx].id) window.cloudSave('BandaMiBanda', String(meds[idx].id), meds[idx]);
 
