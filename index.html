@@ -6460,6 +6460,19 @@
       const active = m.map((e, i) => ({ ...e, i })).filter(e => !e.archived && e.destino !== 'mibanda').sort((a,b) => (b.id||0) - (a.id||0));
       const archived = m.map((e, i) => ({ ...e, i })).filter(e => e.archived && e.destino !== 'mibanda').sort((a,b) => (b.id||0) - (a.id||0));
 
+      const getThumbHtml = (x, size = 60) => {
+        if (x.url) {
+           let ytIdMatch = x.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})/);
+           if (ytIdMatch && ytIdMatch[1]) return `<img src="https://img.youtube.com/vi/${ytIdMatch[1]}/default.jpg" onclick="abrirLightbox('https://www.youtube.com/embed/${ytIdMatch[1]}', 'vid')" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #ddd;flex-shrink:0;" title="Toca para ver">`;
+           return `<div style="width:${size}px;height:${size}px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:${size/2.5}px;color:#999;flex-shrink:0;"><i class="fas fa-link"></i></div>`;
+        } else if (x.t === 'vid') {
+           return `<video src="${x.d}#t=0.1" preload="metadata" onclick="abrirLightbox('${x.d}', 'vid')" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #ddd;flex-shrink:0;background:#000;" title="Toca para ver"></video>`;
+        } else if (x.d) {
+           return `<img src="${x.d}" onclick="abrirLightbox(this.src, 'img')" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #ddd;flex-shrink:0;" title="Toca para ampliar">`;
+        }
+        return '';
+      };
+
       c.innerHTML = active.length ? active.slice(0, 50).map(x => {
         let rSum = x.reacciones ? `<div style="display:flex;gap:5px;margin-top:5px;font-size:10px;font-weight:700;">
             <span title="Love">❤️ ${(x.reacciones['❤️'] || []).length}</span>
@@ -6468,7 +6481,8 @@
             <span title="Inspired">✨ ${(x.reacciones['✨'] || []).length}</span>
           </div>` : '';
         return `<div style="background:#f8f9fa;padding:12px;border-radius:12px;margin-bottom:10px;border-left:4px solid var(--az);box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+            ${getThumbHtml(x, 60)}
             <div style="flex:1;overflow:hidden;">
               <div style="font-weight:900;font-size:13px;color:#333;">${(x.alb || 'galeria').toUpperCase()}</div>
               <div style="font-size:11px;color:#666;margin-top:2px;">${x.comentario || 'Sin descripción'}</div>
@@ -6483,8 +6497,9 @@
       }).join('') + (active.length > 8 ? `<p style="text-align:center;font-size:10px;color:#bbb;margin-top:5px;">Mostrando últimos 8</p>` : '') : '<p style="text-align:center;color:#ccc;padding:10px;">No hay multimedia activa</p>';
 
       arch.innerHTML = archived.length ? archived.map(x => `
-        <div style="background:#fff;padding:8px;border-radius:10px;margin-bottom:5px;border:1px solid #eee;display:flex;justify-content:space-between;align-items:center;opacity:0.7;">
-          <div style="font-size:10px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${x.alb} - ${x.fecha}</div>
+        <div style="background:#fff;padding:8px;border-radius:10px;margin-bottom:5px;border:1px solid #eee;display:flex;justify-content:space-between;align-items:center;opacity:0.7;gap:8px;">
+          ${getThumbHtml(x, 35)}
+          <div style="font-size:10px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;flex:1;">${x.alb} - ${x.fecha}</div>
           <div style="display:flex;gap:5px;">
             <button onclick="archivarContenido('${KME}', ${x.i}, false)" style="background:var(--ve);color:white;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:9px;"><i class="fas fa-undo"></i></button>
             <button onclick="eliminarContenido('${KME}', ${x.i})" style="background:#ff9999;color:white;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:9px;"><i class="fas fa-trash"></i></button>
