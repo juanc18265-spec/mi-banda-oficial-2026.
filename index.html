@@ -4231,38 +4231,51 @@
         <button class="proc-tab-btn" onclick="verProcTab('grupo',this)">👥 T. GRUPO</button>
       </div>
       <div id="ps-escalas" class="proc-section act">
-        <div style="display:flex;justify-content:space-between;margin-bottom:11px;">
-          <span style="font-weight:900;color:var(--az);font-size:14px;">Escalas</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;">
+          <span style="font-weight:900;color:var(--az);font-size:14px;">🎹 Escalas</span>
           <button class="bbs" style="padding:8px 12px;font-size:11px;margin:0;" onclick="agregarItem('escalas')"><i
               class="fas fa-plus"></i> +</button>
         </div>
         <div id="ps-escalas-list"></div>
+        <div id="ps-escalas-prom" style="background:linear-gradient(135deg,#eef2ff,#e8eaff);padding:10px 14px;border-radius:10px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(102,126,234,.2);">
+          <span style="font-size:12px;font-weight:800;color:#4a5568;">📊 Promedio Escalas:</span>
+          <span id="prom-escalas" style="font-size:16px;font-weight:900;color:#667eea;">—</span>
+        </div>
       </div>
       <div id="ps-rep" class="proc-section">
-        <div style="display:flex;justify-content:space-between;margin-bottom:11px;">
-          <span style="font-weight:900;color:var(--az);font-size:14px;">Repertorio Individual</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;">
+          <span style="font-weight:900;color:var(--az);font-size:14px;">🎼 Repertorio Individual</span>
           <button class="bbs" style="padding:8px 12px;font-size:11px;margin:0;" onclick="agregarItem('rep')"><i
               class="fas fa-plus"></i> +</button>
         </div>
         <div id="ps-rep-list"></div>
+        <div id="ps-rep-prom" style="background:linear-gradient(135deg,#fef3e2,#fde8c8);padding:10px 14px;border-radius:10px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(249,115,22,.2);">
+          <span style="font-size:12px;font-weight:800;color:#4a5568;">📊 Promedio Repertorio:</span>
+          <span id="prom-rep" style="font-size:16px;font-weight:900;color:#f97316;">—</span>
+        </div>
       </div>
       <div id="ps-grupo" class="proc-section">
-        <div style="display:flex;justify-content:space-between;margin-bottom:11px;">
-          <span style="font-weight:900;color:var(--az);font-size:14px;">Trabajo en Grupo</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;">
+          <span style="font-weight:900;color:var(--az);font-size:14px;">👥 Trabajo en Grupo</span>
           <button class="bbs" style="padding:8px 12px;font-size:11px;margin:0;" onclick="agregarItem('grupo')"><i
               class="fas fa-plus"></i> +</button>
         </div>
         <div id="ps-grupo-list"></div>
+        <div id="ps-grupo-prom" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);padding:10px 14px;border-radius:10px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(16,185,129,.2);">
+          <span style="font-size:12px;font-weight:800;color:#4a5568;">📊 Promedio Grupo:</span>
+          <span id="prom-grupo" style="font-size:16px;font-weight:900;color:#10b981;">—</span>
+        </div>
       </div>
       <div class="promedio-box">
         <div style="font-size:12px;opacity:.85;margin-bottom:4px;">PROMEDIO GENERAL</div>
         <div class="promedio-num" id="pprom">—</div>
         <div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:8px;" id="pnivel">SIN EVALUAR</div>
         <div class="detalle-prom">
-          <div class="dp-item"><span class="dp-num" id="pg-esc">—</span>Escalas</div>
-          <div class="dp-item"><span class="dp-num" id="pg-rep">—</span>Repertorio</div>
-          <div class="dp-item"><span class="dp-num" id="pg-gru">—</span>Grupo</div>
+          <div class="dp-item"><span class="dp-num" id="pg-esc">—</span>🎹 Escalas</div>
+          <div class="dp-item"><span class="dp-num" id="pg-rep">—</span>🎼 Repertorio</div>
+          <div class="dp-item"><span class="dp-num" id="pg-gru">—</span>👥 Grupo</div>
         </div>
+        <div id="prom-formula" style="font-size:11px;opacity:.8;margin-top:6px;font-weight:600;color:#cbd5e1;"></div>
         <div style="font-size:10px;opacity:.75;margin-top:8px;">1–2.9 BAJO | 3–3.6 BÁSICO | 3.7–4.6 ALTO | 4.7–5
           SUPERIOR</div>
       </div>
@@ -6751,13 +6764,16 @@
       return vals.reduce((a, b) => a + b, 0) / vals.length;
     }
     function promGen(p) {
-      const arr = [];
-      const pe = promSec(p.escalas), pr = promSec(p.rep), pg = promSec(p.grupo);
-      if (pe !== null) arr.push(pe);
-      if (pr !== null) arr.push(pr);
-      if (pg !== null) arr.push(pg);
-      if (!arr.length) return null;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
+      const pe = promSec(p.escalas);
+      const ppRep = promSec(p.rep);
+      const pg = promSec(p.grupo);
+      // Si ninguna sección tiene datos, retornar null
+      if (pe === null && ppRep === null && pg === null) return null;
+      // Cada sección SIN datos cuenta como 0 — SIEMPRE se divide entre 3
+      const valEsc = pe !== null ? pe : 0;
+      const valRep = ppRep !== null ? ppRep : 0;
+      const valGru = pg !== null ? pg : 0;
+      return (valEsc + valRep + valGru) / 3;
     }
     function rProc() {
       const c = document.getElementById('proc-lista');
@@ -6874,17 +6890,37 @@
       rProc();
     }
     function actualizarProm(p) {
-      const pe = promSec(p.escalas), pr = promSec(p.rep), pg = promSec(p.grupo);
-      document.getElementById('pg-esc').innerText = pe !== null ? pe.toFixed(2) : '—';
-      document.getElementById('pg-rep').innerText = pr !== null ? pr.toFixed(2) : '—';
-      document.getElementById('pg-gru').innerText = pg !== null ? pg.toFixed(2) : '—';
+      const pe = promSec(p.escalas);
+      const ppRep = promSec(p.rep);
+      const pg = promSec(p.grupo);
+      // Mostrar promedio de cada sección
+      const escTxt = pe !== null ? pe.toFixed(2) : '—';
+      const repTxt = ppRep !== null ? ppRep.toFixed(2) : '—';
+      const gruTxt = pg !== null ? pg.toFixed(2) : '—';
+      document.getElementById('pg-esc').innerText = escTxt;
+      document.getElementById('pg-rep').innerText = repTxt;
+      document.getElementById('pg-gru').innerText = gruTxt;
+      // Subtotales dentro de cada pestaña
+      const promEscEl = document.getElementById('prom-escalas');
+      const promRepEl = document.getElementById('prom-rep');
+      const promGruEl = document.getElementById('prom-grupo');
+      if (promEscEl) { promEscEl.innerText = escTxt; if (pe !== null) promEscEl.style.color = colV(pe); }
+      if (promRepEl) { promRepEl.innerText = repTxt; if (ppRep !== null) promRepEl.style.color = colV(ppRep); }
+      if (promGruEl) { promGruEl.innerText = gruTxt; if (pg !== null) promGruEl.style.color = colV(pg); }
+      // Promedio general: SIEMPRE (esc + rep + gru) / 3
       const gen = promGen(p);
+      const formulaEl = document.getElementById('prom-formula');
       if (gen === null) {
         document.getElementById('pprom').innerText = '—';
         document.getElementById('pnivel').innerText = 'SIN EVALUAR';
+        if (formulaEl) formulaEl.innerText = '';
       } else {
         document.getElementById('pprom').innerText = gen.toFixed(2);
         document.getElementById('pnivel').innerText = lblV(gen) + ' (' + gen.toFixed(2) + ' / 5)';
+        const vE = pe !== null ? pe.toFixed(1) : '0';
+        const vR = ppRep !== null ? ppRep.toFixed(1) : '0';
+        const vG = pg !== null ? pg.toFixed(1) : '0';
+        if (formulaEl) formulaEl.innerText = '(' + vE + ' + ' + vR + ' + ' + vG + ') ÷ 3 = ' + gen.toFixed(2);
       }
     }
     function guardarCalificacion() {
