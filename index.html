@@ -4266,15 +4266,28 @@
           <span id="prom-grupo" style="font-size:16px;font-weight:900;color:#10b981;">—</span>
         </div>
       </div>
-      <div class="promedio-box">
+      <div class="detalle-prom" style="background:#f8fafc;border-radius:14px;padding:14px;margin-bottom:14px;border:1px solid #e2e8f0;">
+        <div style="font-size:13px;font-weight:900;color:#475569;margin-bottom:10px;text-align:center;">📊 PROMEDIOS POR SECCIÓN</div>
+        <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#eef2ff,#e8eaff);border-radius:10px;margin-bottom:6px;">
+          <span style="font-weight:800;color:#4a5568;font-size:13px;">🎹 Escalas</span>
+          <span class="dp-num" id="pg-esc" style="font-size:16px;font-weight:900;color:#667eea;">—</span>
+        </div>
+        <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#fef3e2,#fde8c8);border-radius:10px;margin-bottom:6px;">
+          <span style="font-weight:800;color:#4a5568;font-size:13px;">🎼 Repertorio</span>
+          <span class="dp-num" id="pg-rep" style="font-size:16px;font-weight:900;color:#f97316;">—</span>
+        </div>
+        <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border-radius:10px;">
+          <span style="font-weight:800;color:#4a5568;font-size:13px;">👥 Grupo</span>
+          <span class="dp-num" id="pg-gru" style="font-size:16px;font-weight:900;color:#10b981;">—</span>
+        </div>
+      </div>
+      <button id="btn-calc-prom" onclick="calcularPromedioGeneral()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:14px;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 12px rgba(102,126,234,.35);transition:transform .2s,box-shadow .2s;letter-spacing:0.5px;" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 18px rgba(102,126,234,.5)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(102,126,234,.35)'">
+        <i class="fas fa-calculator" style="margin-right:8px;"></i> CALCULAR PROMEDIO GENERAL
+      </button>
+      <div id="prom-gen-box" class="promedio-box" style="display:none;">
         <div style="font-size:12px;opacity:.85;margin-bottom:4px;">PROMEDIO GENERAL</div>
         <div class="promedio-num" id="pprom">—</div>
         <div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:8px;" id="pnivel">SIN EVALUAR</div>
-        <div class="detalle-prom">
-          <div class="dp-item"><span class="dp-num" id="pg-esc">—</span>🎹 Escalas</div>
-          <div class="dp-item"><span class="dp-num" id="pg-rep">—</span>🎼 Repertorio</div>
-          <div class="dp-item"><span class="dp-num" id="pg-gru">—</span>👥 Grupo</div>
-        </div>
         <div id="prom-formula" style="font-size:11px;opacity:.8;margin-top:6px;font-weight:600;color:#cbd5e1;"></div>
         <div style="font-size:10px;opacity:.75;margin-top:8px;">1–2.9 BAJO | 3–3.6 BÁSICO | 3.7–4.6 ALTO | 4.7–5
           SUPERIOR</div>
@@ -4971,7 +4984,14 @@
             
             // Guardar en RAM para rebasar límite visual de LocalStorage
             if (window.GLOBAL_MEMORY_CACHE) {
-               window.GLOBAL_MEMORY_CACHE[localKey] = (OBJ_KEYS.includes(localKey) ? rebuilt : items);
+               const OBJ_KEYS_CACHE = [KPR, KPIN, KPIN_PADRES, KACCESS_PADRES, KVISITS];
+               if (OBJ_KEYS_CACHE.includes(localKey)) {
+                 try {
+                   window.GLOBAL_MEMORY_CACHE[localKey] = JSON.parse(localStorage.getItem(localKey) || '{}');
+                 } catch(e) { window.GLOBAL_MEMORY_CACHE[localKey] = {}; }
+               } else {
+                 window.GLOBAL_MEMORY_CACHE[localKey] = items;
+               }
             }
           });
         });
@@ -5001,7 +5021,7 @@
         rAdminsTabla();
       }
       // Nuevas colecciones sincronizadas
-      if (colName === 'BandaProcesos') { if (adminLogueado) rProc(); }
+      if (colName === 'BandaProcesos') { if (adminLogueado && !procSyncBlocked) rProc(); }
       if (colName === 'BandaPins') { if (adminLogueado) rUsuariosTabla(); }
       if (colName === 'BandaPinsPadres') { if (adminLogueado) rUsuariosTabla(); }
       if (colName === 'BandaAsistencia') { rAsist(); rHist(); }
@@ -6821,8 +6841,12 @@
       const secEscalas = document.getElementById('ps-escalas');
       if (secEscalas) secEscalas.classList.add('act');
 
+      procSyncBlocked = true; // Bloquear sync mientras editas
       renderProc();
       actualizarProm(getPr(id));
+      // Ocultar promedio general hasta que el usuario lo calcule manualmente
+      const pgBox = document.getElementById('prom-gen-box');
+      if (pgBox) pgBox.style.display = 'none';
       const mProc = document.getElementById('m-proc');
       if (mProc) mProc.style.display = 'flex';
     }
@@ -6855,7 +6879,9 @@
       });
       c.innerHTML = h;
     }
+    let procSyncBlocked = false; // Bloquear sync mientras se edita
     function cambVal(tipo, idx, v, slider) {
+      procSyncBlocked = true; // Bloquear sync mientras editas
       v = Math.round(v * 10) / 10;
       const p = getPr(aPr);
       p[tipo][idx].v = v;
@@ -6865,7 +6891,9 @@
       const pv = document.getElementById(`pv-${tipo}-${idx}`);
       if (pv) pv.innerHTML = `<span style="font-size:28px;font-weight:900;color:${col};">${v.toFixed(1)}</span><span style="font-size:12px;font-weight:900;color:${col};margin-left:8px;">/ 5.0</span><span style="display:block;font-size:13px;font-weight:900;color:${col};margin-top:2px;">${lblV(v)}</span>`;
       actualizarProm(getPr(aPr));
-      rProc();
+      // Ocultar promedio general si se cambia algo (debe recalcularse manualmente)
+      const pgBox = document.getElementById('prom-gen-box');
+      if (pgBox) pgBox.style.display = 'none';
     }
     window.cambVal = cambVal;
     function cambNombre(tipo, idx, nombre) {
@@ -6893,13 +6921,16 @@
       const pe = promSec(p.escalas);
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
-      // Mostrar promedio de cada sección
+      // Mostrar promedio de cada sección (ESTOS SÍ son automáticos)
       const escTxt = pe !== null ? pe.toFixed(2) : '—';
       const repTxt = ppRep !== null ? ppRep.toFixed(2) : '—';
       const gruTxt = pg !== null ? pg.toFixed(2) : '—';
-      document.getElementById('pg-esc').innerText = escTxt;
-      document.getElementById('pg-rep').innerText = repTxt;
-      document.getElementById('pg-gru').innerText = gruTxt;
+      const pgEsc = document.getElementById('pg-esc');
+      const pgRep = document.getElementById('pg-rep');
+      const pgGru = document.getElementById('pg-gru');
+      if (pgEsc) { pgEsc.innerText = escTxt; if (pe !== null) pgEsc.style.color = colV(pe); }
+      if (pgRep) { pgRep.innerText = repTxt; if (ppRep !== null) pgRep.style.color = colV(ppRep); }
+      if (pgGru) { pgGru.innerText = gruTxt; if (pg !== null) pgGru.style.color = colV(pg); }
       // Subtotales dentro de cada pestaña
       const promEscEl = document.getElementById('prom-escalas');
       const promRepEl = document.getElementById('prom-rep');
@@ -6907,13 +6938,24 @@
       if (promEscEl) { promEscEl.innerText = escTxt; if (pe !== null) promEscEl.style.color = colV(pe); }
       if (promRepEl) { promRepEl.innerText = repTxt; if (ppRep !== null) promRepEl.style.color = colV(ppRep); }
       if (promGruEl) { promGruEl.innerText = gruTxt; if (pg !== null) promGruEl.style.color = colV(pg); }
-      // Promedio general: SIEMPRE (esc + rep + gru) / 3
+      // PROMEDIO GENERAL **NO** se calcula automáticamente
+      // El usuario debe presionar el botón "CALCULAR PROMEDIO GENERAL"
+    }
+    function calcularPromedioGeneral() {
+      if (!aPr) { alert('⚠️ No hay alumno seleccionado.'); return; }
+      const p = getPr(aPr);
+      const pe = promSec(p.escalas);
+      const ppRep = promSec(p.rep);
+      const pg = promSec(p.grupo);
+      // Mostrar el box del promedio general
+      const pgBox = document.getElementById('prom-gen-box');
+      if (pgBox) pgBox.style.display = 'block';
       const gen = promGen(p);
       const formulaEl = document.getElementById('prom-formula');
       if (gen === null) {
         document.getElementById('pprom').innerText = '—';
         document.getElementById('pnivel').innerText = 'SIN EVALUAR';
-        if (formulaEl) formulaEl.innerText = '';
+        if (formulaEl) formulaEl.innerText = 'No hay datos en ninguna sección';
       } else {
         document.getElementById('pprom').innerText = gen.toFixed(2);
         document.getElementById('pnivel').innerText = lblV(gen) + ' (' + gen.toFixed(2) + ' / 5)';
@@ -6922,9 +6964,13 @@
         const vG = pg !== null ? pg.toFixed(1) : '0';
         if (formulaEl) formulaEl.innerText = '(' + vE + ' + ' + vR + ' + ' + vG + ') ÷ 3 = ' + gen.toFixed(2);
       }
+      // Scroll suave hacia el promedio general
+      if (pgBox) pgBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     function guardarCalificacion() {
-      alert('✅ Calificación guardada');
+      procSyncBlocked = false; // Re-habilitar sync
+      savePr(aPr, getPr(aPr)); // Asegurar guardado final
+      alert('✅ Calificación guardada correctamente');
       rProc();
     }
     window.abrirProc = abrirProc;
@@ -6932,6 +6978,7 @@
     window.agregarItem = agregarItem;
     window.elimItem = elimItem;
     window.guardarCalificacion = guardarCalificacion;
+    window.calcularPromedioGeneral = calcularPromedioGeneral;
 
     /* EVENTOS */
     function vEvTab(tab, el) {

@@ -7,9 +7,13 @@
     content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
   <!-- Forzar modo claro en TODOS los dispositivos (Samsung, Android, etc) -->
   <meta name="color-scheme" content="only light">
-  <meta name="theme-color" content="#667eea">
+  <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Banda ENS">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <link rel="manifest" href="manifest.json?v=3">
   <title>ENS Sagrado Corazon 2026</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link
@@ -336,12 +340,16 @@
     .logoh {
       position: relative;
       z-index: 10;
-      margin-top: calc(env(safe-area-inset-top, 20px) + 40px) !important;
+      margin-top: calc(env(safe-area-inset-top, 12px) + clamp(18px, 5vh, 40px)) !important;
       margin-bottom: 0 !important;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .tith {
-      font-size: 24px;
+      font-size: clamp(16px, 5vw, 24px);
       font-weight: 900;
       text-transform: uppercase;
       border-bottom: 4px solid var(--or) !important;
@@ -352,11 +360,11 @@
       color: #fff !important;
       text-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 4px 15px rgba(0, 0, 0, 0.8) !important;
       margin-bottom: 4px;
-      letter-spacing: 1px;
+      letter-spacing: clamp(0px, 0.5vw, 1px);
     }
 
     .subttit {
-      font-size: 13px;
+      font-size: clamp(10px, 3vw, 13px);
       font-weight: 700;
       color: rgba(255, 255, 255, .95) !important;
       text-transform: uppercase;
@@ -369,8 +377,8 @@
     .trompeta-container {
       position: relative;
       width: 100%;
-      height: 220px;
-      margin: 120px 0 20px 0;
+      height: clamp(120px, 20vh, 220px);
+      margin: clamp(60px, 12vh, 120px) 0 clamp(10px, 2vh, 20px) 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -415,7 +423,7 @@
 
     .letra-musical {
       display: inline-block;
-      font-size: clamp(28px, 8vw, 55px);
+      font-size: clamp(22px, 6vw, 42px);
       font-weight: 950;
       opacity: 0;
       transform: translate(-45vw, 15px) rotate(-10deg) scale(0);
@@ -457,7 +465,7 @@
 
     .btn-entrar {
       position: absolute !important;
-      bottom: 85px !important;
+      bottom: max(calc(env(safe-area-inset-bottom, 0px) + 60px), 60px) !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
       z-index: 5000;
@@ -465,20 +473,20 @@
       color: #1a1a1a !important;
       border: 3px solid #000 !important;
       border-radius: 50px !important;
-      padding: 20px 60px !important;
-      font-size: 20px !important;
+      padding: clamp(14px, 3vh, 20px) clamp(30px, 8vw, 60px) !important;
+      font-size: clamp(15px, 4vw, 20px) !important;
       font-weight: 900 !important;
       cursor: pointer;
       box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4) !important;
       transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       text-transform: uppercase;
-      letter-spacing: 3px;
+      letter-spacing: clamp(1px, 0.5vw, 3px);
       white-space: nowrap !important;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
     }
 
     .btn-entrar:active {
-      transform: scale(.95) translateY(3px);
+      transform: scale(.95) translateX(-50%) translateY(3px) !important;
       box-shadow: 0 5px 20px rgba(255, 215, 0, .4);
     }
 
@@ -566,12 +574,12 @@
 
     .marquee-item {
       flex-shrink: 0;
-      width: 140px;
+      width: clamp(100px, 22vw, 140px);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      margin: 0 20px;
+      margin: 0 clamp(10px, 3vw, 20px);
       filter: none;
       opacity: 0.9;
       transition: all 0.3s ease;
@@ -583,8 +591,8 @@
     }
 
     .marquee-item img {
-      width: 62px;
-      height: 62px;
+      width: clamp(44px, 12vw, 62px);
+      height: clamp(44px, 12vw, 62px);
       object-fit: contain;
       filter: drop-shadow(0 3px 10px rgba(0, 0, 0, .15));
       margin-bottom: 6px;
@@ -744,7 +752,8 @@
     /* APP */
     #app {
       display: none;
-      padding-bottom: 92px;
+      padding-bottom: max(92px, calc(env(safe-area-inset-bottom, 0px) + 92px));
+      background-color: #f0f2f5;
     }
 
     .ntop {
@@ -761,7 +770,7 @@
 
     .nfoot {
       position: fixed;
-      bottom: 20px;
+      bottom: max(env(safe-area-inset-bottom, 10px), 10px);
       left: 3%;
       width: 94%;
       height: 70px;
@@ -874,6 +883,7 @@
     #zona-admin {
       display: none;
       padding-bottom: 92px;
+      background-color: #f0f2f5;
     }
 
     .admin-menu {
@@ -1359,6 +1369,13 @@
       border-radius: 15px;
       outline: none;
       cursor: pointer;
+      /* CRÍTICO: permite el deslizamiento horizontal táctil en Android/iOS */
+      touch-action: pan-x;
+      -ms-touch-action: pan-x;
+      /* Asegura que los eventos táctiles lleguen al slider */
+      pointer-events: all;
+      position: relative;
+      z-index: 10;
     }
 
     .prog-barra::-webkit-slider-thumb {
@@ -1368,8 +1385,17 @@
       border-radius: 50%;
       background: white;
       border: 4px solid #667eea;
-      cursor: pointer;
+      cursor: grab;
       box-shadow: 0 3px 10px rgba(0, 0, 0, .3);
+      touch-action: pan-x;
+      position: relative;
+      z-index: 20;
+    }
+
+    .prog-barra::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.15);
+      box-shadow: 0 5px 18px rgba(102, 126, 234, 0.5);
     }
 
     .prog-barra::-moz-range-thumb {
@@ -1378,8 +1404,14 @@
       border-radius: 50%;
       background: white;
       border: 4px solid #667eea;
-      cursor: pointer;
+      cursor: grab;
       box-shadow: 0 3px 10px rgba(0, 0, 0, .3);
+      touch-action: pan-x;
+    }
+
+    .prog-barra::-moz-range-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.15);
     }
 
     .prog-marcas {
@@ -1594,6 +1626,10 @@
       box-shadow: 0 3px 12px rgba(102, 126, 234, .45);
     }
 
+    .atab-todo.act {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+    }
+
     .atab-fotos.act {
       background: linear-gradient(135deg, #ec4899, #db2777);
     }
@@ -1678,7 +1714,47 @@
       font-size: 13px;
     }
 
+    /* LIGHTBOX */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,.95);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox-overlay img, .lightbox-overlay video {
+      max-width: 96vw;
+      max-height: 94vh;
+      border-radius: 14px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.6);
+      object-fit: contain;
+      cursor: default;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 18px; right: 18px;
+      background: rgba(255,255,255,.15);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      transition: background .2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.3); }
+    .mi img { cursor: pointer; }
+    .mb-post-img { cursor: pointer; }
+
     .fecha-grupo {
+      display: none !important;
       font-weight: 900;
       color: var(--az);
       font-size: 12px;
@@ -2237,7 +2313,7 @@
       position: absolute;
       z-index: 5;
       pointer-events: none;
-      font-size: 24px;
+      font-size: clamp(14px, 4vw, 24px);
       opacity: 0.7;
       animation: flotaDecoracion 3s ease-in-out infinite alternate;
       filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
@@ -2254,26 +2330,26 @@
     }
 
     .dec-izq {
-      left: -60px;
+      left: clamp(-20px, -5vw, -60px);
       top: 20px;
     }
 
     .dec-der {
-      right: -60px;
+      right: clamp(-20px, -5vw, -60px);
       top: 20px;
     }
 
     .dec-izq2 {
-      left: -50px;
+      left: clamp(-15px, -4vw, -50px);
       bottom: 10px;
-      font-size: 18px;
+      font-size: clamp(12px, 3vw, 18px);
       animation-delay: 0.5s;
     }
 
     .dec-der2 {
-      right: -50px;
+      right: clamp(-15px, -4vw, -50px);
       bottom: 10px;
-      font-size: 18px;
+      font-size: clamp(12px, 3vw, 18px);
       animation-delay: 0.8s;
     }
 
@@ -2329,6 +2405,24 @@
     .mb-share-btn:active {
       transform: scale(.9);
       background: #f0f0f0;
+    }
+
+    .mb-date-header {
+      position: sticky;
+      top: 0;
+      background: rgba(26, 26, 62, 0.95);
+      backdrop-filter: blur(5px);
+      color: #FFD700;
+      padding: 12px;
+      z-index: 100;
+      font-weight: 900;
+      font-size: 14px;
+      text-transform: uppercase;
+      text-align: center;
+      margin: 10px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     /* Nuevo color para 6to tab del menú */
@@ -2628,6 +2722,141 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ===================================================
+       RESPONSIVE DESIGN - CORRECCIONES GLOBALES
+       =================================================== */
+
+    /* Tablets (768px+) */
+    @media (min-width: 768px) {
+      .logoh {
+        margin-top: calc(env(safe-area-inset-top, 12px) + 50px) !important;
+      }
+
+      .btn-entrar {
+        bottom: max(calc(env(safe-area-inset-bottom, 0px) + 80px), 80px) !important;
+      }
+    }
+
+    /* iPhone SE y teléfonos compactos (max 375px) */
+    @media (max-height: 680px) {
+      .logoh {
+        margin-top: calc(env(safe-area-inset-top, 8px) + 12px) !important;
+      }
+
+      .tith {
+        font-size: clamp(13px, 4vw, 18px);
+      }
+
+      .subttit {
+        font-size: 10px;
+        letter-spacing: 1px;
+      }
+
+      .trompeta-container {
+        height: clamp(80px, 14vh, 140px);
+        margin: clamp(30px, 6vh, 70px) 0 clamp(5px, 1vh, 10px) 0;
+      }
+
+      .btn-entrar {
+        bottom: max(calc(env(safe-area-inset-bottom, 0px) + 50px), 50px) !important;
+        padding: 12px clamp(24px, 6vw, 44px) !important;
+        font-size: 15px !important;
+      }
+
+      /* Ocultar instrumentos flotantes menos importantes en pantallas pequeñas */
+      .if12,
+      .if13,
+      .if14,
+      .if15,
+      .if16,
+      .if17,
+      .if18 {
+        display: none;
+      }
+    }
+
+    /* Pantallas muy pequeñas (max 360px ancho) */
+    @media (max-width: 360px) {
+      .tith {
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      }
+
+      .subttit {
+        font-size: 9px;
+        letter-spacing: 1px;
+      }
+
+      .btn-entrar {
+        padding: 12px 24px !important;
+        font-size: 14px !important;
+        letter-spacing: 1px;
+      }
+
+      .marquee-item {
+        width: clamp(80px, 18vw, 110px);
+        margin: 0 8px;
+      }
+
+      .marquee-item img {
+        width: clamp(36px, 10vw, 50px);
+        height: clamp(36px, 10vw, 50px);
+      }
+
+      .logo-nombre {
+        font-size: 8px;
+        max-width: 120px;
+      }
+
+      /* Instrumento fondo: reducir tamaño */
+      .if1 {
+        font-size: 44px;
+      }
+
+      .if3 {
+        font-size: 60px;
+      }
+
+      .if8 {
+        font-size: 30px;
+      }
+
+      .if9 {
+        font-size: 38px;
+      }
+    }
+
+    /* Corrección específica: logos del tab t-home tienen que respirar con el navbar */
+    #t-home #aliados-section {
+      margin-bottom: max(10px, env(safe-area-inset-bottom, 10px));
+    }
+
+    /* Asegurar que todos los tabs tengan espacio para el navbar flotante */
+    #app .tab {
+      padding-bottom: max(100px, calc(env(safe-area-inset-bottom, 0px) + 100px));
+    }
+
+    /* Evitar que .nfoot tape el último elemento en cualquier sección */
+    .nfoot {
+      /* Asegurar que nunca aparece más arriba de lo necesario */
+      bottom: max(env(safe-area-inset-bottom, 10px), 10px);
+    }
+
+    /* iOS safe-area extra para dispositivos con notch */
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      #app {
+        padding-bottom: calc(env(safe-area-inset-bottom) + 92px);
+      }
+
+      .nfoot {
+        bottom: calc(env(safe-area-inset-bottom) + 10px);
+      }
+
+      #t-home {
+        padding-bottom: calc(env(safe-area-inset-bottom) + 110px) !important;
+      }
+    }
   </style>
 </head>
 
@@ -2655,7 +2884,7 @@
       <h1 class="tith">Escuela Normal Superior<br>Sagrado Corazón</h1>
       <p class="subttit">Riosucio · Caldas</p>
       <img src="img/img.logo3.JPEG.jpeg.png" alt="Escudo Institucional"
-        style="width:155px;height:auto;margin:20px auto 10px;display:block;position:relative;z-index:10;border-radius:12px;filter:drop-shadow(0 0 18px rgba(255,215,0,0.6)) drop-shadow(0 0 45px rgba(255,215,0,0.3)) contrast(1.1) brightness(1.2);animation:escudoFlota 3s ease-in-out infinite alternate;transform:perspective(600px) rotateX(10deg);">
+        style="width:clamp(100px, 35vw, 155px);max-width:155px;height:auto;margin:clamp(8px,2vh,20px) auto clamp(8px,2vh,10px);display:block;position:relative;z-index:10;border-radius:12px;filter:drop-shadow(0 0 18px rgba(255,215,0,0.6)) drop-shadow(0 0 45px rgba(255,215,0,0.3)) contrast(1.1) brightness(1.2);animation:escudoFlota 3s ease-in-out infinite alternate;transform:perspective(600px) rotateX(10deg);">
     </div>
     <!-- POSICIÓN MANUAL EXTREMA INDEPENDIENTE -->
     <div id="texto-musical" class="texto-musical"></div>
@@ -2707,6 +2936,12 @@
         <i class="fas fa-toolbox" style="color:var(--or);"></i> HERRAMIENTAS ALUMNOS
       </div>
 
+      <!-- BOTÓN INSTALAR PWA -->
+      <div id="pwa-install-item" class="drawer-item" onclick="instalarPWA()"
+        style="display:none; background:linear-gradient(135deg,#22c55e,#16a34a); margin-top:15px; border:1px solid #4ade80;">
+        <i class="fas fa-download"></i> INSTALAR APP EN CELULAR
+      </div>
+
       <div style="margin-top: auto; padding: 10px; text-align: center; color: rgba(255,255,255,0.4); font-size: 10px;">
         Versión 11.0.2 <br> ENS Sagrado Corazón
       </div>
@@ -2714,7 +2949,7 @@
 
     <!-- HOME PAGE (segunda página con ambiente musical y aliados) -->
     <div id="t-home" class="tab active"
-      style="overflow: hidden !important; padding:0; height: 100vh; height: 100dvh; background:linear-gradient(135deg,#1a1a3e 0%,#2d1b69 25%,#0f3460 50%,#16213e 75%,#1a1a2e 100%);border-radius:0;margin:0;">
+      style="overflow-x:hidden !important; overflow-y:auto !important; padding:0 0 110px 0; height: 100vh; height: 100dvh; background:linear-gradient(135deg,#1a1a3e 0%,#2d1b69 25%,#0f3460 50%,#16213e 75%,#1a1a2e 100%);border-radius:0;margin:0;">
       <div style="padding:4px;position:relative;overflow:hidden;min-height: 100%;">
 
         <!-- Fondo animado con MUCHOS instrumentos flotantes (DECLUTTERED TOP) -->
@@ -2865,7 +3100,7 @@
         <div class="album-tabs">
           <div class="atab atab-fotos act" onclick="vAlbum('fotos',this)">📷 Fotos</div>
           <div class="atab atab-videos" onclick="vAlbum('videos',this)">🎬 Videos</div>
-          <div class="atab atab-exalumnos" onclick="vAlbum('exalumnos',this)">🎓 Exalumnos</div>
+          <div class="atab atab-exalumnos" onclick="vAlbum('exalumnos',this)">🎓 Egresados</div>
         </div>
         <div class="anio-select" id="anio-tabs"></div>
         <div id="me-render"></div>
@@ -2981,7 +3216,6 @@
               CALIB: A=442Hz
             </div>
 
-            <!-- Selector de Transposición Pro -->
             <div style="margin: 10px 0 20px 0; display:flex; justify-content:center; gap:8px;">
               <button onclick="setTransposition(0, this)" class="transpo-btn act"
                 style="background:#1e2a3a; color:#fff; border:1px solid #334455; padding:6px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;">DO
@@ -2992,6 +3226,22 @@
               <button onclick="setTransposition(3, this)" class="transpo-btn"
                 style="background:#1e2a3a; color:#fff; border:1px solid #334455; padding:6px 12px; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer;">MI♭
                 (Eb)</button>
+            </div>
+
+            <!-- Ajuste de Sensibilidad -->
+            <div style="margin-bottom:20px; padding:0 15px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <span style="font-size:10px; color:#aaa; font-weight:800; text-transform:uppercase;">Sensibilidad</span>
+                <span id="sens-val-label" style="font-size:10px; color:#22c55e; font-weight:800;">Media</span>
+              </div>
+              <input type="range" min="0.001" max="0.1" step="0.001" value="0.01"
+                style="width:100%; height:6px; border-radius:5px; background:#1e2a3a; outline:none; cursor:pointer;"
+                oninput="cambiarSensibilidad(this.value)">
+              <div
+                style="display:flex; justify-content:space-between; margin-top:5px; font-size:9px; color:#556677; font-weight:700;">
+                <span>MÁS SENSIBLE</span>
+                <span>MENOS SENSIBLE</span>
+              </div>
             </div>
 
             <h4 style="margin:0 0 10px 0; color:#22c55e; font-size:13px; letter-spacing:2px; font-weight:900;"><i
@@ -3030,6 +3280,26 @@
               style="margin-top:25px; width:100%; max-width:280px; background:linear-gradient(135deg,#22c55e,#16a34a); color:#000; border:none; padding:18px 40px; border-radius:15px; font-size:16px; font-weight:900; cursor:pointer; box-shadow:0 8px 30px rgba(34,197,94,0.3); letter-spacing:1px; transition:0.3s;">
               <i class="fas fa-microphone"></i> ENCENDER SISTEMA
             </button>
+
+            <!-- BOTÓN TABLÓN DE ANUNCIOS -->
+            <button onclick="verHerramienta('h-tablon'); rTablon();"
+              style="margin-top:15px; width:100%; max-width:280px; background:linear-gradient(135deg, #1e40af, #3b82f6); color:white; border:none; padding:15px; border-radius:15px; font-size:14px; font-weight:900; cursor:pointer; box-shadow:0 4px 15px rgba(30,64,175,0.3);">
+              <i class="fas fa-bullhorn"></i> VER TABLÓN DE ANUNCIOS
+            </button>
+          </div>
+        </div>
+
+        <!-- SECCIÓN: TABLÓN DE ANUNCIOS (HISTORIAL) -->
+        <div id="h-tablon" class="herramienta-pantalla" style="display:none;">
+          <button class="bbg bf" style="width:100%; margin-bottom:15px;" onclick="volverMenuH()"><i
+              class="fas fa-arrow-left"></i> VOLVER AL MENÚ</button>
+          <div class="pc"
+            style="background:white; padding:20px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+            <h4 style="margin:0 0 20px 0; color:var(--az); text-align:center;"><i class="fas fa-bullhorn"></i> TABLÓN DE
+              ANUNCIOS</h4>
+            <div id="tablon-render" style="max-height:500px; overflow-y:auto;">
+              <p style="text-align:center; color:#aaa; padding:20px;">Cargando anuncios recientes...</p>
+            </div>
           </div>
         </div>
 
@@ -3124,7 +3394,7 @@
                 style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; border:1px solid rgba(255,255,255,0.1);">
                 <div
                   style="text-align:center; font-size:14px; color:var(--or); font-weight:900; margin-bottom:10px; letter-spacing:1px;">
-                  🏆 TOP 5 ACADEMIA</div>
+                  🏆 TOP 10 ACADEMIA</div>
                 <div id="simon-leaderboard" style="font-size:13px; color:#ccc;">
                   <!-- Se llena vía JS -->
                 </div>
@@ -3162,13 +3432,13 @@
 
         <div id="ap-stats" class="sg" style="margin-bottom:20px;">
           <div class="sb" style="background:var(--ve);"><span id="ap-sp"
-              style="font-size:24px;display:block;">0</span><small>P</small></div>
+              style="font-size:24px;display:block;">0</span><small>Presente</small></div>
           <div class="sb" style="background:var(--ro);"><span id="ap-sa"
-              style="font-size:24px;display:block;">0</span><small>A</small></div>
+              style="font-size:24px;display:block;">0</span><small>Ausente</small></div>
           <div class="sb" style="background:var(--na);"><span id="ap-st"
-              style="font-size:24px;display:block;">0</span><small>T</small></div>
+              style="font-size:24px;display:block;">0</span><small>Tarde</small></div>
           <div class="sb" style="background:var(--ce);"><span id="ap-se"
-              style="font-size:24px;display:block;">0</span><small>E</small></div>
+              style="font-size:24px;display:block;">0</span><small>Excusa</small></div>
         </div>
 
         <!-- INDICADOR DE INASISTENCIAS -->
@@ -3346,20 +3616,27 @@
             <span>Anuncios para Estudiantes</span>
           </div>
 
+          <!-- 6. Mecenas -->
+          <div class="banner-admin" style="background: linear-gradient(135deg, #15803d, #22c55e);"
+            onclick="verSubAjuste('v-gestion-mecenas')">
+            <i class="fas fa-hand-holding-heart"></i>
+            <strong>Mecenas (Donantes)</strong>
+            <span>Muro de Honor y Configuración</span>
+          </div>
+
+          <!-- 7. Sistema (Nuevo) -->
+          <div class="banner-admin" style="background: linear-gradient(135deg, #475569, #64748b);"
+            onclick="forzarActualizacionApp()">
+            <i class="fas fa-sync-alt"></i>
+            <strong>Sistema v1.9</strong>
+            <span>Limpiar Caché y Actualizar App</span>
+          </div>
           <!-- 4. Multimedia -->
           <div class="banner-admin" style="background: linear-gradient(135deg, #1e293b, #334155);"
             onclick="verSubAjuste('v-gestion-multimedia')">
             <i class="fas fa-camera"></i>
             <strong>Galería Multimedia</strong>
             <span>Administrar Fotos y Videos</span>
-          </div>
-
-          <!-- 5. Mecenas -->
-          <div class="banner-admin" style="background: linear-gradient(135deg, #065f46, #10b981);"
-            onclick="verSubAjuste('v-gestion-mecenas')">
-            <i class="fas fa-hand-holding-heart"></i>
-            <strong>Mecenas</strong>
-            <span>Proyectos y Mosaico</span>
           </div>
 
           <!-- 6. Sistema -->
@@ -3372,7 +3649,7 @@
 
           <!-- 7. Mi Banda (RED SOCIAL) -->
           <div class="banner-admin" style="background: linear-gradient(135deg, #9a3412, #ea580c);"
-            onclick="verSubAjuste('v-gestion-mibanda')">
+            onclick="verSubAjuste('v-gestion-mibanda'); rMiBandaAdmin();">
             <i class="fas fa-heart"></i>
             <strong>Mi Banda</strong>
             <span>Publicar y Popularidad Social</span>
@@ -3405,11 +3682,22 @@
               PASADAS</button>
           </div>
 
-          <div class="pc" style="margin-top:20px; border-left:5px solid #00CED1;">
-            <h4 style="margin:0 0 13px 0;color:#00CED1;font-size:15px;"><i class="fas fa-key"></i> CONTROL ACCESO PADRES
-              (PINs)</h4>
-            <div id="padres-render-admin"
-              style="max-height:400px;overflow-y:auto;border:1px solid #eee;border-radius:15px;padding:10px; background:white;">
+          <div class="pc" style="margin-top:20px; border-left:5px solid var(--az);">
+            <h4 style="margin:0 0 13px 0;color:var(--az);font-size:15px;"><i class="fas fa-list"></i> LISTADO DETALLADO (PINs y Visitas)</h4>
+            <div style="overflow-x:auto;">
+              <table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:10px;">
+                <thead>
+                  <tr style="background:#eee;">
+                    <th style="padding:10px;text-align:left;">Alumno</th>
+                    <th style="padding:10px;text-align:center;">PIN Est.</th>
+                    <th style="padding:10px;text-align:center;">PIN Padre</th>
+                    <th style="padding:10px;text-align:center;">Visitas</th>
+                    <th style="padding:10px;text-align:center;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="usuarios-tabla-render">
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -3433,6 +3721,24 @@
               HISTORIAL / ARCHIVADOS</h4>
             <div id="ev-archived-admin"></div>
           </div>
+
+          <!-- REGISTRAR EVENTO HISTÓRICO (PRE-APP) -->
+          <div style="margin-top:25px; border-top:2px dashed #f59e0b; padding-top:20px;">
+            <div
+              style="background:linear-gradient(135deg,#fffbeb,#fef3c7); border:2px solid #f59e0b; border-radius:16px; padding:18px;">
+              <h4 style="font-size:13px; color:#92400e; margin:0 0 6px 0; font-weight:900;">
+                <i class="fas fa-history" style="color:#d97706;"></i> EVENTOS HISTÓRICOS (antes de la app)
+              </h4>
+              <p style="font-size:11px; color:#78350f; margin:0 0 14px 0; line-height:1.5;">
+                Ingresa eventos que ocurrieron <strong>antes de crear la app</strong>. Aparecerán automáticamente en la
+                sección pública de Historial.
+              </p>
+              <button onclick="document.getElementById('m-ev-hist').style.display='flex'"
+                style="width:100%; background:linear-gradient(135deg,#d97706,#b45309); color:white; border:none; padding:14px; border-radius:12px; font-size:13px; font-weight:900; cursor:pointer; box-shadow:0 4px 12px rgba(217,119,6,0.3);">
+                <i class="fas fa-plus-circle"></i> INGRESAR EVENTO PASADO
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- 3. AVISOS -->
@@ -3443,6 +3749,23 @@
             <i class="fas fa-bullhorn"></i>
             <h4>GESTIÓN DE AVISOS</h4>
           </div>
+
+          <!-- PANEL DE DIRECTOR: NOTIFICACIONES PUSH -->
+          <div class="pc"
+            style="background:linear-gradient(135deg, #001f3f, #003366); color:white; border:none; margin-bottom:20px; box-shadow:0 10px 20px rgba(0,0,0,0.2);">
+            <h4 style="margin:0 0 10px 0; color:var(--or); font-weight:900;"><i class="fas fa-paper-plane"></i> ENVIAR
+              NOTIFICACIÓN PUSH</h4>
+            <p style="font-size:11px; opacity:0.8; margin-bottom:15px;">Este mensaje llegará a la cortina de todos los
+              celulares de padres y alumnos.</p>
+            <input type="text" id="push-titulo" placeholder="Título del aviso..."
+              style="width:100%; padding:12px; border-radius:10px; border:none; margin-bottom:10px; font-weight:700; background:rgba(255,255,255,0.9);">
+            <textarea id="push-mensaje" placeholder="Escribe el mensaje aquí..."
+              style="width:100%; height:80px; padding:12px; border-radius:10px; border:none; margin-bottom:15px; font-family:sans-serif; background:rgba(255,255,255,0.9);"></textarea>
+            <button class="bbp bf" onclick="enviarPushGlobal()"
+              style="background:var(--or); color:var(--az); padding:18px; font-weight:900; width:100%; box-shadow:0 4px 15px rgba(234,179,8,0.3);"><i
+                class="fas fa-broadcast-tower"></i> ENVIAR A TODOS (PUSH)</button>
+          </div>
+
           <div class="pc">
             <button class="bbs bf" onclick="abrirModalAviso()" style="padding:15px; font-size:14px;"><i
                 class="fas fa-plus"></i> CREAR NUEVO AVISO</button>
@@ -3490,20 +3813,7 @@
             <h4>GESTIÓN DE MECENAS</h4>
           </div>
 
-          <div class="pc" style="border-left:5px solid #10b981;">
-            <h4 style="margin:0 0 13px 0;color:#10b981;font-size:15px;"><i class="fas fa-project-diagram"></i> PROYECTOS
-            </h4>
-            <button class="bbor bf" onclick="document.getElementById('m-proyecto').style.display='flex'"
-              style="margin-bottom:15px; padding:15px;"><i class="fas fa-plus"></i> CREAR PROYECTO</button>
-            <h5 style="font-size:11px; color:#666; margin-bottom:8px; font-weight:900;">PROYECTOS VIGENTES</h5>
-            <div id="proy-render-admin"></div>
 
-            <div style="margin-top:20px; border-top:1px dashed #ddd; padding-top:15px;">
-              <h5 style="font-size:11px; color:#999; margin-bottom:8px; font-weight:900;"><i class="fas fa-history"></i>
-                MECENAZGO PASADO (ARCHIVADO)</h5>
-              <div id="proy-archived-admin"></div>
-            </div>
-          </div>
 
           <div class="pc"
             style="margin-top:20px; background:#f0fdf4; border-radius:20px; border:1px solid #bbf7d0; padding:20px;">
@@ -3518,7 +3828,13 @@
 
             <h4 style="margin:0 0 15px 0; color:#10b981; font-weight:900;"><i class="fas fa-play"></i> 2. NUESTRO
               PROYECTO (Video Principal)</h4>
-            <div class="fg"><label>YouTube ID (Video Institucional):</label><input type="text" id="cfg-mec-vid"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+              <div class="fg"><label>Enlace YouTube URL:</label><input type="text" id="cfg-mec-vid" placeholder="https://youtube.com/watch?..."></div>
+              <div class="fg" style="display:flex; flex-direction:column;">
+                <label>O Cargar Archivo (Video o Img):</label>
+                <input type="file" id="cfg-mec-vid-file" accept="image/*,video/*" style="font-size:10px;">
+              </div>
+            </div>
 
             <hr style="margin:20px 0; border:0; border-top:1px dashed #bbf7d0;">
 
@@ -3608,7 +3924,8 @@
             <h4 style="margin:0 0 13px 0;color:var(--az);font-size:15px;"><i class="fas fa-user-shield"></i> NUEVO
               ADMINISTRADOR</h4>
             <div style="background:#f0f4f8;padding:20px;border-radius:15px;border:1px solid #e2e8f0; max-width:400px;">
-              <div class="fg"><label>Usuario:</label><input type="text" id="new-admin-u" placeholder="Nombre Usuario">
+              <div class="fg"><label>Correo Electrónico:</label><input type="text" id="new-admin-u"
+                  placeholder="ejemplo@correo.com">
               </div>
               <div class="fg" style="margin-top:10px;"><label>Contraseña:</label><input type="password" id="new-admin-p"
                   placeholder="Contraseña"></div>
@@ -3632,12 +3949,25 @@
 
           <div class="pc" style="border-left:5px solid #ea580c;">
             <h4 style="margin:0 0 13px 0;color:#9a3412;font-size:15px;"><i class="fas fa-plus-circle"></i> PUBLICAR
-              CONTENIDO OFICIAL</h4>
-            <p style="font-size:12px; color:#666; margin-bottom:15px;">Comparte fotos y videos nuevos que aparecerán
-              automáticamente en el feed social de los alumnos.</p>
-            <button class="bbp bf" onclick="abrirSubirMedia()"
-              style="background: linear-gradient(135deg, #9a3412, #ea580c); padding:18px; font-size:15px;"><i
-                class="fas fa-camera"></i> PUBLICAR NUEVO MOMENTO</button>
+              CONTENIDO EN MI BANDA</h4>
+            <p style="font-size:12px; color:#666; margin-bottom:15px;">Lo que subas aquí aparecerá SOLO en la sección pública <strong>MI BANDA</strong> (NO en Galería).</p>
+            <div class="fg"><label>📸 Archivo (foto/video):</label><input type="file" id="mb-archivo" accept="image/*,video/*"
+                style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;"></div>
+            <div class="fg"><label>🔗 URL de Video (YouTube, TikTok...):</label><input type="text" id="mb-url-input"
+                placeholder="Pegar URL de video aquí..." style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;">
+              <p style="font-size:10px;color:#888;margin:4px 0 0 0;">Puedes subir archivo O pegar URL (o ambos)</p>
+            </div>
+            <div class="fg"><label>💬 Descripción:</label><input type="text" id="mb-desc-input"
+                placeholder="Descripción de la publicación..." style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;"></div>
+            <button class="bbp bf" onclick="guardarMiBanda()"
+              style="background: linear-gradient(135deg, #9a3412, #ea580c); padding:18px; font-size:15px; margin-top:15px;"><i
+                class="fas fa-paper-plane"></i> PUBLICAR EN MI BANDA</button>
+          </div>
+
+          <div class="pc" style="margin-top:20px; border-left:5px solid var(--ro);">
+            <h4 style="margin:0 0 13px 0;color:var(--ro);font-size:15px;"><i class="fas fa-list"></i> PUBLICACIONES DE MI BANDA</h4>
+            <p style="font-size:11px; color:#888; margin-bottom:15px;">Aquí puedes ver y BORRAR las publicaciones de Mi Banda.</p>
+            <div id="mb-admin-lista"></div>
           </div>
 
           <div class="pc" style="margin-top:20px; border-left:5px solid #FFD700;">
@@ -3774,6 +4104,49 @@
     </div>
   </div>
 
+  <!-- MODAL: EVENTO HISTÓRICO (PRE-APP) -->
+  <div id="m-ev-hist" class="ov" onclick="if(event.target.id=='m-ev-hist')this.style.display='none'"
+    style="display:none;">
+    <div class="mb">
+      <div
+        style="background:linear-gradient(135deg,#d97706,#b45309); margin:-20px -20px 20px -20px; padding:18px 20px; border-radius:20px 20px 0 0;">
+        <h2 style="margin:0; color:white; font-size:18px; font-weight:900;">📜 Registrar Evento Histórico</h2>
+        <p style="margin:4px 0 0 0; color:rgba(255,255,255,0.85); font-size:11px;">Eventos ocurridos antes de la app ·
+          aparecerán en el Historial público</p>
+      </div>
+      <div class="fg"><label>Título del evento:</label><input type="text" id="evh-t"
+          placeholder="Ej: Concierto Navideño 2022"></div>
+      <div class="fg"><label>Descripción:</label><textarea id="evh-d"
+          placeholder="Cuéntanos qué pasó en ese evento..."></textarea></div>
+      <div class="fg">
+        <label>📅 Fecha del evento (pasada):</label>
+        <input type="datetime-local" id="evh-f">
+        <p style="font-size:10px; color:#f59e0b; margin:4px 0 0 0; font-weight:700;">⚠️ Ingresa una fecha anterior a hoy
+          para que aparezca en el Historial</p>
+      </div>
+      <div class="fg"><label>📍 Lugar:</label><input type="text" id="evh-l"
+          placeholder="Ej: Parque Principal de Riosucio"></div>
+      <div class="fg"><label>📎 Imagen/Video (opcional):</label><input type="file" id="evh-a" accept="image/*,video/*"
+          style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;"></div>
+      <div class="fg"><label>🔗 URL (YouTube, foto en línea...):</label><input type="text" id="evh-u"
+          placeholder="https://..."></div>
+      <p style="font-size:11px;font-weight:700;color:#888;margin:6px 0 3px 0;">REDES SOCIALES (opcional):</p>
+      <div class="ckg">
+        <div class="fg"><input type="text" id="evh-fb" placeholder="Facebook URL"></div>
+        <div class="fg"><input type="text" id="evh-ig" placeholder="Instagram URL"></div>
+        <div class="fg"><input type="text" id="evh-yt" placeholder="YouTube URL"></div>
+        <div class="fg"><input type="text" id="evh-tk" placeholder="TikTok URL"></div>
+        <div class="fg"><input type="text" id="evh-wa" placeholder="WhatsApp URL"></div>
+      </div>
+      <div style="display:flex;gap:9px;margin-top:16px;">
+        <button class="bbs" style="flex:1; background:linear-gradient(135deg,#d97706,#b45309);"
+          onclick="guardarEventoHistorico()"><i class="fas fa-save"></i> Guardar en Historial</button>
+        <button class="bbg" style="flex:1;" onclick="document.getElementById('m-ev-hist').style.display='none'"><i
+            class="fas fa-times"></i> Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="m-av" class="ov" onclick="if(event.target.id=='m-av')this.style.display='none'">
     <div class="mb">
       <h2 style="margin:0 0 20px 0;color:var(--az);font-size:20px;">📢 Crear Aviso</h2>
@@ -3817,18 +4190,22 @@
 
   <div id="m-me" class="ov" onclick="if(event.target.id=='m-me')this.style.display='none'">
     <div class="mb">
-      <h2 style="margin:0 0 20px 0;color:var(--az);font-size:20px;">📷 Publicar en Mi Banda / Multimedia</h2>
+      <h2 style="margin:0 0 20px 0;color:var(--az);font-size:20px;">📷 Publicar en Galería Multimedia</h2>
       <div class="fg"><label>📁 Álbum:</label>
         <select id="me-alb">
           <option value="fotos">📷 Fotos Banda</option>
           <option value="videos">🎬 Videos Banda</option>
-          <option value="exalumnos">🎓 Exalumnos</option>
+          <option value="exalumnos">🎓 Egresados</option>
         </select>
       </div>
       <div class="fg"><label>📅 Año:</label><input type="number" id="me-anio" value="2026" min="2000" max="2099">
       </div>
       <div class="fg"><label>📂 Archivos:</label><input type="file" id="me-a" multiple accept="image/*,video/*"
           style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;"></div>
+      <div class="fg"><label>🔗 URL de Video (YouTube, TikTok...):</label><input type="text" id="me-url"
+          placeholder="Pegar URL de video aquí..." style="width:100%;padding:11px;border:2px solid #eee;border-radius:11px;">
+        <p style="font-size:10px;color:#888;margin:4px 0 0 0;">Puedes subir archivos O pegar una URL (o ambos)</p>
+      </div>
       <div class="fg"><label>💬 Descripción (se verá en Mi Banda):</label><input type="text" id="me-com"
           placeholder="Descripción de la foto/video...">
       </div>
@@ -3889,15 +4266,28 @@
           <span id="prom-grupo" style="font-size:16px;font-weight:900;color:#10b981;">—</span>
         </div>
       </div>
-      <div class="promedio-box">
+      <div class="detalle-prom" style="background:#f8fafc;border-radius:14px;padding:14px;margin-bottom:14px;border:1px solid #e2e8f0;">
+        <div style="font-size:13px;font-weight:900;color:#475569;margin-bottom:10px;text-align:center;">📊 PROMEDIOS POR SECCIÓN</div>
+        <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#eef2ff,#e8eaff);border-radius:10px;margin-bottom:6px;">
+          <span style="font-weight:800;color:#4a5568;font-size:13px;">🎹 Escalas</span>
+          <span class="dp-num" id="pg-esc" style="font-size:16px;font-weight:900;color:#667eea;">—</span>
+        </div>
+        <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#fef3e2,#fde8c8);border-radius:10px;margin-bottom:6px;">
+          <span style="font-weight:800;color:#4a5568;font-size:13px;">🎼 Repertorio</span>
+          <span class="dp-num" id="pg-rep" style="font-size:16px;font-weight:900;color:#f97316;">—</span>
+        </div>
+        <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border-radius:10px;">
+          <span style="font-weight:800;color:#4a5568;font-size:13px;">👥 Grupo</span>
+          <span class="dp-num" id="pg-gru" style="font-size:16px;font-weight:900;color:#10b981;">—</span>
+        </div>
+      </div>
+      <button id="btn-calc-prom" onclick="calcularPromedioGeneral()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:14px;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 12px rgba(102,126,234,.35);transition:transform .2s,box-shadow .2s;letter-spacing:0.5px;" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 18px rgba(102,126,234,.5)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(102,126,234,.35)'">
+        <i class="fas fa-calculator" style="margin-right:8px;"></i> CALCULAR PROMEDIO GENERAL
+      </button>
+      <div id="prom-gen-box" class="promedio-box" style="display:none;">
         <div style="font-size:12px;opacity:.85;margin-bottom:4px;">PROMEDIO GENERAL</div>
         <div class="promedio-num" id="pprom">—</div>
         <div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:8px;" id="pnivel">SIN EVALUAR</div>
-        <div class="detalle-prom">
-          <div class="dp-item"><span class="dp-num" id="pg-esc">—</span>🎹 Escalas</div>
-          <div class="dp-item"><span class="dp-num" id="pg-rep">—</span>🎼 Repertorio</div>
-          <div class="dp-item"><span class="dp-num" id="pg-gru">—</span>👥 Grupo</div>
-        </div>
         <div id="prom-formula" style="font-size:11px;opacity:.8;margin-top:6px;font-weight:600;color:#cbd5e1;"></div>
         <div style="font-size:10px;opacity:.75;margin-top:8px;">1–2.9 BAJO | 3–3.6 BÁSICO | 3.7–4.6 ALTO | 4.7–5
           SUPERIOR</div>
@@ -4092,23 +4482,33 @@
   <div id="m-admin-login" class="ov" style="z-index:100000 !important;"
     onclick="if(event.target.id=='m-admin-login')this.style.display='none'">
     <div class="mb" style="max-width:350px;">
-      <h2 style="margin:0 0 10px 0;color:var(--az);font-size:22px;text-align:center;font-weight:900;">🔐 LOGIN ADMIN
+      <h2 id="admin-login-titulo"
+        style="margin:0 0 10px 0;color:var(--az);font-size:22px;text-align:center;font-weight:900;cursor:default;user-select:none;"
+        title="">🔐 LOGIN ADMIN
+        <span style="font-size:10px; opacity:0.3; font-weight:normal;">v4</span>
       </h2>
-      <div class="fg"><label>Usuario:</label><input type="text" id="admin-user" placeholder="Nombre"
-          autocomplete="username"></div>
+      <div class="fg"><label>Usuario / Correo:</label><input type="text" id="admin-user" placeholder="Correo o Usuario"
+          autocomplete="off" style="background:#f8fafc;"></div>
       <div class="fg" style="position:relative;">
         <label>Contraseña:</label>
-        <input type="password" id="admin-pass" placeholder="****" autocomplete="current-password">
+        <input type="password" id="admin-pass" placeholder="****" autocomplete="new-password"
+          style="background:#f8fafc;">
         <i class="fas fa-eye" id="eye-admin" onclick="togglePassword('admin-pass','eye-admin')"
           style="position:absolute;right:12px;top:38px;cursor:pointer;color:#888;"></i>
       </div>
       <label style="display:flex;align-items:center;gap:10px;margin:10px 0;cursor:pointer;font-size:12px;color:#555;">
-        <input type="checkbox" id="admin-recordar"> <strong>Recordar sesión en este dispositivo</strong>
+        <input type="checkbox" id="admin-recordar" checked> <strong>Recordar sesión en este dispositivo</strong>
       </label>
       <button class="bbp" style="width:100%;padding:15px;margin-top:10px;font-weight:900;"
         onclick="loginAdmin()">ENTRAR</button>
       <button class="bbg" style="width:100%;margin-top:5px;"
         onclick="document.getElementById('m-admin-login').style.display='none'">Cancelar</button>
+      <div style="text-align:center;margin-top:18px;padding-top:14px;border-top:1px solid #eee;">
+        <p style="font-size:11px;color:#aaa;margin:0 0 8px 0;">¿Olvidaste tu contraseña?</p>
+        <button onclick="resetearAccesoAdmin()"
+          style="background:none;border:none;color:#e74c3c;font-size:12px;font-weight:900;cursor:pointer;text-decoration:underline;">🔄
+          Restablecer acceso de administrador</button>
+      </div>
     </div>
   </div>
 
@@ -4120,8 +4520,8 @@
         MAESTRO</h2>
       <p style="text-align:center;font-size:13px;color:#444;margin-bottom:20px;">Crea la cuenta principal de
         administración.<br><strong>Esta acción solo se realiza una vez.</strong></p>
-      <div class="fg"><label>Nombre del Dueño:</label><input type="text" id="setup-user" placeholder="Ej: Maestro"
-          autocomplete="username">
+      <div class="fg"><label>Correo del Maestro:</label><input type="text" id="setup-user"
+          placeholder="ejemplo@correo.com" autocomplete="username">
       </div>
       <div class="fg" style="position:relative;">
         <label>Contraseña Maestra:</label>
@@ -4135,6 +4535,114 @@
         onclick="document.getElementById('m-admin-setup').style.display='none'">Cancelar y Volver</button>
     </div>
   </div>
+
+  <!-- PWA logic consolidated at end of file -->
+  <style>
+    @keyframes slideUp {
+      from {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* ===== PWA INSTALL BANNER ===== */
+    #pwa-install-banner {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      max-width: 420px;
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 20px;
+      padding: 18px 20px;
+      z-index: 9999;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      animation: pwaSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes pwaSlideUp {
+      from {
+        transform: translateX(-50%) translateY(80px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .pwa-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .pwa-banner-icon {
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+
+    .pwa-banner-text {
+      flex: 1;
+    }
+
+    .pwa-banner-text strong {
+      display: block;
+      color: #fff;
+      font-size: 15px;
+      margin-bottom: 3px;
+    }
+
+    .pwa-banner-text span {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .pwa-banner-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      justify-content: flex-end;
+    }
+
+    .pwa-btn-install {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .pwa-btn-install:active {
+      transform: scale(0.95);
+    }
+
+    .pwa-btn-dismiss {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+    }
+  </style>
 
   <script>
     // Exponer de inmediato para asegurar funcionamiento del botón ENTRAR
@@ -4182,19 +4690,81 @@
       } catch (e) { console.error(e); }
     };
 
-    document.addEventListener('DOMContentLoaded', window.animarTitulo);
+    document.addEventListener('DOMContentLoaded', () => {
+      window.animarTitulo();
+      // Solicitar permisos de notificación 3 segundos después de entrar
+      setTimeout(() => {
+        if (typeof window.requestPermission === 'function') window.requestPermission();
+      }, 3000);
+    });
     setTimeout(window.animarTitulo, 500);
     if (document.readyState === 'complete') window.animarTitulo();
   </script>
 
+  <!-- PWA logic consolidated at end of file -->
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot, collection, query, orderBy, limit, getDocs, deleteDoc, addDoc, serverTimestamp, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging.js";
 
     // ============================================================
     // CONSTANTES GLOBAL — DEFINIDAS AL PRINCIPIO
     // ============================================================
-    const KA = 'ens_a11', KAL = 'ens_al11', KEV = 'ens_ev11', KAV = 'ens_av11', KME = 'ens_me11', KPR = 'ens_pr11', KCO = 'ens_co11', KPROY = 'ens_proy11', KMEC = 'ens_mec11', KMB = 'ens_mb11', KPIN = 'ens_pins11', KTRUSTED = 'ens_trusted11', KVISITS = 'ens_visits11', KPIN_PADRES = 'ens_pins_padres11', KACCESS_PADRES = 'ens_access_padres11', KPIN_PADRES_SAVED = 'ens_pins_padres_saved11', KV_PADRES = 'ens_v_padres11', KADMINS = 'ens_admins11', KADMIN_SESSION = 'ens_admin_session11', KMEC_HIST = 'ens_mec_history_v1', KMEC_LIST = 'ens_mec_donors_v1', KMEC_CFG = 'ens_mec_cfg';
+    const KA = 'ens_a11', KAL = 'ens_al11', KEV = 'ens_ev11', KAV = 'ens_av11', KME = 'ens_me11', KPR = 'ens_pr11', KCO = 'ens_co11', KPROY = 'ens_proy11', KMEC = 'ens_mec11', KMB = 'ens_mb11', KPIN = 'ens_pins11', KTRUSTED = 'ens_trusted11', KVISITS = 'ens_visits11', KPIN_PADRES = 'ens_pins_padres11', KACCESS_PADRES = 'ens_access_padres11', KPIN_PADRES_SAVED = 'ens_pins_padres_saved11', KV_PADRES = 'ens_v_padres11', KADMINS = 'ens_admins11', KADMIN_SESSION = 'ens_admin_session11', KMEC_HIST = 'ens_mec_history_v1', KMEC_LIST = 'ens_mec_donors_v1', KMEC_CFG = 'ens_mec_cfg', KSIMON_TOP = 'ens_simon_top5';
+
+    // Funciones de utilidad
+    function validarEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+    window.validarEmail = validarEmail;
+
+    // ESTADO GLOBAL — INICIALIZADO AL PRINCIPIO PARA EVITAR TDZ
+    let adminLogueado = localStorage.getItem(KADMIN_SESSION) || null;
+    let banda = [], aT = {}, aEd = null, aPr = null, edIdx = null, eTmp = {};
+    let albumActual = 'fotos', anioActual = 'todos', montoSel = 0, moodSel = '';
+    
+    /* ===== MI BANDA - RED SOCIAL CONSTANTES ===== */
+    const MB_REACCIONES = [
+      { emoji: '❤️', nombre: 'Me encanta' },
+      { emoji: '👍', nombre: 'Me gusta' },
+      { emoji: '😄', nombre: 'Me divierte' },
+      { emoji: '✨', nombre: 'Me inspira' }
+    ];
+    const MB_AVATARES = [
+      'linear-gradient(135deg,#667eea,#764ba2)',
+      'linear-gradient(135deg,#e91e63,#c2185b)',
+      'linear-gradient(135deg,#f59e0b,#d97706)',
+      'linear-gradient(135deg,#06b6d4,#0284c7)',
+      'linear-gradient(135deg,#27ae60,#1e8449)',
+      'linear-gradient(135deg,#6366f1,#4f46e5)',
+      'linear-gradient(135deg,#f97316,#ea580c)',
+      'linear-gradient(135deg,#a855f7,#7c3aed)'
+    ];
+    function getAvatarBg(nombre) {
+      let h = 0; for (let i = 0; i < nombre.length; i++) h = nombre.charCodeAt(i) + ((h << 5) - h);
+      return MB_AVATARES[Math.abs(h) % MB_AVATARES.length];
+    }
+    function getInitials(nombre) { const p = nombre.split(' '); return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase(); }
+    function tiempoAgo(ts) {
+      const d = Date.now() - ts, s = d / 1000, m = s / 60, h = m / 60, dd = h / 24;
+      if (s < 60) return 'Ahora';
+      if (m < 60) return Math.floor(m) + ' min';
+      if (h < 24) return Math.floor(h) + 'h';
+      if (dd < 7) return Math.floor(dd) + 'd';
+      return new Date(ts).toLocaleDateString();
+    }
+    
+    const PER = { 1: { n: 'Periodo 1', i: '2026-01-19', f: '2026-03-29' }, 2: { n: 'Periodo 2', i: '2026-04-06', f: '2026-06-14' }, 3: { n: 'Periodo 3', i: '2026-07-06', f: '2026-10-11' }, 4: { n: 'Periodo 4', i: '2026-10-12', f: '2026-11-29' } };
+
+    // Audio State
+    let audioCtx = null, tOsc = null, tGn = null, tAgujaInt = null, tVocalInt = null, tTrans = 0;
+
+    // Simon Dice State
+    let memSec = [], memTurno = [], memNivel = 0, memPlayer = "";
+    let memStartTime = 0, memMistakes = 0, memTimerInt = null;
+    const memFreqs = [261.6, 329.6, 392.0, 523.2];
 
     const DEFAULT_MEC_CFG = {
       intro: "Ayúdanos a construir el futuro de más de 200 niños y jóvenes músicos de la región. Tu apoyo es la nota que nos hace sonar.",
@@ -4221,13 +4791,13 @@
         abrirAccesoAsistencia, mostrarPinPadres, verificarPinPadresModal, cerrarSesionPadres,
         rAsistenciaPadres, rPadresGeneral, abrirPagoCuota, irPagoCuota, verificarPin,
         rAsistenciaPublica, verStats, marcar, guardarDia, borrarReg, limpH, togD,
-        resetVisitasPadres, resetVisitas, guardarPinPadre, asignarPinPadre,
+        resetVisitasPadres, resetVisitas, guardarPinPadre, asignarPinPadre, editPin, editPinPadre,
         verHerramienta, volverMenuH, cambiarBPM, toggleMetronomo,
         tocarNota, pararNota, toggleTunerAguja, toggleTunerVocal, pararTunerAguja, pararTunerVocal,
         setTransposition,
         prepararJuegoSimon, presionarPad,
         renderCirculo, verArmonia, actualizarLeaderboard,
-        vAlbum, vAnio, abrirSubirMedia, guardarMedia, elimMe, addCom,
+        vAlbum, vAnio, abrirSubirMedia, guardarMedia, guardarMiBanda, elimMiBanda, elimMe, addCom,
         vEvTab, guardarEvento, rEv, rEvHist,
         copiarDatoMec, verDatosBanco, guardarConfigMecenas, rProyectos,
         guardarProyecto, abrirDonar, selMonto, irMetodo, rConfigMecenas,
@@ -4236,19 +4806,22 @@
         loginAdmin, cerrarSesionAdmin, crearMaestro, agregarAdmin, elimAdmin, rAdminsTabla,
         generarReporte, descargar, rUsuariosTabla, rAlumnos, abrirModalAlumno,
         editAl, elimAl, guardarAlumno, abrirEditor, cargarEdReg, guardarEdicion,
-        forzarSincronizacionAlumnos,
-        rAsist, rHist, rProc, abrirProc, verProcTab, renderProc, agregarItem, elimItem,
+        forzarSincronizacionAlumnos, cambiarClaveAdmin, resetearAccesoAdmin,
+        rAsist, rHist, rProc, abrirProc, verProcTab, renderProc, agregarItem, elimItem, cambVal, cambNombre,
         guardarCalificacion, abrirModalAviso, togDest, guardarAviso,
         rAvAdmin, rEvAdmin, rMeAdmin, rProyectosAdmin, rMiBandaAdmin, rAccesosPadres,
         archivarContenido, eliminarContenido,
+        abrirLightbox, cerrarLightbox, editMecenasDonor,
         verSubAjuste, volverHubAjustes,
+        enviarPushGlobal, rTablon,
         togglePassword: (id, eyeId) => {
           const x = document.getElementById(id);
           const e = document.getElementById(eyeId);
           if (!x || !e) return;
           if (x.type === 'password') { x.type = 'text'; e.classList.replace('fa-eye', 'fa-eye-slash'); }
           else { x.type = 'password'; e.classList.replace('fa-eye-slash', 'fa-eye'); }
-        }
+        },
+        forzarActualizacionApp: () => window.forzarActualizacionApp()
       });
       console.log('✅ Funciones globales expuestas correctamente (hoisting).');
     } catch (err) {
@@ -4270,10 +4843,56 @@
     try {
       fb = initializeApp(firebaseConfig);
       db = getFirestore(fb);
+      const messaging = getMessaging(fb);
+      window.messaging = messaging;
       console.log('🔥 Firebase conectado correctamente');
+
+      // Request FCM Token
+      function requestPermission() {
+        console.log('🔔 Solicitando permiso de notificación...');
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            console.log('✅ Permiso concedido.');
+            getToken(messaging, { vapidKey: 'BEt7zVMdAByWUTgxUtSBsoLvAgCj1i5eS48aHHxPrYx8vMB0t-PH87UWRmO1YxkQapFbTlAf4xc7xFhOCaoE5I' }).then((currentToken) => {
+              if (currentToken) {
+                console.log('🎫 Token FCM:', currentToken);
+                // Guardar token en Firestore
+                setDoc(doc(db, "BandaTokens", currentToken), {
+                  token: currentToken,
+                  timestamp: serverTimestamp(),
+                  dispositivo: navigator.userAgent
+                });
+              } else {
+                console.log('❌ No se pudo obtener el token.');
+              }
+            }).catch((err) => {
+              console.log('❌ Error al obtener token:', err);
+            });
+          } else {
+            console.log('❌ Permiso denegado.');
+          }
+        });
+      }
+      window.requestPermission = requestPermission;
+
+      // Handle foreground messages
+      onMessage(messaging, (payload) => {
+        console.log('📩 Mensaje recibido en primer plano:', payload);
+        alert(`📢 NUEVO AVISO: ${payload.notification.title}\n\n${payload.notification.body}`);
+      });
     } catch (fbErr) {
       console.warn('⚠️ Firebase no disponible, app funciona en modo local:', fbErr.message);
     }    // MAPA DE COLECCIONES PARA SINCRONIZACIÓN AUTOMÁTICA (ColName -> LocalKey)
+    // List of IDs that have been deleted locally to prevent sync race conditions
+    // Persistir en localStorage para que sobrevivan recargas de página
+    const _storedDeleted = JSON.parse(localStorage.getItem('ens_deleted_alumnos') || '[]');
+    const deletedAlumnosIds = new Set(_storedDeleted);
+    const deletedDonorIds = new Set();
+
+    function persistDeletedIds() {
+      localStorage.setItem('ens_deleted_alumnos', JSON.stringify([...deletedAlumnosIds]));
+    }
+
     const SYNC_MAP = {
       'BandaEventos': KEV,
       'BandaAvisos': KAV,
@@ -4287,10 +4906,25 @@
       'BandaAdmins': KADMINS,
       'BandaAsistencia': KA,
       'BandaPadresAccess': KACCESS_PADRES,
-      'BandaMultimedia': KME
+      'BandaMultimedia': KME,
+      'BandaProcesos': KPR,
+      'BandaPins': KPIN,
+      'BandaPinsPadres': KPIN_PADRES,
+      'BandaSimonRecords': KSIMON_TOP
     };
 
     // SINCRONIZACIÓN REAL-TIME NATIVA v9
+    window.GLOBAL_MEMORY_CACHE = {}; // Cache RAM para evitar límite de 5MB en UI
+
+    // Proxy para lectura de LocalStorage usando RAM (evita pérdida visual de archivos por límite offline)
+    const _originalGetItem = localStorage.getItem.bind(localStorage);
+    localStorage.getItem = function(key) {
+        if (window.GLOBAL_MEMORY_CACHE && window.GLOBAL_MEMORY_CACHE[key]) {
+            return JSON.stringify(window.GLOBAL_MEMORY_CACHE[key]);
+        }
+        return _originalGetItem(key);
+    };
+
     if (db) {
       try {
         Object.keys(SYNC_MAP).forEach(colName => {
@@ -4298,9 +4932,14 @@
             let items = [];
             snap.forEach(d => items.push({ id: d.id, ...d.data() }));
 
-            // SORT: Forzar orden numérico para alumnos (evita desorden en la nube)
             if (colName === 'BandaAlumnos') {
+              items = items.filter(al => !deletedAlumnosIds.has(String(al.id)));
               items.sort((a, b) => Number(a.id) - Number(b.id));
+            }
+
+            // Filtrar donantes recién eliminados para evitar efecto zombie
+            if (colName === 'BandaMecenasDonors') {
+              items = items.filter(d => !deletedDonorIds.has(String(d.id)));
             }
 
             const localKey = SYNC_MAP[colName];
@@ -4308,48 +4947,55 @@
             let localData = [];
             try { localData = JSON.parse(localRaw) || []; } catch (e) { localData = []; }
 
-            // LÓGICA DE PROTECCIÓN Y MIGRACIÓN
             if (colName === 'BandaAlumnos' && items.length > 0) {
-              // MERGE INTELIGENTE: detectar alumnos locales que faltan en la nube y subirlos
-              const idsNube = new Set(items.map(x => String(x.id)));
-              const alumnosLocalesNuevos = localData.filter(x => !idsNube.has(String(x.id)));
-              if (alumnosLocalesNuevos.length > 0) {
-                console.log(`🔄 Sincronizando ${alumnosLocalesNuevos.length} alumno(s) local(es) a la nube...`);
-                alumnosLocalesNuevos.forEach(al => {
-                  setDoc(doc(db, 'BandaAlumnos', String(al.id)), al, { merge: true });
-                });
-                // Mientras sube, usar la lista combinada para la UI
-                const merged = [...items, ...alumnosLocalesNuevos].sort((a, b) => Number(a.id) - Number(b.id));
-                localStorage.setItem(localKey, JSON.stringify(merged));
-                actualizarUI(colName, merged);
-              } else {
-                // No hay diferencias: usar datos de la nube normalmente
-                localStorage.setItem(localKey, JSON.stringify(items));
-                actualizarUI(colName, items);
-              }
-            } else if (items.length > 0) {
-              // Para otras colecciones: comportamiento original
+              // FIX: Usar la nube como fuente de verdad — NO re-subir alumnos locales
+              // Esto evita el bug de alumnos borrados que reaparecen
               localStorage.setItem(localKey, JSON.stringify(items));
               actualizarUI(colName, items);
-            } else if (snap.empty && localData.length > 0) {
-              // La nube está vacía pero tenemos datos locales: ¡MIGRAR A LA NUBE!
-              console.log(`☁️ Migrando datos locales de ${colName} a la nube...`);
-              localData.forEach((item, idx) => {
-                if (!item) return;
-                // Si no tiene ID, usar timestamp + index para asegurar unicidad
-                const docId = item.id ? String(item.id) : `loc_${Date.now()}_${idx}`;
-                setDoc(doc(db, colName, docId), { ...item, id: docId }, { merge: true });
-              });
-            } else if (snap.empty && (!localRaw || localRaw === '[]')) {
-              // Ambos vacíos: Solo asegurar que local sea []
-              localStorage.setItem(localKey, JSON.stringify([]));
-              actualizarUI(colName, []);
+            } else if (items.length > 0) {
+              const OBJ_KEYS = [KPR, KPIN, KPIN_PADRES, KACCESS_PADRES, KVISITS];
+              if (OBJ_KEYS.includes(localKey)) {
+                let rebuilt = {};
+                if (localKey === KPR || localKey === KVISITS) {
+                  items.forEach(doc => {
+                    if (doc.alumnoId && doc.periodo) {
+                      if (!rebuilt[doc.alumnoId]) rebuilt[doc.alumnoId] = {};
+                      rebuilt[doc.alumnoId][doc.periodo] = (localKey === KPR ? doc.datos : doc.v);
+                    }
+                  });
+                } else {
+                  items.forEach(doc => { if (doc.alumnoId) rebuilt[doc.alumnoId] = (localKey === KPIN || localKey === KPIN_PADRES ? doc.pin : doc.v); });
+                }
+                safeLocalSet(localKey, JSON.stringify(rebuilt));
+              } else {
+                safeLocalSet(localKey, JSON.stringify(items));
+              }
+              actualizarUI(colName, items);
+            } else if (snap.empty) {
+                // EVITAR EFECTO ZOMBIE: Si la nube está vacía, vaciamos local (excepto si hay error de red)
+                // IMPORTANTE: Excepto para Multimedia y Mi Banda, que pueden tener muchos datos locales.
+                const NO_WIPE = [KME, KMB];
+                if (!NO_WIPE.includes(localKey)) {
+                  safeLocalSet(localKey, Array.isArray(localData) ? '[]' : '{}');
+                  if (window.GLOBAL_MEMORY_CACHE) window.GLOBAL_MEMORY_CACHE[localKey] = Array.isArray(localData) ? [] : {};
+                  actualizarUI(colName, []);
+                }
+            }
+            
+            // Guardar en RAM para rebasar límite visual de LocalStorage
+            if (window.GLOBAL_MEMORY_CACHE) {
+               const OBJ_KEYS_CACHE = [KPR, KPIN, KPIN_PADRES, KACCESS_PADRES, KVISITS];
+               if (OBJ_KEYS_CACHE.includes(localKey)) {
+                 try {
+                   window.GLOBAL_MEMORY_CACHE[localKey] = JSON.parse(localStorage.getItem(localKey) || '{}');
+                 } catch(e) { window.GLOBAL_MEMORY_CACHE[localKey] = {}; }
+               } else {
+                 window.GLOBAL_MEMORY_CACHE[localKey] = items;
+               }
             }
           });
         });
-      } catch (e) {
-        console.error("Error in Firebase Listeners:", e);
-      }
+      } catch (e) { console.error("Error listeners:", e); }
     }
 
     function actualizarUI(colName, items) {
@@ -4357,15 +5003,29 @@
       if (colName === 'BandaEventos') { rEv(); if (adminLogueado) rEvAdmin(); }
       if (colName === 'BandaAvisos') { rAv(); if (adminLogueado) rAvAdmin(); }
       if (colName === 'BandaMosaico') rConfigMecenas();
-      if (colName === 'BandaMultimedia') { rMe(); rMiBanda(); if (adminLogueado) { rMeAdmin(); rMiBandaAdmin(); } }
+      if (colName === 'BandaMultimedia') { rMe(); if (adminLogueado) { rMeAdmin(); } }
+      if (colName === 'BandaMiBanda') { rMiBanda(); if (adminLogueado) { rMiBandaAdmin(); } }
       if (colName === 'BandaProyectos') { rProyectos(); if (adminLogueado) rProyectosAdmin(); }
       if (colName === 'BandaMecenasConfig') {
         const cfg = items.find(i => i.id === 'config_v1') || items[0];
         rConfigMecenas(cfg);
       }
       if (colName === 'BandaMecenasHistory') rHistoryMecenas();
-      if (colName === 'BandaMecenasDonors') rMecenasAdmin();
-      if (colName === 'BandaAdmins') rAdminsTabla();
+      if (colName === 'BandaMecenasDonors') { rMecenasAdmin(); rMecenasPublic(); }
+      if (colName === 'BandaAdmins') {
+        const foundJuan = items.find(a => a.u && a.u.toLowerCase() === 'juan');
+        if (foundJuan) {
+          console.log("🧹 Eliminando rastro de cuenta 'Juan' de la nube...");
+          deleteDoc(doc(db, 'BandaAdmins', foundJuan.id || 'Juan'));
+        }
+        rAdminsTabla();
+      }
+      // Nuevas colecciones sincronizadas
+      if (colName === 'BandaProcesos') { if (adminLogueado && !procSyncBlocked) rProc(); }
+      if (colName === 'BandaPins') { if (adminLogueado) rUsuariosTabla(); }
+      if (colName === 'BandaPinsPadres') { if (adminLogueado) rUsuariosTabla(); }
+      if (colName === 'BandaAsistencia') { rAsist(); rHist(); }
+      if (colName === 'BandaSimonRecords') { actualizarLeaderboard(); }
     }
 
     window.cloudSave = async function (colName, docId, data) {
@@ -4423,10 +5083,9 @@
     // rMosaico is defined later in the file
 
 
-    let adminLogueado = localStorage.getItem(KADMIN_SESSION) || null;
-    const PER = { 1: { n: 'Periodo 1', i: '2026-01-19', f: '2026-03-29' }, 2: { n: 'Periodo 2', i: '2026-04-06', f: '2026-06-14' }, 3: { n: 'Periodo 3', i: '2026-07-06', f: '2026-10-11' }, 4: { n: 'Periodo 4', i: '2026-10-12', f: '2026-11-29' } };
-    let banda = [], aT = {}, aEd = null, aPr = null, edIdx = null, eTmp = {};
-    let albumActual = 'fotos', anioActual = 'todos', montoSel = 0, moodSel = '';
+    // adminLogueado movido al inicio
+    // PER movido al inicio
+    // banda, albumActual, etc. movidos al inicio
 
     if (document.readyState === 'loading') {
       window.addEventListener('DOMContentLoaded', () => {
@@ -4459,6 +5118,14 @@
 
     /* INIT */
     function init() {
+      // 🕵️ CLEANUP: Si el usuario 'Juan' existe localmente, lo borramos para forzar nuevo setup
+      const localAdmins = JSON.parse(localStorage.getItem(KADMINS)) || [];
+      if (localAdmins.some(a => a.u && a.u.toLowerCase() === 'juan')) {
+        localStorage.removeItem(KADMINS);
+        localStorage.removeItem(KADMIN_SESSION);
+        console.log("🧹 Sesión de 'Juan' limpiada localmente.");
+      }
+
       const OFFICIAL_VER = 5;
       let al = JSON.parse(localStorage.getItem(KAL));
       let currentVer = parseInt(localStorage.getItem('KAL_VER')) || 0;
@@ -4715,6 +5382,7 @@
       let accesos = JSON.parse(localStorage.getItem(KACCESS_PADRES)) || {};
       accesos[id] = (accesos[id] || 0) + 1;
       localStorage.setItem(KACCESS_PADRES, JSON.stringify(accesos));
+      if (window.cloudSave) window.cloudSave('BandaPadresAccess', `acc_${id}`, { id: `acc_${id}`, alumnoId: String(id), v: accesos[id] });
 
       // Mostrar vista
       rAsistenciaPadres(id);
@@ -4823,10 +5491,10 @@
               </div>
             </div>
             <div class="sg" style="margin-top:10px;gap:4px;">
-              <div class="sb" style="background:var(--ve);padding:6px 2px;"><span style="font-size:14px;display:block;">${p}</span><small style="font-size:8px;">P</small></div>
-              <div class="sb" style="background:var(--ro);padding:6px 2px;"><span style="font-size:14px;display:block;">${au}</span><small style="font-size:8px;">A</small></div>
-              <div class="sb" style="background:var(--na);padding:6px 2px;"><span style="font-size:14px;display:block;">${t}</span><small style="font-size:8px;">T</small></div>
-              <div class="sb" style="background:var(--ce);padding:6px 2px;"><span style="font-size:14px;display:block;">${e}</span><small style="font-size:8px;">E</small></div>
+              <div class="sb" style="background:var(--ve);padding:6px 2px;"><span style="font-size:14px;display:block;">${p}</span><small style="font-size:8px;">Presente</small></div>
+              <div class="sb" style="background:var(--ro);padding:6px 2px;"><span style="font-size:14px;display:block;">${au}</span><small style="font-size:8px;">Ausente</small></div>
+              <div class="sb" style="background:var(--na);padding:6px 2px;"><span style="font-size:14px;display:block;">${t}</span><small style="font-size:8px;">Tarde</small></div>
+              <div class="sb" style="background:var(--ce);padding:6px 2px;"><span style="font-size:14px;display:block;">${e}</span><small style="font-size:8px;">Excusa</small></div>
             </div>
           </div>
         `;
@@ -4885,8 +5553,11 @@
 
         // CONTADOR DE VISITAS
         let visitas = JSON.parse(localStorage.getItem(KVISITS)) || {};
-        visitas[id] = (visitas[id] || 0) + 1;
+        const pKey = 'p' + obtenerPeriodoActual();
+        if (!visitas[id]) visitas[id] = {};
+        visitas[id][pKey] = (visitas[id][pKey] || 0) + 1;
         localStorage.setItem(KVISITS, JSON.stringify(visitas));
+        if (window.cloudSave) window.cloudSave('BandaVisitas', `v_${id}_${pKey}`, { id: `v_${id}_${pKey}`, alumnoId: String(id), periodo: pKey, v: visitas[id][pKey] });
 
         rAsistenciaPublica(id);
         document.getElementById('m-pin-acceso').style.display = 'none';
@@ -4948,13 +5619,6 @@
       var perActual = obtenerPeriodoActual();
       var perKey = 'p' + perActual;
 
-      // Mostrar info del periodo actual
-      var lbl = document.getElementById('periodo-actual-lbl');
-      if (lbl) {
-        var pd = PER[perActual];
-        lbl.textContent = '📅 ' + pd.n + ' (' + pd.i + ' → ' + pd.f + ')';
-      }
-
       var pins = JSON.parse(localStorage.getItem(KPIN)) || {};
       var pinsPadres = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
       var visitas = JSON.parse(localStorage.getItem(KVISITS)) || {};
@@ -4971,31 +5635,32 @@
         return `
           <tr style="border-bottom:1px solid #eee;">
             <td style="padding:10px;">
-              <div style="font-weight:900;font-size:22px;color:var(--az);">${al.n}</div>
+              <div style="font-weight:900;font-size:18px;color:var(--az);">${al.n}</div>
               <div style="font-size:11px;color:#888;">${al.i} | GRADO: ${al.g || '—'}</div>
             </td>
             <td style="padding:10px;text-align:center;">
               <input type="text" id="pin-${al.id}" value="${pin}" style="width:50px;text-align:center;font-size:10px;padding:3px;border:1px solid #ddd;border-radius:4px;">
-              <button onclick="editPin(${al.id})" style="background:var(--ve);color:white;border:none;padding:3px 6px;border-radius:4px;font-size:9px;margin-top:2px;">OK</button>
+              <button onclick="editPin('${al.id}')" style="background:var(--ve);color:white;border:none;padding:3px 6px;border-radius:4px;font-size:9px;margin-top:2px;">OK</button>
             </td>
             <td style="padding:10px;text-align:center;">
               <input type="text" id="pinp-${al.id}" value="${pinPadre}" style="width:50px;text-align:center;font-size:10px;padding:3px;border:1px solid #ddd;border-radius:4px;">
-              <button onclick="editPinPadre(${al.id})" style="background:var(--or);color:white;border:none;padding:3px 6px;border-radius:4px;font-size:9px;margin-top:2px;">OK</button>
+              <button onclick="editPinPadre('${al.id}')" style="background:var(--or);color:white;border:none;padding:3px 6px;border-radius:4px;font-size:9px;margin-top:2px;">OK</button>
             </td>
             <td style="padding:10px;text-align:center;">
               <div style="font-size:10px;color:#555;">Est: <strong>${v}</strong></div>
               <div style="font-size:10px;color:#888;">Pad: <strong>${ap}</strong></div>
             </td>
             <td style="padding:10px;text-align:center;">
-              <button onclick="abrirModalAlumno(${al.id})" style="background:var(--az);color:white;border:none;padding:6px;border-radius:6px;font-size:10px;"><i class="fas fa-edit"></i></button>
-              <button onclick="elimAl(${al.id})" style="background:var(--ro);color:white;border:none;padding:6px;border-radius:6px;font-size:10px;margin-top:2px;"><i class="fas fa-trash"></i></button>
+              <button onclick="editAl('${al.id}')" style="background:var(--az);color:white;border:none;padding:6px;border-radius:6px;font-size:14px;"><i class="fas fa-edit"></i></button>
+              <button onclick="elimAl('${al.id}')" style="background:var(--ro);color:white;border:none;padding:6px;border-radius:6px;font-size:14px;margin-top:2px;"><i class="fas fa-trash"></i></button>
             </td>
           </tr>
         `;
-      }).join('') || '<tr><td colspan="3" style="text-align:center; padding:20px; color:#aaa;">Sin alumnos</td></tr>';
+      }).join('') || '<tr><td colspan="5" style="text-align:center; padding:20px; color:#aaa;">Sin alumnos</td></tr>';
     }
 
     function asignarPinPadre(id, pin) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden asignar PINs de padres.'); return; }
       var pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
       if (pin.trim() === '') {
         delete pins[id];
@@ -5003,6 +5668,7 @@
         pins[id] = pin.trim();
       }
       localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
+      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), alumnoId: String(id), pin: pins[id] || '' });
       rUsuariosTabla();
     }
 
@@ -5094,9 +5760,20 @@
 
     /* ADMIN — CON VERIFICACIÓN EN FIRESTORE */
     function irAdmin() {
+      console.log('🔘 Intentando entrar a zona Admin...');
       const admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
-      if (admins.length === 0 && db) {
-        // Consultar Firestore directamente para evitar condición de carrera
+
+      // 1. Si ya tiene sesión recordada, dejarlo entrar directo
+      if (adminLogueado) {
+        console.log('--- SESIÓN RECORDADA DETECTADA: ENTRANDO DIRECTO ---');
+      } 
+      // 2. Si hay base de datos cargada pero no hay sesión, pedir clave
+      else if (admins.length > 0) {
+        document.getElementById('m-admin-login').style.display = 'flex';
+        return;
+      } 
+      // 3. Si no hay admins locales ni sesión, ir a la nube o setup
+      else if (admins.length === 0 && db) {
         getDocs(collection(db, 'BandaAdmins')).then(snap => {
           if (snap.empty) {
             document.getElementById('m-admin-setup').style.display = 'flex';
@@ -5104,20 +5781,19 @@
             let items = [];
             snap.forEach(d => items.push({ id: d.id, ...d.data() }));
             localStorage.setItem(KADMINS, JSON.stringify(items));
-            irAdmin(); // Re-intentar con datos de la nube
+            document.getElementById('m-admin-login').style.display = 'flex';
           }
         }).catch(() => {
           document.getElementById('m-admin-setup').style.display = 'flex';
         });
         return;
-      } else if (admins.length === 0) {
+      } 
+      // 4. Último recurso (falta internet y no hay datos locales)
+      else if (admins.length === 0) {
         document.getElementById('m-admin-setup').style.display = 'flex';
         return;
       }
-      if (!adminLogueado) {
-        document.getElementById('m-admin-login').style.display = 'flex';
-        return;
-      }
+
       console.log('--- ENTRANDO A ZONA ADMIN ---');
       // Cerrar cualquier modal abierto antes de entrar
       document.querySelectorAll('.ov').forEach(m => m.style.display = 'none');
@@ -5132,20 +5808,80 @@
       rAsist(); rHist(); rAlumnos(); rProc();
     }
 
-    function loginAdmin() {
+    async function loginAdmin() {
+      console.log('🔑 Intentando iniciar sesión admin...');
       const u = document.getElementById('admin-user').value.trim();
       const p = document.getElementById('admin-pass').value.trim();
       const recordar = document.getElementById('admin-recordar').checked;
-      const admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
-      const found = admins.find(a => a.u.toLowerCase() === u.toLowerCase() && a.p === p);
+
+      if (!u || !p) return alert('Por favor, completa todos los campos.');
+
+      // 1) Buscar primero en localStorage (rápido)
+      let admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
+      let found = admins.find(a => a.u.toLowerCase() === u.toLowerCase() && a.p === p);
+
+      // 2) Si no está localmente, intentar traer de Firestore (otro dispositivo)
+      if (!found && db) {
+        try {
+          const snap = await getDocs(collection(db, 'BandaAdmins'));
+          if (!snap.empty) {
+            let items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            localStorage.setItem(KADMINS, JSON.stringify(items));
+            admins = items;
+            found = admins.find(a => a.u.toLowerCase() === u.toLowerCase() && a.p === p);
+          }
+        } catch (e) {
+          console.warn('⚠️ No se pudo consultar Firestore:', e.message);
+        }
+      }
+
       if (found) {
         adminLogueado = found.u;
         if (recordar) localStorage.setItem(KADMIN_SESSION, found.u);
         document.getElementById('m-admin-login').style.display = 'none';
+        // Ocultar botón de restablecer una vez el admin ha ingresado
+        const btnRest = document.querySelector('#m-admin-login [onclick=\"resetearAccesoAdmin()\"]');
+        if (btnRest) btnRest.closest('div').style.display = 'none';
         irAdmin();
       } else {
-        alert('❌ Usuario o contraseña incorrectos');
+        alert('❌ Usuario o contraseña incorrectos.\n\nAsegúrate de ingresar exactamente el correo y contraseña registrados.');
       }
+    }
+
+    async function resetearAccesoAdmin() {
+      // Pedir PIN de seguridad antes de restablecer
+      const PIN_MAESTRO = 'ENS2026';
+      const pinIngresado = prompt('🔒 Ingresa el código de seguridad para restablecer el acceso:');
+      if (pinIngresado === null) return;
+      if (pinIngresado.trim() !== PIN_MAESTRO) {
+        alert('❌ Código incorrecto. Acceso denegado.');
+        return;
+      }
+      if (!confirm('⚠️ ¿RESTABLECER ACCESO?\n\nEsto borrará la cuenta de administrador actual para que puedas crear una nueva.\n\nLos datos de alumnos y asistencia NO se borrarán.\n\n¿Continuar?')) return;
+
+      localStorage.removeItem(KADMINS);
+      localStorage.removeItem(KADMIN_SESSION);
+      adminLogueado = null;
+
+      if (db) {
+        try {
+          const snap = await getDocs(collection(db, 'BandaAdmins'));
+          const batch = writeBatch(db);
+          snap.forEach(d => batch.delete(d.ref));
+          await batch.commit();
+          console.log('✅ Admins eliminados de Firestore');
+        } catch (e) {
+          console.warn('⚠️ No se pudo limpiar Firestore:', e.message);
+        }
+      }
+
+      alert('✅ Acceso restablecido.\n\nAhora podrás crear un nuevo administrador.');
+      location.reload();
+    }
+
+    function restablecerAdmin() {
+      resetearAccesoAdmin();
     }
 
     async function crearMaestro() {
@@ -5179,6 +5915,7 @@
       const u = document.getElementById('new-admin-u').value.trim();
       const p = document.getElementById('new-admin-p').value.trim();
       if (!u || !p) return alert('Datos de usuario administrador incompletos');
+      if (!validarEmail(u)) return alert('❌ El identificador debe ser un correo electrónico válido.');
       let admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
       if (admins.some(a => a.u.toLowerCase() === u.toLowerCase())) return alert('⚠️ Este nombre de usuario ya existe');
       const newAdmin = { u, p, id: u };
@@ -5205,12 +5942,28 @@
             <div style="font-weight:900;font-size:14px;color:#333;">${a.u} ${i === 0 ? '👑' : ''}</div>
             <div style="font-size:10px;color:#888;">${i === 0 ? 'Administrador Maestro' : 'Sub-Administrador'}</div>
           </div>
-          ${canDelete ? `<button onclick="elimAdmin(${i})" style="background:var(--ro);color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:10px;font-weight:900;"><i class="fas fa-trash"></i></button>` : ''}
+          <div style="display:flex; gap:5px;">
+            <button onclick="cambiarClaveAdmin(${i})" style="background:var(--az);color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:10px;font-weight:900;" title="Cambiar Contraseña"><i class="fas fa-key"></i></button>
+            ${canDelete ? `<button onclick="elimAdmin(${i})" style="background:var(--ro);color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:10px;font-weight:900;"><i class="fas fa-trash"></i></button>` : ''}
+          </div>
         </div>`;
       });
       h += '</div>';
       c.innerHTML = h;
     }
+
+    function cambiarClaveAdmin(i) {
+      let admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
+      const np = prompt('Escribe la nueva contraseña para "' + admins[i].u + '":');
+      if (!np || np.trim() === '') return;
+      admins[i].p = np.trim();
+      localStorage.setItem(KADMINS, JSON.stringify(admins));
+      window.cloudSave('BandaAdmins', admins[i].u, admins[i]);
+      alert('✅ Contraseña actualizada correctamente');
+      rAdminsTabla();
+    }
+
+    window.cambiarClaveAdmin = cambiarClaveAdmin;
 
     function elimAdmin(i) {
       let admins = JSON.parse(localStorage.getItem(KADMINS)) || [];
@@ -5255,11 +6008,14 @@
     }
 
     function guardarDia() {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden guardar asistencia.'); return; }
       if (!Object.keys(aT).length) { alert('Marca al menos un alumno'); return; }
       const f = new Date().toLocaleDateString('es-CO');
       let h = JSON.parse(localStorage.getItem(KA)) || [];
-      h.push({ f, d: { ...aT } });
+      const registro = { f, d: { ...aT } };
+      h.push(registro);
       localStorage.setItem(KA, JSON.stringify(h));
+      if (window.cloudSave) window.cloudSave('BandaAsistencia', `asist_${Date.now()}`, registro);
       alert('✅ Guardada');
       aT = {};
       rAsist();
@@ -5458,11 +6214,70 @@
       URL.revokeObjectURL(u);
     }
 
-    /* ALUMNOS */
+    /* NOTIFICACIONES PUSH Y TABLÓN */
+    async function enviarPushGlobal() {
+      const t = document.getElementById('push-titulo').value.trim();
+      const m = document.getElementById('push-mensaje').value.trim();
+      if (!t || !m) { alert('Completa título y mensaje'); return; }
+
+      if (!confirm(`¿Enviar esta notificación a TODOS los dispositivos?\n\nTítulo: ${t}\nMensaje: ${m}`)) return;
+
+      try {
+        // 1. Guardar en el Tablón de Historial (Firestore)
+        await addDoc(collection(db, "BandaTablon"), {
+          titulo: t,
+          mensaje: m,
+          fecha: new Date().toLocaleString(),
+          timestamp: serverTimestamp(),
+          autor: 'Director'
+        });
+
+        // 2. Notificar que se ha registrado (El envío real requiere Cloud Functions o Admin SDK)
+        // Por ahora, lo guardamos en una colección de "pendientes" para que un worker lo procese
+        await addDoc(collection(db, "BandaPushQueue"), {
+          notification: { title: t, body: m },
+          status: 'pending',
+          timestamp: serverTimestamp()
+        });
+
+        alert('✅ Notificación enviada al Tablón y programada para envío Push.');
+        document.getElementById('push-titulo').value = '';
+        document.getElementById('push-mensaje').value = '';
+      } catch (err) {
+        console.error('Error al enviar:', err);
+        alert('❌ Error al conectar con la base de datos.');
+      }
+    }
+
+    function rTablon() {
+      const c = document.getElementById('tablon-render');
+      if (!c) return;
+      onSnapshot(query(collection(db, "BandaTablon"), orderBy("timestamp", "desc"), limit(20)), (snap) => {
+        if (snap.empty) {
+          c.innerHTML = '<p style="text-align:center; color:#aaa; padding:20px;">No hay avisos recientes.</p>';
+          return;
+        }
+        let html = '';
+        snap.forEach(doc => {
+          const a = doc.data();
+          html += `
+            <div style="background:#f0f7ff; padding:15px; border-radius:15px; margin-bottom:12px; border-left:5px solid var(--az);">
+              <div style="font-weight:900; color:var(--az); font-size:14px; margin-bottom:5px;">${a.titulo}</div>
+              <div style="font-size:13px; color:#444; margin-bottom:8px;">${a.mensaje}</div>
+              <div style="display:flex; justify-content:space-between; font-size:10px; color:#888; font-weight:700;">
+                <span><i class="fas fa-clock"></i> ${a.fecha || ''}</span>
+                <span><i class="fas fa-user-tie"></i> ${a.autor || 'Director'}</span>
+              </div>
+            </div>
+          `;
+        });
+        c.innerHTML = html;
+      });
+    }
     function rAlumnos() {
       const c = document.getElementById('al-render');
       if (!c) return;
-      c.innerHTML = banda.map(al => `<div class="alit"><div style="flex:1;"><div class="ann">${al.n}</div><div class="ain">${al.i} | GRADO: ${al.g || '—'}</div></div><div style="display:flex;gap:7px;"><button onclick="editAl(${al.id})" style="background:var(--na);color:white;border:none;padding:7px 11px;border-radius:8px;cursor:pointer;"><i class="fas fa-edit"></i></button><button onclick="elimAl(${al.id})" style="background:var(--ro);color:white;border:none;padding:7px 11px;border-radius:8px;cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`).join('') || '<p style="text-align:center;color:#aaa;">Sin alumnos</p>';
+      c.innerHTML = banda.map(al => `<div class="alit"><div style="flex:1;"><div class="ann">${al.n}</div><div class="ain">${al.i} | GRADO: ${al.g || '—'}</div></div><div style="display:flex;gap:7px;"><button onclick="editAl('${al.id}')" style="background:var(--na);color:white;border:none;padding:7px 11px;border-radius:8px;cursor:pointer;"><i class="fas fa-edit"></i></button><button onclick="elimAl('${al.id}')" style="background:var(--ro);color:white;border:none;padding:7px 11px;border-radius:8px;cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`).join('') || '<p style="text-align:center;color:#aaa;">Sin alumnos</p>';
     }
 
     function abrirModalAlumno() {
@@ -5475,9 +6290,10 @@
     }
 
     function editAl(id) {
-      const al = banda.find(x => x.id === id);
-      if (!al) return;
-      aEd = id;
+      const nid = Number(id);
+      const al = banda.find(x => Number(x.id) === nid);
+      if (!al) { console.warn('editAl: alumno no encontrado con id', id); return; }
+      aEd = al.id;
       document.getElementById('t-mal').innerText = 'Editar';
       document.getElementById('al-n').value = al.n;
       document.getElementById('al-g').value = al.g || '';
@@ -5488,13 +6304,14 @@
     function guardarAlumno() {
       const n = document.getElementById('al-n').value.trim(), g = document.getElementById('al-g').value.trim(), inst = document.getElementById('al-i').value;
       if (!n || !inst) { alert('Completa campos'); return; }
-      if (aEd) {
-        const i = banda.findIndex(x => x.id === aEd);
+      if (aEd !== null && aEd !== undefined) {
+        const i = banda.findIndex(x => Number(x.id) === Number(aEd));
+        if (i === -1) { alert('Error: alumno no encontrado.'); return; }
         banda[i].n = n;
         banda[i].g = g;
         banda[i].i = inst;
         // SINCRONIZAR EDICIÓN CON FIREBASE
-        if (window.cloudSave) window.cloudSave('BandaAlumnos', String(aEd), banda[i]);
+        if (window.cloudSave) window.cloudSave('BandaAlumnos', String(banda[i].id), banda[i]);
       } else {
         const nid = banda.length ? Math.max(...banda.map(x => x.id)) + 1 : 1;
         const nuevoAlumno = { id: nid, n, g, i: inst };
@@ -5509,11 +6326,11 @@
         visitas[nid] = 0;
         localStorage.setItem(KVISITS, JSON.stringify(visitas));
 
-        // SINCRONIZAR CON FIREBASE (crítico para persistencia en la nube)
+        // SINCRONIZAR NUEVO ALUMNO CON FIREBASE (crítico para persistencia)
         if (window.cloudSave) window.cloudSave('BandaAlumnos', String(nid), nuevoAlumno);
       }
       localStorage.setItem(KAL, JSON.stringify(banda));
-      localStorage.setItem('KAL_VER', 5); // Mantener versión actualizada para evitar reset de init()
+      localStorage.setItem('KAL_VER', 5); // Evitar que init() sobrescriba con lista original
       rAlumnos();
       rAsist();
       rProc();
@@ -5522,16 +6339,89 @@
     }
 
     /* RENDERERS ADMIN (AJUSTES) - GESTIÓN Y BORRADO */
-    const MAX_MB = 3;
+    var MAX_MB = 5; // Limite de 5MB para archivos originales
     function checkSize(file) {
       if (!file) return true;
       const size = file.size || 0;
       if (size > MAX_MB * 1024 * 1024) {
-        alert(`⚠️ El archivo es demasiado grande (${(size / 1024 / 1024).toFixed(1)}MB).\nEl límite para estabilidad es de ${MAX_MB}MB.`);
+        alert(`⚠️ El archivo es demasiado grande (${(size / 1024 / 1024).toFixed(1)}MB).\nEl límite es de ${MAX_MB}MB.`);
         return false;
       }
       return true;
     }
+
+    // Comprimir imagen antes de guardar en localStorage/Firestore
+    function comprimirImagen(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) { resolve(null); return; }
+        // Si es video, no comprimir, solo convertir a base64
+        if (file.type.startsWith('video')) {
+          if (file.size > 1 * 1024 * 1024) {
+            alert('⚠️ Los videos deben ser menores a 1MB para guardarse.\nPor favor usa un enlace de YouTube en su lugar.');
+            resolve(null);
+            return;
+          }
+          const r = new FileReader();
+          r.onload = e => resolve(e.target.result);
+          r.onerror = () => reject('Error leyendo archivo');
+          r.readAsDataURL(file);
+          return;
+        }
+        // Comprimir imágenes
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = e => {
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_DIM = 800; // max 800px de ancho/alto
+            let w = img.width, h = img.height;
+            if (w > MAX_DIM || h > MAX_DIM) {
+              if (w > h) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+              else { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            const compressed = canvas.toDataURL('image/jpeg', 0.6);
+            console.log('📷 Imagen comprimida:', (compressed.length / 1024).toFixed(0) + 'KB');
+            resolve(compressed);
+          };
+          img.onerror = () => reject('Error procesando imagen');
+          img.src = e.target.result;
+        };
+        reader.onerror = () => reject('Error leyendo archivo');
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Guardar en localStorage con manejo de errores
+    function safeLocalSet(key, value) {
+      if (window.GLOBAL_MEMORY_CACHE) {
+          try { window.GLOBAL_MEMORY_CACHE[key] = JSON.parse(value); } catch(e) {}
+      }
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        try {
+          let arr = JSON.parse(value);
+          if (Array.isArray(arr) && arr.length > 2) {
+            while (arr.length > 2) {
+              arr = arr.slice(-Math.floor(arr.length / 1.5)); 
+              try {
+                localStorage.setItem(key, JSON.stringify(arr));
+                console.warn('⚡ Cache local reducido para estabilizar la memoria (' + key + ')');
+                return true;
+              } catch(e2) {}
+            }
+          }
+        } catch(e3) {}
+        console.error('localStorage lleno irreparable:', e);
+        if (key !== KME && key !== KMB) alert('⚠️ Memoria del navegador completamente llena. Es recomendable borrar un par de fotos viejas o limpiar caché.');
+        return false;
+      }
+    }
+
 
     function rEvAdmin() {
       const c = document.getElementById('ev-render-admin');
@@ -5539,8 +6429,8 @@
       if (!c || !arch) return;
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
 
-      const active = ev.map((e, i) => ({ ...e, i })).filter(e => !e.archived);
-      const archived = ev.map((e, i) => ({ ...e, i })).filter(e => e.archived);
+      const active = ev.map((e, i) => ({ ...e, i })).filter(e => !e.archived && !e.historico);
+      const archived = ev.map((e, i) => ({ ...e, i })).filter(e => e.archived || e.historico);
 
       c.innerHTML = active.length ? active.map(e => `
         <div style="background:#f8f9fa;padding:10px;border-radius:12px;margin-bottom:8px;border-left:4px solid var(--az);display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
@@ -5599,10 +6489,24 @@
       if (!c || !arch) return;
       let m = JSON.parse(localStorage.getItem(KME)) || [];
 
-      const active = m.map((e, i) => ({ ...e, i })).filter(e => !e.archived);
-      const archived = m.map((e, i) => ({ ...e, i })).filter(e => e.archived);
+      // Solo mostrar items de Galería (excluir los de Mi Banda)
+      const active = m.map((e, i) => ({ ...e, i })).filter(e => !e.archived && e.destino !== 'mibanda').sort((a,b) => (b.id||0) - (a.id||0));
+      const archived = m.map((e, i) => ({ ...e, i })).filter(e => e.archived && e.destino !== 'mibanda').sort((a,b) => (b.id||0) - (a.id||0));
 
-      c.innerHTML = active.length ? active.slice(-8).reverse().map(x => {
+      const getThumbHtml = (x, size = 60) => {
+        if (x.url) {
+           let ytIdMatch = x.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})/);
+           if (ytIdMatch && ytIdMatch[1]) return `<img src="https://img.youtube.com/vi/${ytIdMatch[1]}/default.jpg" onclick="abrirLightbox('https://www.youtube.com/embed/${ytIdMatch[1]}', 'vid')" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #ddd;flex-shrink:0;" title="Toca para ver">`;
+           return `<div style="width:${size}px;height:${size}px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:${size/2.5}px;color:#999;flex-shrink:0;"><i class="fas fa-link"></i></div>`;
+        } else if (x.t === 'vid') {
+           return `<video src="${x.d}#t=0.1" preload="metadata" onclick="abrirLightbox('${x.d}', 'vid')" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #ddd;flex-shrink:0;background:#000;" title="Toca para ver"></video>`;
+        } else if (x.d) {
+           return `<img src="${x.d}" onclick="abrirLightbox(this.src, 'img')" style="width:${size}px;height:${size}px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #ddd;flex-shrink:0;" title="Toca para ampliar">`;
+        }
+        return '';
+      };
+
+      c.innerHTML = active.length ? active.slice(0, 50).map(x => {
         let rSum = x.reacciones ? `<div style="display:flex;gap:5px;margin-top:5px;font-size:10px;font-weight:700;">
             <span title="Love">❤️ ${(x.reacciones['❤️'] || []).length}</span>
             <span title="Like">👍 ${(x.reacciones['👍'] || []).length}</span>
@@ -5610,9 +6514,10 @@
             <span title="Inspired">✨ ${(x.reacciones['✨'] || []).length}</span>
           </div>` : '';
         return `<div style="background:#f8f9fa;padding:12px;border-radius:12px;margin-bottom:10px;border-left:4px solid var(--az);box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+            ${getThumbHtml(x, 60)}
             <div style="flex:1;overflow:hidden;">
-              <div style="font-weight:900;font-size:13px;color:#333;">${x.alb.toUpperCase()} - ${x.fecha}</div>
+              <div style="font-weight:900;font-size:13px;color:#333;">${(x.alb || 'galeria').toUpperCase()}</div>
               <div style="font-size:11px;color:#666;margin-top:2px;">${x.comentario || 'Sin descripción'}</div>
               ${rSum}
             </div>
@@ -5625,8 +6530,9 @@
       }).join('') + (active.length > 8 ? `<p style="text-align:center;font-size:10px;color:#bbb;margin-top:5px;">Mostrando últimos 8</p>` : '') : '<p style="text-align:center;color:#ccc;padding:10px;">No hay multimedia activa</p>';
 
       arch.innerHTML = archived.length ? archived.map(x => `
-        <div style="background:#fff;padding:8px;border-radius:10px;margin-bottom:5px;border:1px solid #eee;display:flex;justify-content:space-between;align-items:center;opacity:0.7;">
-          <div style="font-size:10px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${x.alb} - ${x.fecha}</div>
+        <div style="background:#fff;padding:8px;border-radius:10px;margin-bottom:5px;border:1px solid #eee;display:flex;justify-content:space-between;align-items:center;opacity:0.7;gap:8px;">
+          ${getThumbHtml(x, 35)}
+          <div style="font-size:10px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;flex:1;">${x.alb} - ${x.fecha}</div>
           <div style="display:flex;gap:5px;">
             <button onclick="archivarContenido('${KME}', ${x.i}, false)" style="background:var(--ve);color:white;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:9px;"><i class="fas fa-undo"></i></button>
             <button onclick="eliminarContenido('${KME}', ${x.i})" style="background:#ff9999;color:white;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:9px;"><i class="fas fa-trash"></i></button>
@@ -5636,11 +6542,12 @@
     }
     function reiniciarReacciones(idx) {
       if (!confirm('¿Seguro que deseas reiniciar TODAS las reacciones de esta publicación?')) return;
-      let m = JSON.parse(localStorage.getItem(KME)) || [];
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
       if (m[idx]) {
         m[idx].reacciones = {};
-        localStorage.setItem(KME, JSON.stringify(m));
-        rMeAdmin();
+        safeLocalSet(KMB, JSON.stringify(m));
+        if (window.cloudSave && m[idx].id) window.cloudSave('BandaMiBanda', String(m[idx].id), m[idx]);
+        rMiBandaAdmin();
         rMiBanda();
         alert('✅ Reacciones reiniciadas.');
       }
@@ -5682,7 +6589,7 @@
       let data = JSON.parse(localStorage.getItem(key)) || [];
       if (data[idx]) {
         data[idx].archived = archived;
-        localStorage.setItem(key, JSON.stringify(data));
+        safeLocalSet(key, JSON.stringify(data));
         // Refrescar vistas
         if (key === KEV) { rEvAdmin(); if (typeof rEv === 'function') rEv(); }
         if (key === KME) { rMeAdmin(); if (typeof rMe === 'function') rMe(); }
@@ -5692,11 +6599,36 @@
       }
     }
 
-    function eliminarContenido(key, idx) {
+    async function eliminarContenido(key, idx) {
       if (!confirm('¿ELIMINAR PERMANENTEMENTE? Esta acción no se puede deshacer.')) return;
       let data = JSON.parse(localStorage.getItem(key)) || [];
+      const itemToDel = data[idx];
       data.splice(idx, 1);
-      localStorage.setItem(key, JSON.stringify(data));
+      safeLocalSet(key, JSON.stringify(data));
+      
+      // Borrar de Firestore
+      if (db && itemToDel && itemToDel.id) {
+        let colName = '';
+        if (key === KEV) colName = 'BandaEventos';
+        if (key === KME) colName = 'BandaMultimedia';
+        if (key === KPROY) colName = 'BandaProyectos';
+        if (key === KAV) colName = 'BandaAvisos';
+        
+        if (colName) {
+          try {
+            await deleteDoc(doc(db, colName, String(itemToDel.id)));
+            alert('✅ Eliminado permanentemente.');
+          } catch (e) { 
+            console.warn('Aviso: Bloqueo de borrado en Firestore, usando soft-delete:', e);
+            itemToDel.archived = true;
+            if (window.cloudSave) await window.cloudSave(colName, String(itemToDel.id), itemToDel);
+            alert('✅ Eliminado (archivado forzoso).');
+          }
+        }
+      } else {
+         alert('⚠️ Esta foto aún no tiene conexión a nube o no tiene ID.');
+      }
+
       // Refrescar vistas
       if (key === KEV) { rEvAdmin(); if (typeof rEv === 'function') rEv(); }
       if (key === KME) { rMeAdmin(); if (typeof rMe === 'function') rMe(); }
@@ -5737,25 +6669,87 @@
       rAccesosPadres();
     }
     function guardarPinPadre(id, val) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden modificar PINs.'); return; }
       let pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
       pins[id] = val.trim();
       localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
+      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), alumnoId: String(id), pin: val.trim() });
     }
 
-    function elimAl(id) {
-      const al = banda.find(x => x.id === id);
+    // FIX: Funciones editPin y editPinPadre que faltaban
+    function editPin(id) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden modificar PINs.'); return; }
+      const input = document.getElementById('pin-' + id);
+      if (!input) { alert('Error: No se encontró el campo de PIN.'); return; }
+      const val = input.value.trim();
+      if (!val) { alert('El PIN no puede estar vacío.'); return; }
+      let pins = JSON.parse(localStorage.getItem(KPIN)) || {};
+      pins[id] = val;
+      localStorage.setItem(KPIN, JSON.stringify(pins));
+      if (window.cloudSave) window.cloudSave('BandaPins', `pin_${id}`, { id: String(id), alumnoId: String(id), pin: val });
+      alert('✅ PIN de alumno actualizado.');
+    }
+
+    function editPinPadre(id) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden modificar PINs.'); return; }
+      const input = document.getElementById('pinp-' + id);
+      if (!input) { alert('Error: No se encontró el campo de PIN de padre.'); return; }
+      const val = input.value.trim();
+      if (!val) {
+        // Si está vacío, eliminar el PIN de padre
+        let pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
+        delete pins[id];
+        localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
+        if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), alumnoId: String(id), pin: '' });
+        alert('🗑️ PIN de padre eliminado.');
+        return;
+      }
+      let pins = JSON.parse(localStorage.getItem(KPIN_PADRES)) || {};
+      pins[id] = val;
+      localStorage.setItem(KPIN_PADRES, JSON.stringify(pins));
+      if (window.cloudSave) window.cloudSave('BandaPinsPadres', `pin_padre_${id}`, { id: String(id), alumnoId: String(id), pin: val });
+      alert('✅ PIN de padre actualizado.');
+    }
+
+    async function elimAl(id) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar alumnos.'); return; }
+      const nid = Number(id);
+      const al = banda.find(x => Number(x.id) === nid);
+      if (!al) { alert('⚠️ No se encontró el alumno. Recarga la página e intenta de nuevo.'); return; }
       if (!confirm(`¿Eliminar a ${al.n}?`)) return;
-      banda = banda.filter(x => x.id !== id);
+
+      // Mark as deleted locally to prevent sync restoring it before cloud deletion
+      deletedAlumnosIds.add(String(nid));
+      persistDeletedIds();
+
+      banda = banda.filter(x => Number(x.id) !== nid);
       localStorage.setItem(KAL, JSON.stringify(banda));
+      localStorage.setItem('KAL_VER', 5);
       let pr = JSON.parse(localStorage.getItem(KPR)) || {};
-      delete pr[id];
+      delete pr[id]; delete pr[nid]; delete pr[String(nid)];
       localStorage.setItem(KPR, JSON.stringify(pr));
 
       // LIMPIAR CONTADOR DE VISITAS
       let visitas = JSON.parse(localStorage.getItem(KVISITS)) || {};
-      delete visitas[id];
+      delete visitas[id]; delete visitas[nid]; delete visitas[String(nid)];
       localStorage.setItem(KVISITS, JSON.stringify(visitas));
+
+      // BORRAR TAMBIÉN EN FIRESTORE (AWAIT para asegurar persistencia)
+      if (db) {
+        try {
+          await deleteDoc(doc(db, 'BandaAlumnos', String(nid)));
+          console.log('✅ Alumno eliminado de Firestore:', nid);
+        } catch (e) {
+          console.warn('⚠️ No se pudo eliminar de Firestore:', e.message);
+          alert('⚠️ El alumno se borró localmente pero hubo un error en la nube. Intenta de nuevo con conexión a internet.');
+        }
+      }
+
+      // Mantener filtro activo por 5 minutos para evitar que el sync lo restaure
+      setTimeout(() => { deletedAlumnosIds.delete(String(nid)); persistDeletedIds(); }, 300000);
+
       rAlumnos();
+      rUsuariosTabla();
       rAsist();
       rProc();
     }
@@ -5780,6 +6774,8 @@
       }
       pr[id][getPeriodoPr()] = datos;
       localStorage.setItem(KPR, JSON.stringify(pr));
+      const periodo = getPeriodoPr();
+      if (window.cloudSave) window.cloudSave('BandaProcesos', `proc_${id}_${periodo}`, { id: `proc_${id}_${periodo}`, alumnoId: String(id), periodo, datos });
     }
     function promSec(items) {
       if (!items || !items.length) return null;
@@ -5791,7 +6787,9 @@
       const pe = promSec(p.escalas);
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
+      // Si ninguna sección tiene datos, retornar null
       if (pe === null && ppRep === null && pg === null) return null;
+      // Cada sección SIN datos cuenta como 0 — SIEMPRE se divide entre 3
       const valEsc = pe !== null ? pe : 0;
       const valRep = ppRep !== null ? ppRep : 0;
       const valGru = pg !== null ? pg : 0;
@@ -5843,8 +6841,12 @@
       const secEscalas = document.getElementById('ps-escalas');
       if (secEscalas) secEscalas.classList.add('act');
 
+      procSyncBlocked = true; // Bloquear sync mientras editas
       renderProc();
       actualizarProm(getPr(id));
+      // Ocultar promedio general hasta que el usuario lo calcule manualmente
+      const pgBox = document.getElementById('prom-gen-box');
+      if (pgBox) pgBox.style.display = 'none';
       const mProc = document.getElementById('m-proc');
       if (mProc) mProc.style.display = 'flex';
     }
@@ -5877,7 +6879,9 @@
       });
       c.innerHTML = h;
     }
+    let procSyncBlocked = false; // Bloquear sync mientras se edita
     function cambVal(tipo, idx, v, slider) {
+      procSyncBlocked = true; // Bloquear sync mientras editas
       v = Math.round(v * 10) / 10;
       const p = getPr(aPr);
       p[tipo][idx].v = v;
@@ -5887,13 +6891,17 @@
       const pv = document.getElementById(`pv-${tipo}-${idx}`);
       if (pv) pv.innerHTML = `<span style="font-size:28px;font-weight:900;color:${col};">${v.toFixed(1)}</span><span style="font-size:12px;font-weight:900;color:${col};margin-left:8px;">/ 5.0</span><span style="display:block;font-size:13px;font-weight:900;color:${col};margin-top:2px;">${lblV(v)}</span>`;
       actualizarProm(getPr(aPr));
-      rProc();
+      // Ocultar promedio general si se cambia algo (debe recalcularse manualmente)
+      const pgBox = document.getElementById('prom-gen-box');
+      if (pgBox) pgBox.style.display = 'none';
     }
+    window.cambVal = cambVal;
     function cambNombre(tipo, idx, nombre) {
       const p = getPr(aPr);
       p[tipo][idx].n = nombre;
       savePr(aPr, p);
     }
+    window.cambNombre = cambNombre;
     function agregarItem(tipo) {
       const p = getPr(aPr);
       const noms = { escalas: 'Nueva Escala', rep: 'Nueva Obra', grupo: 'Nueva Pieza' };
@@ -5913,24 +6921,41 @@
       const pe = promSec(p.escalas);
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
+      // Mostrar promedio de cada sección (ESTOS SÍ son automáticos)
       const escTxt = pe !== null ? pe.toFixed(2) : '—';
       const repTxt = ppRep !== null ? ppRep.toFixed(2) : '—';
       const gruTxt = pg !== null ? pg.toFixed(2) : '—';
-      document.getElementById('pg-esc').innerText = escTxt;
-      document.getElementById('pg-rep').innerText = repTxt;
-      document.getElementById('pg-gru').innerText = gruTxt;
+      const pgEsc = document.getElementById('pg-esc');
+      const pgRep = document.getElementById('pg-rep');
+      const pgGru = document.getElementById('pg-gru');
+      if (pgEsc) { pgEsc.innerText = escTxt; if (pe !== null) pgEsc.style.color = colV(pe); }
+      if (pgRep) { pgRep.innerText = repTxt; if (ppRep !== null) pgRep.style.color = colV(ppRep); }
+      if (pgGru) { pgGru.innerText = gruTxt; if (pg !== null) pgGru.style.color = colV(pg); }
+      // Subtotales dentro de cada pestaña
       const promEscEl = document.getElementById('prom-escalas');
       const promRepEl = document.getElementById('prom-rep');
       const promGruEl = document.getElementById('prom-grupo');
       if (promEscEl) { promEscEl.innerText = escTxt; if (pe !== null) promEscEl.style.color = colV(pe); }
       if (promRepEl) { promRepEl.innerText = repTxt; if (ppRep !== null) promRepEl.style.color = colV(ppRep); }
       if (promGruEl) { promGruEl.innerText = gruTxt; if (pg !== null) promGruEl.style.color = colV(pg); }
+      // PROMEDIO GENERAL **NO** se calcula automáticamente
+      // El usuario debe presionar el botón "CALCULAR PROMEDIO GENERAL"
+    }
+    function calcularPromedioGeneral() {
+      if (!aPr) { alert('⚠️ No hay alumno seleccionado.'); return; }
+      const p = getPr(aPr);
+      const pe = promSec(p.escalas);
+      const ppRep = promSec(p.rep);
+      const pg = promSec(p.grupo);
+      // Mostrar el box del promedio general
+      const pgBox = document.getElementById('prom-gen-box');
+      if (pgBox) pgBox.style.display = 'block';
       const gen = promGen(p);
       const formulaEl = document.getElementById('prom-formula');
       if (gen === null) {
         document.getElementById('pprom').innerText = '—';
         document.getElementById('pnivel').innerText = 'SIN EVALUAR';
-        if (formulaEl) formulaEl.innerText = '';
+        if (formulaEl) formulaEl.innerText = 'No hay datos en ninguna sección';
       } else {
         document.getElementById('pprom').innerText = gen.toFixed(2);
         document.getElementById('pnivel').innerText = lblV(gen) + ' (' + gen.toFixed(2) + ' / 5)';
@@ -5939,11 +6964,21 @@
         const vG = pg !== null ? pg.toFixed(1) : '0';
         if (formulaEl) formulaEl.innerText = '(' + vE + ' + ' + vR + ' + ' + vG + ') ÷ 3 = ' + gen.toFixed(2);
       }
+      // Scroll suave hacia el promedio general
+      if (pgBox) pgBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     function guardarCalificacion() {
-      alert('✅ Calificación guardada');
+      procSyncBlocked = false; // Re-habilitar sync
+      savePr(aPr, getPr(aPr)); // Asegurar guardado final
+      alert('✅ Calificación guardada correctamente');
       rProc();
     }
+    window.abrirProc = abrirProc;
+    window.verProcTab = verProcTab;
+    window.agregarItem = agregarItem;
+    window.elimItem = elimItem;
+    window.guardarCalificacion = guardarCalificacion;
+    window.calcularPromedioGeneral = calcularPromedioGeneral;
 
     /* EVENTOS */
     function vEvTab(tab, el) {
@@ -5958,8 +6993,9 @@
       const c = document.getElementById('ev-prox');
       if (!c) return;
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
-      const now = new Date();
-      const prox = ev.filter(e => !e.archived && new Date(e.f) >= now);
+      const nowLimit = new Date();
+      nowLimit.setHours(nowLimit.getHours() - 12);
+      const prox = ev.filter(e => !e.archived && new Date(e.f) >= nowLimit);
       if (!prox.length) {
         c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:25px;font-size:13px;">No hay eventos próximos</p>';
         return;
@@ -5969,8 +7005,9 @@
     function rEvHist() {
       const c = document.getElementById('ev-hist-render');
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
-      const now = new Date();
-      const hist = [...ev].filter(e => !e.archived && new Date(e.f) < now).reverse();
+      const nowLimit = new Date();
+      nowLimit.setHours(nowLimit.getHours() - 12);
+      const hist = [...ev].filter(e => !e.archived && new Date(e.f) < nowLimit).reverse();
       if (!hist.length) {
         c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:25px;font-size:13px;">Sin eventos pasados</p>';
         return;
@@ -5985,9 +7022,9 @@
           let vid = ev.mu.includes('youtu.be') ? ev.mu.split('/').pop() : '';
           try { if (!vid) vid = new URL(ev.mu).searchParams.get('v'); } catch (_) { }
           if (vid) med = `<iframe class="evid" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe>`;
-        } else med = `<img src="${ev.mu}" class="eimg" onerror="this.style.display='none'">`;
+        } else med = `<img src="${ev.mu}" class="eimg" onerror="this.style.display='none'" onclick="abrirLightbox(this.src,'img')" style="cursor:pointer;">`;
       } else if (ev.md) {
-        med = ev.md.startsWith('data:image') ? `<img src="${ev.md}" class="eimg">` : `<video controls class="evid"><source src="${ev.md}"></video>`;
+        med = ev.md.startsWith('data:image') ? `<img src="${ev.md}" class="eimg" onclick="abrirLightbox(this.src,'img')" style="cursor:pointer;">` : `<video controls class="evid"><source src="${ev.md}"></video>`;
       }
       let r = '';
       if (ev.r) {
@@ -5999,7 +7036,16 @@
         if (ev.r.wa) r += `<a href="${ev.r.wa}" target="_blank" class="rl rwa"><i class="fab fa-whatsapp"></i></a>`;
         r += '</div>';
       }
-      return `<div class="evc ${past ? 'ev-hist-card' : ''}"><h3 style="margin:0 0 7px 0;color:var(--az);font-size:16px;">${ev.t}</h3>${med}<p style="color:#666;font-size:12px;margin:7px 0;">${ev.d}</p><div style="font-size:11px;color:#aaa;">📅 ${f}${ev.lu ? `<br>📍 ${ev.lu}` : ''}</div>${r}</div>`;
+      return `<div class="evc ${past ? 'ev-hist-card' : ''}" style="background:#fff;border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 6px 15px rgba(0,0,0,0.08);border-left:8px solid var(--az);">
+        <h3 style="margin:0 0 12px 0;color:var(--az);font-size:22px;font-weight:900;letter-spacing:-0.5px;">${ev.t}</h3>
+        ${med}
+        <p style="color:#444;font-size:16px;line-height:1.6;margin:15px 0;">${ev.d}</p>
+        <div style="background:#f0f7ff;padding:12px;border-radius:12px;margin-bottom:15px;">
+          <div style="font-size:15px;color:var(--az);font-weight:800;margin-bottom:4px;"><i class="fas fa-calendar-alt" style="margin-right:6px;"></i> ${f}</div>
+          ${ev.lu ? `<div style="font-size:14px;color:#666;font-weight:600;"><i class="fas fa-map-marker-alt" style="margin-right:6px;color:#e74c3c;"></i> ${ev.lu}</div>` : ''}
+        </div>
+        ${r}
+      </div>`;
     }
     function guardarEvento() {
       const t = document.getElementById('ev-t').value.trim(), d = document.getElementById('ev-d').value.trim(), f = document.getElementById('ev-f').value;
@@ -6020,11 +7066,75 @@
         alert('✅ Publicado');
       };
       if (arch) {
-        const r = new FileReader();
-        r.onload = e => { ne.md = e.target.result; save(); };
-        r.readAsDataURL(arch);
+        comprimirImagen(arch).then(md => {
+          if (!md && arch.type.startsWith('image/')) {
+            alert('⚠️ No se pudo procesar la imagen.');
+            return;
+          }
+          if (md) ne.md = md;
+          save();
+        }).catch(err => {
+          console.error(err);
+          alert('Error al leer archivo');
+        });
       } else save();
     }
+    window.guardarEvento = guardarEvento;
+
+    function guardarEventoHistorico() {
+      const t = document.getElementById('evh-t').value.trim();
+      const d = document.getElementById('evh-d').value.trim();
+      const f = document.getElementById('evh-f').value;
+      if (!t || !d || !f) { alert('Completa los campos: Título, Descripción y Fecha'); return; }
+      if (new Date(f) >= new Date()) {
+        alert('La fecha debe ser ANTERIOR a hoy para que aparezca en el Historial.\nSi es un evento futuro, usa "Crear Nuevo Evento".');
+        return;
+      }
+      const arch = document.getElementById('evh-a').files[0];
+      if (arch && !checkSize(arch)) return;
+      const u = document.getElementById('evh-u').value.trim();
+      const ne = {
+        t, d, f,
+        lu: document.getElementById('evh-l').value.trim(),
+        mu: u || null, md: null, historico: true,
+        r: {
+          fb: document.getElementById('evh-fb').value.trim(),
+          ig: document.getElementById('evh-ig').value.trim(),
+          yt: document.getElementById('evh-yt').value.trim(),
+          tk: document.getElementById('evh-tk').value.trim(),
+          wa: document.getElementById('evh-wa').value.trim()
+        }
+      };
+      const save = () => {
+        ne.id = ne.id || ('evh_' + Date.now());
+        let ev = JSON.parse(localStorage.getItem(KEV)) || [];
+        ev.push(ne);
+        localStorage.setItem(KEV, JSON.stringify(ev));
+        if (window.cloudSave) window.cloudSave('BandaEventos', ne.id, ne);
+        if (typeof rEvHist === 'function') rEvHist();
+        if (typeof rEvAdmin === 'function') rEvAdmin();
+        document.getElementById('m-ev-hist').style.display = 'none';
+        ['evh-t', 'evh-d', 'evh-f', 'evh-l', 'evh-u', 'evh-fb', 'evh-ig', 'evh-yt', 'evh-tk', 'evh-wa'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.value = '';
+        });
+        document.getElementById('evh-a').value = '';
+        alert('Evento histórico guardado. Ya aparece en la sección pública de Historial.');
+      };
+      if (arch) {
+        comprimirImagen(arch).then(md => {
+          if (!md && arch.type.startsWith('image/')) {
+            alert('⚠️ No se pudo procesar la imagen.');
+            return;
+          }
+          if (md) ne.md = md;
+          save();
+        }).catch(err => {
+          console.error(err);
+          alert('Error al leer archivo');
+        });
+      } else save();
+    }
+    window.guardarEventoHistorico = guardarEventoHistorico;
 
     /* AVISOS */
     function abrirModalAviso() {
@@ -6128,11 +7238,15 @@
     }
     function rMe() {
       let m = JSON.parse(localStorage.getItem(KME)) || [];
-      const filtered = m.filter(x => !x.archived && (albumActual === 'TODO' || x.alb === albumActual));
+      const filtered = m.filter(x => !x.archived && x.destino !== 'mibanda' && (albumActual === 'TODO' || x.alb === albumActual));
       const anios = [...new Set(filtered.map(x => x.anio || '2026'))].sort().reverse();
       const at = document.getElementById('anio-tabs');
       if (anios.length) {
-        at.innerHTML = `<button class="anio-btn ${anioActual === 'todos' ? 'act' : ''}" onclick="vAnio('todos',this)">Todos</button>` + anios.map(a => `<button class="anio-btn ${anioActual === a ? 'act' : ''}" onclick="vAnio('${a}',this)">${a}</button>`).join('');
+        // Si el año actual no está en la lista (o es 'todos'), seleccionar el primero (más reciente)
+        if (anioActual === 'todos' || !anios.includes(anioActual)) {
+          anioActual = anios[0];
+        }
+        at.innerHTML = anios.map(a => `<button class="anio-btn ${anioActual === a ? 'act' : ''}" onclick="vAnio('${a}',this)">${a}</button>`).join('');
       } else at.innerHTML = '';
       renderGaleria();
     }
@@ -6140,7 +7254,7 @@
       const c = document.getElementById('me-render');
       if (!c) return;
       let m = JSON.parse(localStorage.getItem(KME)) || [];
-      let filtrado = m.filter(x => !x.archived && x.alb === albumActual);
+      let filtrado = m.filter(x => !x.archived && x.destino !== 'mibanda' && (albumActual === 'TODO' || x.alb === albumActual));
       if (anioActual !== 'todos') filtrado = filtrado.filter(x => (x.anio || '2026') === anioActual);
       if (!filtrado.length) {
         c.innerHTML = `<div style="text-align:center;padding:35px;color:#bbb;font-size:13px;background:white;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);"><i class="fas fa-images" style="font-size:45px;margin-bottom:10px;display:block;opacity:.4;"></i>No hay archivos</div>`;
@@ -6164,8 +7278,34 @@
         html += '<div class="mgrid">';
         grupos[fecha].forEach(x => {
           const idx = m.indexOf(x);
-          const cont = x.t === 'vid' ? `<video controls><source src="${x.d}"></video>` : `<img src="${x.d}" alt="">`;
-          html += `<div class="mi">${cont}<button class="mdel" onclick="elimMe(${idx})">×</button></div>`;
+          let cont = '';
+          let ytId = null;
+          
+          if (x.url) {
+            // Extracción robusta del ID de YouTube
+            let match = x.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})/);
+            if (match && match[1]) {
+              ytId = match[1];
+            } else if (typeof extraerYouTubeId === 'function') {
+              ytId = extraerYouTubeId(x.url);
+            }
+            
+            if (ytId) {
+              cont = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:10px;border-radius:12px;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`;
+            } else {
+              cont = `<a href="${x.url}" target="_blank" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:20px;border-radius:12px;text-decoration:none;font-weight:700;margin-bottom:10px;"><i class="fas fa-play-circle" style="font-size:24px;margin-right:10px;"></i> Ver Video</a>`;
+            }
+          } else if (x.t === 'vid') {
+            cont = `<video controls><source src="${x.d}"></video>`;
+          } else {
+            cont = `<img src="${x.d}" class="zoomable-img" alt="" onclick="abrirLightbox(this.src, 'img')">`;
+          }
+          
+          let extraStyle = '';
+          if (ytId) {
+             extraStyle = 'grid-column: 1 / -1; aspect-ratio: auto; box-shadow: none; background: transparent;';
+          }
+          html += `<div class="mi" style="${extraStyle}">${cont}</div>`;
         });
         html += '</div>';
         html += `<div class="com-caja"><div class="com-tit">💬 Comentarios (${comentarios.length})</div>${comentarios.length ? comentarios.map(c => `<div class="com-item"><div class="com-autor">${c.a} • ${c.ts || ''}</div>${c.t}</div>`).join('') : '<div style="font-size:11px;color:#bbb;">Ninguno...</div>'}<div class="com-input"><input type="text" id="ci-${key}" placeholder="Comentar..." style="flex:1;"><button class="bbp" style="padding:9px 13px;margin:0;font-size:12px;" onclick="addCom('${fecha}','${key}')"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
@@ -6183,104 +7323,94 @@
       renderGaleria();
     }
 
-    function rMiBandaAdmin() {
-      const c = document.getElementById('mb-popular-render');
-      if (!c) return;
-      let m = JSON.parse(localStorage.getItem(KME)) || [];
 
-      // Calcular total de interacciones para cada post
-      const populares = m.map(item => {
-        const reactions = item.reactions || {};
-        const total = Object.values(reactions).reduce((a, b) => a + b, 0);
-        return { ...item, totalInteractions: total };
-      })
-        .filter(item => item.totalInteractions > 0)
-        .sort((a, b) => b.totalInteractions - a.totalInteractions)
-        .slice(0, 5);
-
-      if (!populares.length) {
-        c.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay interacciones aún.</p>';
-        return;
-      }
-
-      c.innerHTML = populares.map((p, i) => {
-        const reactions = p.reactions || {};
-        const reactBadges = Object.entries(reactions)
-          .map(([emoji, count]) => `<span style="background:#eee; padding:2px 6px; border-radius:10px; font-size:10px; margin-right:4px;">${emoji} ${count}</span>`)
-          .join('');
-
-        const preview = p.t === 'vid' ? '<i class="fas fa-video"></i> Video' : `<img src="${p.d}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">`;
-
-        return `
-          <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#fff; border-radius:12px; margin-bottom:10px; border:1px solid #f0f0f0;">
-            <div style="font-weight:900; color:#FFD700; font-size:18px;">#${i + 1}</div>
-            <div style="width:40px; height:40px; background:#f9f9f9; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;">${preview}</div>
-            <div style="flex:1;">
-              <div style="font-size:11px; color:#333; font-weight:700; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.comentario || 'Sin descripción'}</div>
-              <div style="margin-top:4px;">${reactBadges}</div>
-            </div>
-            <div style="text-align:right;">
-              <div style="font-size:14px; font-weight:900; color:var(--az);">${p.totalInteractions}</div>
-              <div style="font-size:8px; color:#999; text-transform:uppercase;">Interacciones</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-    function guardarMedia() {
+    async function guardarMedia() {
       const fs = document.getElementById('me-a').files;
-      if (!fs.length) { alert('Selecciona archivos'); return; }
-      const totalSize = Array.from(fs).reduce((acc, f) => acc + f.size, 0);
-      if (!checkSize({ size: totalSize })) return;
+      const urlInput = document.getElementById('me-url');
+      const urlVal = urlInput ? urlInput.value.trim() : '';
+      if (!fs.length && !urlVal) { alert('Selecciona archivos o pega una URL de video'); return; }
+      const mbBtn = document.getElementById('m-me');
+      if(mbBtn) mbBtn.style.opacity = '0.6';
+      
       const alb = document.getElementById('me-alb').value;
       const anio = String(document.getElementById('me-anio').value || '2026');
       const com = document.getElementById('me-com').value.trim();
       const fecha = new Date().toLocaleDateString('es-CO');
       let m = JSON.parse(localStorage.getItem(KME)) || [];
-      let pend = fs.length;
-      Array.from(fs).forEach((f, i) => {
-        const r = new FileReader();
-        r.onload = e => {
-          m.push({ d: e.target.result, t: f.type.startsWith('image/') ? 'img' : 'vid', alb, anio, fecha, comentario: i === 0 ? com : '' });
-          pend--;
-          if (!pend) {
-            try {
-              localStorage.setItem(KME, JSON.stringify(m));
-            } catch (e) {
-              let saved = false;
-              if (m.length > 2) {
-                while (m.length > 2) {
-                  m = m.slice(-Math.floor(m.length / 1.5));
-                  try {
-                    localStorage.setItem(KME, JSON.stringify(m));
-                    saved = true;
-                    break;
-                  } catch(e2) {}
-                }
-              }
-              if (!saved) {
-                alert('⚠️ No hay espacio suficiente en tu celular para guardar la caché. Puedes borrar algo de memoria.');
-                console.error('Error de localStorage lleno irreparable:', e);
-              }
-            }
-            albumActual = alb;
-            if (typeof rMe === 'function') rMe();
-            if (typeof rMeAdmin === 'function') rMeAdmin();
-            if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
-            document.getElementById('m-me').style.display = 'none';
-            if (document.getElementById('me-a')) document.getElementById('me-a').value = '';
-            alert('✅ Subido');
+      
+      let subidos = 0;
+
+      // Guardar URL de video si se proporcionó
+      if (urlVal) {
+        const id = Date.now();
+        const item = { id: id, url: urlVal, t: 'url', alb, anio, fecha, comentario: com };
+        m.push(item);
+        if (window.cloudSave) {
+          await window.cloudSave('BandaMultimedia', String(item.id), item);
+        }
+        subidos++;
+      }
+
+      // Guardar archivos subidos
+      for (let i = 0; i < fs.length; i++) {
+        const f = fs[i];
+        const isVid = f.type.startsWith('video');
+        if (isVid && f.size > 1.5 * 1024 * 1024) {
+          alert('⚠️ Video muy grande. Límite: 1.5MB');
+          continue;
+        }
+        try {
+          const base64Data = await comprimirImagen(f);
+          if (!base64Data) continue;
+          const id = Date.now() + i + 1;
+          const item = { id: id, d: base64Data, t: isVid ? 'vid' : 'img', alb, anio, fecha, comentario: (i === 0 && !urlVal) ? com : '' };
+          m.push(item);
+          if (window.cloudSave) {
+            await window.cloudSave('BandaMultimedia', String(item.id), item);
           }
-        };
-        r.readAsDataURL(f);
-      });
+          subidos++;
+        } catch (e) {
+          console.error('Error procesando multimedia:', e);
+          alert('⚠️ Error procesando la foto o video: ' + (e || 'Intenta con un formato diferente o archivo más pequeño.'));
+        }
+      }
+      
+      if(mbBtn) mbBtn.style.opacity = '1';
+      document.getElementById('m-me').style.display = 'none';
+      // Limpiar campo de URL
+      if (urlInput) urlInput.value = '';
+      if (subidos > 0) {
+        safeLocalSet(KME, JSON.stringify(m));
+        albumActual = alb;
+        if (typeof rMe === 'function') rMe();
+        if (typeof rMeAdmin === 'function') rMeAdmin();
+        alert('✅ ' + subidos + ' contenido(s) subido(s) a Galería Multimedia.');
+      }
+      if (document.getElementById('me-a')) document.getElementById('me-a').value = '';
     }
-    function elimMe(i) {
-      if (!confirm('¿Eliminar?')) return;
+    async function elimMe(i) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar multimedia.'); return; }
+      if (!confirm('¿Eliminar permanentemente?')) return;
       let m = JSON.parse(localStorage.getItem(KME)) || [];
+      const item = m[i];
       m.splice(i, 1);
-      localStorage.setItem(KME, JSON.stringify(m));
+      safeLocalSet(KME, JSON.stringify(m));
+      // Borrar también de Firestore
+      if (db && item && item.id) {
+        try {
+          await deleteDoc(doc(db, 'BandaMultimedia', String(item.id)));
+          alert('✅ Eliminado de la base de datos.');
+        } catch (e) {
+          console.warn('⚠️ Error eliminando, intentando archivado:', e.message);
+          item.archived = true;
+          if (window.cloudSave) await window.cloudSave('BandaMultimedia', String(item.id), item);
+          alert('✅ Archivo borrado de la vista principal.');
+        }
+      } else {
+        alert('⚠️ Ítem sin ID, borrado únicamente local.');
+      }
       rMe();
+      if (typeof rMeAdmin === 'function') rMeAdmin();
     }
 
     /* MECENAS */
@@ -6337,18 +7467,25 @@
           </div>`;
       }).join('');
     }
-    function guardarProyecto() {
+    async function guardarProyecto() {
       const t = document.getElementById('proy-t').value.trim();
       const d = document.getElementById('proy-d').value.trim();
       const meta = parseInt(document.getElementById('proy-meta').value) || 100000;
-      const vaki = document.getElementById('proy-vaki').value ? document.getElementById('proy-vaki').value.trim() : '';
-      const vakiExtra = document.getElementById('proy-vaki-extra').value.trim();
+      const vakiEl = document.getElementById('proy-vaki');
+      const vaki = vakiEl ? vakiEl.value.trim() : '';
+      const vakiExtra = document.getElementById('proy-vaki-extra') ? document.getElementById('proy-vaki-extra').value.trim() : '';
       if (!t || !d) { alert('Completa campos'); return; }
       let p = JSON.parse(localStorage.getItem(KPROY)) || [];
       const archV = document.getElementById('proy-v').files[0];
       if (archV && !checkSize(archV)) return;
 
-      const save = (vData, type) => {
+      try {
+        let vData = null, type = null;
+        if (archV) {
+          type = archV.type.startsWith('video') ? 'video' : 'image';
+          vData = await comprimirImagen(archV);
+        }
+
         p.push({
           titulo: t,
           desc: d,
@@ -6359,22 +7496,18 @@
           v: vData || null,
           vType: type || null
         });
-        localStorage.setItem(KPROY, JSON.stringify(p));
+
+        if (!safeLocalSet(KPROY, JSON.stringify(p))) return;
         if (typeof rProyectos === 'function') rProyectos();
         if (typeof rProyectosAdmin === 'function') rProyectosAdmin();
         document.getElementById('m-proyecto').style.display = 'none';
         alert('✅ Proyecto creado');
-      };
-
-      if (archV) {
-        const r = new FileReader();
-        const type = archV.type.startsWith('video') ? 'video' : 'image';
-        r.onload = e => save(e.target.result, type);
-        r.readAsDataURL(archV);
-      } else {
-        save(null, null);
+      } catch (err) {
+        console.error('Error guardando proyecto:', err);
+        alert('❌ Error al guardar proyecto: ' + (err.message || err));
       }
     }
+
     function abrirDonar(i) {
       let p = JSON.parse(localStorage.getItem(KPROY)) || [];
       document.getElementById('don-proy-nom').innerText = 'Proyecto: ' + p[i].titulo;
@@ -6430,42 +7563,14 @@
       location.reload();
     }
 
-    /* ===== MI BANDA - RED SOCIAL ===== */
-    const MB_REACCIONES = [
-      { emoji: '❤️', nombre: 'Me encanta' },
-      { emoji: '👍', nombre: 'Me gusta' },
-      { emoji: '😄', nombre: 'Me divierte' },
-      { emoji: '✨', nombre: 'Me inspira' }
-    ];
-    const MB_AVATARES = [
-      'linear-gradient(135deg,#667eea,#764ba2)',
-      'linear-gradient(135deg,#e91e63,#c2185b)',
-      'linear-gradient(135deg,#f59e0b,#d97706)',
-      'linear-gradient(135deg,#06b6d4,#0284c7)',
-      'linear-gradient(135deg,#27ae60,#1e8449)',
-      'linear-gradient(135deg,#6366f1,#4f46e5)',
-      'linear-gradient(135deg,#f97316,#ea580c)',
-      'linear-gradient(135deg,#a855f7,#7c3aed)'
-    ];
-    function getAvatarBg(nombre) {
-      let h = 0; for (let i = 0; i < nombre.length; i++) h = nombre.charCodeAt(i) + ((h << 5) - h);
-      return MB_AVATARES[Math.abs(h) % MB_AVATARES.length];
-    }
-    function getInitials(nombre) { const p = nombre.split(' '); return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase(); }
-    function tiempoAgo(ts) {
-      const d = Date.now() - ts, s = d / 1000, m = s / 60, h = m / 60, dd = h / 24;
-      if (s < 60) return 'Ahora';
-      if (m < 60) return Math.floor(m) + ' min';
-      if (h < 24) return Math.floor(h) + 'h';
-      if (dd < 7) return Math.floor(dd) + 'd';
-      return new Date(ts).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
-    }
-
+    /* ===== MI BANDA - COMPONENTES ===== */
     function rMiBanda() {
       const c = document.getElementById('mb-feed');
       if (!c) return;
-      let meds = JSON.parse(localStorage.getItem(KME)) || [];
-      if (!meds.length) {
+      let meds = JSON.parse(localStorage.getItem(KMB)) || [];
+      // Mostrar todos los items de Mi Banda (ya están en su propio almacén)
+      let medsActivos = meds.filter(x => !x.archived);
+      if (!medsActivos.length) {
         c.innerHTML = `<div style="text-align:center;padding:50px 20px;">
           <div style="font-size:60px;margin-bottom:16px;">🎺</div>
           <h3 style="color:#1a1a3e;font-size:18px;margin:0 0 8px;">¡Bienvenido a Mi Banda!</h3>
@@ -6474,12 +7579,30 @@
         return;
       }
 
-      // Ordenar por fecha (asumiendo que tienen ts o usar reverso para últimos arriba)
-      let msorted = [...meds].reverse();
+      // Ordenar por fecha (últimos arriba)
+      let msorted = [...medsActivos].reverse();
 
       let html = '';
+      let currentHeader = '';
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
       msorted.forEach((m) => {
-        const idxOriginal = meds.indexOf(m);
+        const idxOriginal = meds.indexOf(m); 
+        
+        // Lógica de Cabecera por Mes/Año
+        if (m.fecha) {
+            const parts = m.fecha.split('/');
+            if (parts.length === 3) {
+                const month = monthNames[parseInt(parts[1]) - 1];
+                const year = parts[2];
+                const header = `${month} ${year}`;
+                if (header !== currentHeader) {
+                    currentHeader = header;
+                    html += `<div class="mb-date-header"><i class="fas fa-calendar-alt"></i> ${header}</div>`;
+                }
+            }
+        }
+
         const ago = m.fecha ? m.fecha : 'Reciente';
         const bg = 'linear-gradient(135deg, #1e293b, #334155)';
         const ini = '🎺';
@@ -6493,13 +7616,21 @@
         });
         const rResumen = rTotal > 0 ? `<div class="mb-reactions-bar">${rEmojis}<span class="mb-reaction-count">${rTotal}</span></div>` : '';
 
-        // Media Element
+        // Media Element — soporta archivos Y URLs
         let mediaTag = '';
-        if (m.d) {
+        if (m.url) {
+          // URL externa (YouTube, TikTok, etc.)
+          const ytId = extraerYouTubeId(m.url);
+          if (ytId) {
+            mediaTag = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:10px 0;border-radius:12px;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px;" src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`;
+          } else {
+            mediaTag = `<a href="${m.url}" target="_blank" style="display:block;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:16px;border-radius:12px;margin:10px 0;text-align:center;text-decoration:none;font-weight:700;"><i class="fas fa-play-circle" style="margin-right:8px;"></i> Ver Video Externo</a>`;
+          }
+        } else if (m.d) {
           if (m.t === 'vid') {
             mediaTag = `<video src="${m.d}" class="mb-post-img" controls></video>`;
           } else {
-            mediaTag = `<img src="${m.d}" class="mb-post-img" alt="Foto">`;
+            mediaTag = `<img src="${m.d}" class="mb-post-img zoomable-img" alt="Foto" onclick="abrirLightbox(this.src, 'img')">`;
           }
         }
 
@@ -6507,7 +7638,7 @@
           <div class="mb-post-head">
             <div class="mb-avatar" style="background:${bg};">${ini}</div>
             <div class="mb-post-info">
-              <div class="mb-post-name">Publicación Oficial - ${m.alb.toUpperCase()}</div>
+              <div class="mb-post-name">Publicación Oficial - ${(m.alb || 'MIBANDA').toUpperCase()}</div>
               <div class="mb-post-meta">📆 ${ago}</div>
             </div>
           </div>
@@ -6530,9 +7661,315 @@
       c.innerHTML = html;
     }
 
+    // Utilidad: extraer ID de YouTube de una URL
+    function extraerYouTubeId(url) {
+      if (!url) return null;
+      try {
+        // youtu.be/XXXX
+        if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split(/[?&#]/)[0];
+        // youtube.com/watch?v=XXXX
+        if (url.includes('youtube.com')) {
+          const u = new URL(url);
+          return u.searchParams.get('v') || null;
+        }
+        // youtube.com/shorts/XXXX
+        if (url.includes('/shorts/')) return url.split('/shorts/')[1].split(/[?&#]/)[0];
+      } catch(e) {}
+      return null;
+    }
+
     function compartirMedia(idx) {
       alert('¡Enlace copiado al portapapeles! Reacciona para apoyar a la banda.');
     }
+
+    /* GUARDAR MI BANDA — Función dedicada para publicar en Mi Banda (usa KMB/BandaMiBanda) */
+    async function guardarMiBanda() {
+      const fileInput = document.getElementById('mb-archivo');
+      const urlInput = document.getElementById('mb-url-input');
+      const descInput = document.getElementById('mb-desc-input');
+      const file = fileInput ? fileInput.files[0] : null;
+      const urlVal = urlInput ? urlInput.value.trim() : '';
+      const desc = descInput ? descInput.value.trim() : '';
+
+      if (!file && !urlVal) { alert('Sube un archivo o pega una URL de video'); return; }
+
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
+      const fecha = new Date().toLocaleDateString('es-CO');
+      const anio = String(new Date().getFullYear());
+      let subidos = 0;
+
+      // Guardar URL
+      if (urlVal) {
+        const id = Date.now();
+        const item = { id, url: urlVal, t: 'url', alb: 'mibanda', anio, fecha, comentario: desc, destino: 'mibanda' };
+        m.push(item);
+        if (window.cloudSave) await window.cloudSave('BandaMiBanda', String(id), item);
+        subidos++;
+      }
+
+      // Guardar archivo
+      if (file) {
+        const isVid = file.type.startsWith('video');
+        if (isVid && file.size > 1.5 * 1024 * 1024) {
+          alert('⚠️ Video muy grande. Límite: 1.5MB. Usa una URL en su lugar.');
+        } else {
+          try {
+            const base64Data = await comprimirImagen(file);
+            if (base64Data) {
+              const id = Date.now() + 1;
+              const item = { id, d: base64Data, t: isVid ? 'vid' : 'img', alb: 'mibanda', anio, fecha, comentario: !urlVal ? desc : '', destino: 'mibanda' };
+              m.push(item);
+              if (window.cloudSave) await window.cloudSave('BandaMiBanda', String(id), item);
+              subidos++;
+            }
+          } catch (e) { console.error('Error procesando:', e); }
+        }
+      }
+
+      if (subidos > 0) {
+        safeLocalSet(KMB, JSON.stringify(m));
+        if (typeof rMiBanda === 'function') rMiBanda();
+        if (typeof rMiBandaAdmin === 'function') rMiBandaAdmin();
+        alert('✅ ' + subidos + ' contenido(s) publicado(s) en Mi Banda.');
+      }
+      // Limpiar formulario
+      if (fileInput) fileInput.value = '';
+      if (urlInput) urlInput.value = '';
+      if (descInput) descInput.value = '';
+    }
+
+    /* ELIMINAR item de Mi Banda (usa KMB/BandaMiBanda) */
+    async function elimMiBanda(idx) {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar.'); return; }
+      if (!confirm('¿ELIMINAR esta publicación de Mi Banda? No se puede deshacer.')) return;
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
+      const item = m[idx];
+      m.splice(idx, 1);
+      safeLocalSet(KMB, JSON.stringify(m));
+      if (db && item && item.id) {
+        try { 
+          await deleteDoc(doc(db, 'BandaMiBanda', String(item.id))); 
+          await deleteDoc(doc(db, 'BandaMultimedia', String(item.id))); 
+        } catch (e) { console.warn('Error nube:', e); }
+      }
+      rMiBanda();
+      rMiBandaAdmin();
+      alert('🗑️ Publicación eliminada de Mi Banda.');
+    }
+
+    async function eliminarTodoMiBanda() {
+      if (!adminLogueado) { alert('🔒 Solo administradores pueden eliminar.'); return; }
+      if (!confirm('⚠️ ¿ESTÁS COMPLETAMENTE SEGURO DE QUE DESEAS BORRAR TODO EL HISTORIAL DE MI BANDA? Se perderán todas las interacciones y archivos. Esto NO se puede deshacer.')) return;
+      
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
+      const idsToDelete = m.map(item => String(item.id)).filter(id => id && id !== 'undefined');
+      
+      // Limpiar localmente de inmediato para feedback rápido
+      safeLocalSet(KMB, JSON.stringify([]));
+      rMiBanda();
+      rMiBandaAdmin();
+
+      // Borrar de Firestore masivamente
+      if (db) {
+        try {
+          // Usar promesas paralelas para borrar de ambas colecciones (en caso de que sean zombies de BandaMultimedia)
+          await Promise.all(
+            idsToDelete.flatMap(id => [
+              deleteDoc(doc(db, 'BandaMiBanda', id)),
+              deleteDoc(doc(db, 'BandaMultimedia', id))
+            ])
+          );
+        } catch (e) {
+          console.warn('Error borrando historial en la nube:', e);
+        }
+      }
+      alert('✅ Todo el historial de Mi Banda ha sido eliminado correctamente.');
+    }
+
+    /* ADMIN: Lista de items de Mi Banda con botón borrar (usa KMB/BandaMiBanda) */
+    function rMiBandaAdmin() {
+      // Lista con botón borrar
+      const lista = document.getElementById('mb-admin-lista');
+      if (lista) {
+        let m = JSON.parse(localStorage.getItem(KMB)) || [];
+        const mbItems = m.map((x, i) => ({ ...x, idx: i }));
+        if (!mbItems.length) {
+          lista.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay publicaciones en Mi Banda.</p>';
+        } else {
+          let htmlResult = `<button onclick="eliminarTodoMiBanda()" style="width:100%;background:#ef4444;color:white;border:none;padding:12px;border-radius:12px;font-weight:900;margin-bottom:15px;cursor:pointer;box-shadow:0 2px 4px rgba(239,68,68,0.3);"><i class="fas fa-skull-crossbones"></i> VACIAR TODO EL HISTORIAL</button>`;
+          
+          let currentHeaderAdmin = '';
+          const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+          htmlResult += [...mbItems].reverse().map(x => {
+            let headerHtml = '';
+            if (x.fecha) {
+                const parts = x.fecha.split('/');
+                if (parts.length === 3) {
+                    const month = monthNames[parseInt(parts[1]) - 1];
+                    const year = parts[2];
+                    const header = `${month} ${year}`;
+                    if (header !== currentHeaderAdmin) {
+                        currentHeaderAdmin = header;
+                        headerHtml = `<div style="background:#1e293b; color:#fbbf24; padding:8px 12px; border-radius:10px; font-weight:900; font-size:12px; margin:15px 0 10px 0; text-align:center;"><i class="fas fa-calendar-day"></i> ${header}</div>`;
+                    }
+                }
+            }
+
+            let preview = '';
+            if (x.url) preview = '<i class="fas fa-link" style="color:var(--ce);margin-right:6px;"></i> URL';
+            else if (x.t === 'vid') preview = '<i class="fas fa-video" style="color:var(--na);margin-right:6px;"></i> Video';
+            else preview = '<i class="fas fa-image" style="color:var(--ve);margin-right:6px;"></i> Foto';
+            return headerHtml + `<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:12px;border-radius:12px;margin-bottom:8px;border-left:4px solid #ea580c;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <div style="flex:1;overflow:hidden;">
+                <div style="font-weight:900;font-size:12px;color:#333;">${preview} ${x.fecha}</div>
+                <div style="font-size:11px;color:#666;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">${x.comentario || x.url || 'Sin descripción'}</div>
+              </div>
+              <button onclick="elimMiBanda(${x.idx})" style="background:var(--ro);color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0;"><i class="fas fa-trash"></i> BORRAR</button>
+            </div>`;
+          }).join('');
+          lista.innerHTML = htmlResult;
+        }
+      }
+
+      // Popular posts
+      const c = document.getElementById('mb-popular-render');
+      if (!c) return;
+      let m = JSON.parse(localStorage.getItem(KMB)) || [];
+      const populares = m.map(item => {
+        let total = 0;
+        if (item.reacciones) {
+          Object.values(item.reacciones).forEach(arr => { if (Array.isArray(arr)) total += arr.length; });
+        }
+        return { ...item, totalInteractions: total };
+      })
+        .filter(item => item.totalInteractions > 0)
+        .sort((a, b) => b.totalInteractions - a.totalInteractions)
+        .slice(0, 5);
+
+      if (!populares.length) {
+        c.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:20px;">No hay interacciones aún.</p>';
+        return;
+      }
+
+      c.innerHTML = populares.map((p, i) => {
+        const reactions = p.reactions || {};
+        const reactBadges = Object.entries(reactions)
+          .map(([emoji, count]) => `<span style="background:#eee; padding:2px 6px; border-radius:10px; font-size:10px; margin-right:4px;">${emoji} ${count}</span>`)
+          .join('');
+        const preview = p.t === 'vid' ? '<i class="fas fa-video"></i> Video' : p.url ? '<i class="fas fa-link"></i> URL' : `<img src="${p.d}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">`;
+        return `<div style="display:flex; align-items:center; gap:12px; padding:12px; background:#fff; border-radius:12px; margin-bottom:10px; border:1px solid #f0f0f0;">
+            <div style="font-weight:900; color:#FFD700; font-size:18px;">#${i + 1}</div>
+            <div style="width:40px; height:40px; background:#f9f9f9; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;">${preview}</div>
+            <div style="flex:1;"><div style="font-size:11px; color:#333; font-weight:700;">${p.comentario || 'Sin descripción'}</div><div style="margin-top:4px;">${reactBadges}</div></div>
+            <div style="text-align:right;"><div style="font-size:14px; font-weight:900; color:var(--az);">${p.totalInteractions}</div><div style="font-size:8px; color:#999;">Interacciones</div></div>
+          </div>`;
+      }).join('');
+    }
+
+    /* LIGHTBOX — Zoom foto a pantalla completa */
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.tagName === 'IMG' && e.target.closest('.mi')) {
+        e.preventDefault();
+        e.stopPropagation();
+        abrirLightbox(e.target.src, 'img');
+      }
+    }, true);
+
+    function abrirLightbox(src, tipo) {
+      if (!src) return;
+      // Remover lightbox existente si hay
+      cerrarLightbox();
+      const overlay = document.createElement('div');
+      overlay.className = 'lightbox-overlay';
+      overlay.id = 'lightbox-active';
+      overlay.onclick = function(e) { if (e.target === overlay) cerrarLightbox(); };
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'lightbox-close';
+      closeBtn.innerHTML = '&times;';
+      closeBtn.onclick = cerrarLightbox;
+      overlay.appendChild(closeBtn);
+      if (tipo === 'vid') {
+        const vid = document.createElement('video');
+        vid.src = src; vid.controls = true; vid.autoplay = true;
+        vid.style.maxWidth = '94vw'; vid.style.maxHeight = '85vh';
+        overlay.appendChild(vid);
+      } else {
+        const img = document.createElement('img');
+        img.src = src; img.alt = 'Foto ampliada';
+        overlay.appendChild(img);
+
+        // Lógica de Pinch-to-Zoom
+        let pDist = 0, scale = 1, minS = 1, maxS = 4;
+        let startX = 0, startY = 0, tX = 0, tY = 0, lX = 0, lY = 0;
+
+        img.addEventListener('touchstart', e => {
+          if (e.touches.length === 2) {
+            pDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+          } else if (e.touches.length === 1) {
+            startX = e.touches[0].pageX - lX;
+            startY = e.touches[0].pageY - lY;
+          }
+        }, { passive: false });
+
+        img.addEventListener('touchmove', e => {
+          if (scale > 1) e.preventDefault();
+          if (e.touches.length === 2) {
+            e.preventDefault();
+            const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+            scale = Math.min(Math.max(minS, scale * (dist / pDist)), maxS);
+            pDist = dist;
+            img.style.transform = `translate(${tX}px, ${tY}px) scale(${scale})`;
+          } else if (e.touches.length === 1 && scale > 1) {
+            e.preventDefault();
+            tX = e.touches[0].pageX - startX;
+            tY = e.touches[0].pageY - startY;
+            img.style.transform = `translate(${tX}px, ${tY}px) scale(${scale})`;
+          }
+        }, { passive: false });
+
+        img.addEventListener('touchend', e => {
+          lX = tX; lY = tY;
+          if (scale === 1) { tX = 0; tY = 0; lX = 0; lY = 0; img.style.transform = ''; }
+        });
+      }
+      document.body.appendChild(overlay);
+      // Cerrar con Escape
+      document.addEventListener('keydown', lightboxEsc);
+    }
+    function cerrarLightbox() {
+      const el = document.getElementById('lightbox-active');
+      if (el) {
+        el.remove();
+      }
+      document.removeEventListener('keydown', lightboxEsc);
+    }
+    function lightboxEsc(e) { if (e.key === 'Escape') cerrarLightbox(); }
+    window.abrirLightbox = abrirLightbox;
+    window.cerrarLightbox = cerrarLightbox;
+
+    // EXPORTAR FUNCIONES AL SCOPE GLOBAL PARA LOS ONCLICK DE HTML
+    window.cancelHidePanel = cancelHidePanel;
+    window.compartirMedia = compartirMedia;
+    window.rTopPosts = rTopPosts;
+    window.guardarMedia = guardarMedia;
+    window.elimMe = elimMe;
+    window.rMe = rMe;
+    window.rMeAdmin = rMeAdmin;
+    window.archivarContenido = archivarContenido;
+    window.eliminarContenido = eliminarContenido;
+    window.vAlbum = vAlbum;
+    window.vAnio = vAnio;
+    window.addCom = addCom;
+    window.guardarMiBanda = guardarMiBanda;
+    window.elimMiBanda = elimMiBanda;
+    window.eliminarTodoMiBanda = eliminarTodoMiBanda;
+    window.rMiBandaAdmin = rMiBandaAdmin;
+    window.rMiBanda = rMiBanda;
+    window.showReactPanel = showReactPanel;
+    window.hideReactPanelDelay = hideReactPanelDelay;
+    window.toggleReactPanel = toggleReactPanel;
+    window.reaccionar = reaccionar;
     let hidePanelTimers = {};
     function showReactPanel(idx, el) {
       clearTimeout(hidePanelTimers[idx]);
@@ -6550,24 +7987,26 @@
       if (panel) panel.classList.toggle('show');
     }
     function reaccionar(idx, emoji) {
-      let meds = JSON.parse(localStorage.getItem(KME)) || [];
+      let meds = JSON.parse(localStorage.getItem(KMB)) || [];
       if (!meds[idx]) return;
       if (!meds[idx].reacciones) meds[idx].reacciones = {};
       if (!meds[idx].reacciones[emoji]) meds[idx].reacciones[emoji] = [];
 
       meds[idx].reacciones[emoji].push(Date.now());
-      localStorage.setItem(KME, JSON.stringify(meds));
+      safeLocalSet(KMB, JSON.stringify(meds));
+      // Sincronizar reacción con la nube
+      if (window.cloudSave && meds[idx].id) window.cloudSave('BandaMiBanda', String(meds[idx].id), meds[idx]);
 
       // Feedback visual
       const panel = document.getElementById('rp-' + idx);
       if (panel) panel.classList.remove('show');
 
       rMiBanda();
-      if (adminLogueado) rMeAdmin();
+      if (adminLogueado) rMiBandaAdmin();
     }
 
     function rTopPosts() {
-      let meds = JSON.parse(localStorage.getItem(KME)) || [];
+      let meds = JSON.parse(localStorage.getItem(KMB)) || [];
       if (!meds.length) return '<p style="font-size:11px;color:#aaa;">Sin datos.</p>';
 
       let stats = meds.map((m, i) => {
@@ -6585,7 +8024,7 @@
 
       return top.map(s => `
             <div style="font-size:11px; margin-bottom:4px; padding:4px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-              <span>${s.alb.toUpperCase()} (${s.date})</span>
+              <span>${(s.alb || 'MIBANDA').toUpperCase()} (${s.date})</span>
               <strong style="color:var(--az);">${s.total} ✨</strong>
             </div>
         `).join('');
@@ -6615,7 +8054,15 @@
       banda.forEach(function (a) {
         if (!pins[a.id]) { pins[a.id] = '1234'; cambio = true; }
       });
-      if (cambio) localStorage.setItem(KPIN, JSON.stringify(pins));
+      if (cambio) {
+        localStorage.setItem(KPIN, JSON.stringify(pins));
+        // Sincronizar PINs iniciales a la nube
+        if (window.cloudSave) {
+          Object.keys(pins).forEach(function (pid) {
+            window.cloudSave('BandaPins', `pin_${pid}`, { id: `pin_${pid}`, alumnoId: String(pid), pin: pins[pid] });
+          });
+        }
+      }
 
       // Visitas por periodo
       var perKey = 'p' + obtenerPeriodoActual();
@@ -6749,6 +8196,27 @@
 
       let html = '';
 
+      // Función robusta para sacar el ID de YouTube
+      const extraerYtId = (url) => {
+        if (!url) return null;
+        if (url.length === 11 && !url.includes('/') && !url.includes('.')) return url; // Es un ID directo
+        let match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})/);
+        return match && match[1] ? match[1] : null;
+      };
+
+      // Función para renderizar el media final (YouTube, Imagen, o Video Base64)
+      const renderMedia = (srcString, isMuro = false) => {
+        let yid = extraerYtId(srcString);
+        let marginBottom = isMuro ? "30px" : "20px";
+        if (yid) {
+          return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff; margin-bottom:${marginBottom};"><iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/${yid}" allowfullscreen></iframe></div>`;
+        } else if (srcString.startsWith('data:video/')) {
+          return `<video src="${srcString}" controls style="width:100%; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff; margin-bottom:${marginBottom};"></video>`;
+        } else {
+          return `<img src="${srcString}" style="width:100%; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff; object-fit:cover; margin-bottom:${marginBottom};">`;
+        }
+      };
+
       // 1. ENCABEZADO
       if (cfg.intro) {
         html += `
@@ -6764,8 +8232,8 @@
             <p style="text-align:center; font-weight:900; color:var(--az); font-size:14px; margin-bottom:20px; letter-spacing:3px; text-transform:uppercase;">
               <i class="fas fa-play-circle"></i> NUESTRO PROYECTO
             </p>
-            <div style="width:92%; margin:0 auto; background:#000; position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.3); border: 5px solid #fff;">
-              <iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/${cfg.vid}" allowfullscreen></iframe>
+            <div style="width:92%; margin:0 auto;">
+              ${renderMedia(cfg.vid)}
             </div>
           </div>`;
       }
@@ -6797,22 +8265,12 @@
 
       // 4. PROYECTO ACTUAL (DINÁMICO)
       if (cfg.proyDesc || cfg.proyMedia) {
-        let mediaHtml = '';
-        if (cfg.proyMedia) {
-          if (cfg.proyMedia.includes('youtube.com') || cfg.proyMedia.includes('youtu.be') || cfg.proyMedia.length < 15) {
-            let yid = cfg.proyMedia.includes('=') ? cfg.proyMedia.split('=')[1].split('&')[0] : cfg.proyMedia.split('/').pop();
-            mediaHtml = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:15px; margin-bottom:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2);"><iframe src="https://www.youtube.com/embed/${yid}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe></div>`;
-          } else {
-            mediaHtml = `<img src="${cfg.proyMedia}" style="width:100%; border-radius:15px; margin-bottom:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2); object-fit:cover;">`;
-          }
-        }
-
         html += `
           <div style="padding:40px 20px; background:#f8fafc;">
             <h3 style="text-align:center; color:#ea580c; font-weight:900; letter-spacing:2px; font-size:13px; margin-bottom:25px; text-transform:uppercase;">
                <i class="fas fa-star"></i> PROYECTO ACTUAL
             </h3>
-            ${mediaHtml}
+            ${cfg.proyMedia ? renderMedia(cfg.proyMedia) : ''}
             <div style="background:#fff; padding:25px; border-radius:20px; border:1px solid #e2e8f0; font-family:'Montserrat', sans-serif; line-height:1.6; color:#334155; font-size:15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
               ${cfg.proyDesc}
             </div>
@@ -6827,14 +8285,7 @@
           </h3>`;
 
       if (cfg.muroVid) {
-        let mMedia = '';
-        if (cfg.muroVid.includes('youtube.com') || cfg.muroVid.includes('youtu.be') || cfg.muroVid.length < 15) {
-          let yid = cfg.muroVid.includes('=') ? cfg.muroVid.split('=')[1].split('&')[0] : cfg.muroVid.split('/').pop();
-          mMedia = `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:15px; margin-bottom:30px; box-shadow:0 10px 25px rgba(0,0,0,0.2);"><iframe src="https://www.youtube.com/embed/${yid}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe></div>`;
-        } else {
-          mMedia = `<img src="${cfg.muroVid}" style="width:100%; border-radius:15px; margin-bottom:30px; box-shadow:0 10px 25px rgba(0,0,0,0.2); object-fit:cover;">`;
-        }
-        html += mMedia;
+        html += renderMedia(cfg.muroVid, true);
       }
 
       if (cfg.muroMsg) {
@@ -6880,26 +8331,47 @@
       c.innerHTML = html;
     }
 
-    function guardarConfigMecenas() {
+    async function guardarConfigMecenas() {
       let oldDataArr = JSON.parse(localStorage.getItem(KMEC_CFG)) || [{}];
       let oldData = oldDataArr[0] || {};
 
       const proyFile = document.getElementById('cfg-mec-proy-file').files[0];
       const muroFile = document.getElementById('cfg-mec-muro-file').files[0];
+      const vidFile = document.getElementById('cfg-mec-vid-file').files[0];
 
-      const finalize = (proyMediaData, muroMediaData) => {
+      try {
+        // Comprimir imágenes si las hay
+        let proyMediaData = null, muroMediaData = null, vidMediaData = null;
+        if (vidFile) {
+          if (!checkSize(vidFile)) return;
+          vidMediaData = await comprimirImagen(vidFile);
+        }
+        if (proyFile) {
+          if (!checkSize(proyFile)) return;
+          proyMediaData = await comprimirImagen(proyFile);
+        }
+        if (muroFile) {
+          if (!checkSize(muroFile)) return;
+          muroMediaData = await comprimirImagen(muroFile);
+        }
+
+        // Prioridad: 1. Archivo nuevo, 2. URL/Texto nuevo, 3. Dato anterior
+        let finalVidMedia = vidMediaData || document.getElementById('cfg-mec-vid').value.trim() || oldData.vid || '';
+        let finalProyMedia = proyMediaData || document.getElementById('cfg-mec-proy-media').value.trim() || oldData.proyMedia || '';
+        let finalMuroVid = muroMediaData || document.getElementById('cfg-mec-muro-vid').value.trim() || oldData.muroVid || '';
+
         let newData = {
-          intro: document.getElementById('cfg-mec-intro').value,
-          vid: document.getElementById('cfg-mec-vid').value,
-          vaki: document.getElementById('cfg-mec-vaki').value,
-          nequi: document.getElementById('cfg-mec-nequi').value,
-          davi: document.getElementById('cfg-mec-davi').value,
-          banco: document.getElementById('cfg-mec-banco').value,
-          proyDesc: document.getElementById('cfg-mec-proy-desc').value,
-          proyMedia: proyMediaData || document.getElementById('cfg-mec-proy-media').value,
-          muroVid: muroMediaData || document.getElementById('cfg-mec-muro-vid').value,
-          muroMsg: document.getElementById('cfg-mec-muro-msg').value,
-          transparencia: document.getElementById('cfg-mec-transparencia').value,
+          intro: document.getElementById('cfg-mec-intro').value.trim() || oldData.intro || '',
+          vid: finalVidMedia,
+          vaki: document.getElementById('cfg-mec-vaki').value.trim() || oldData.vaki || '',
+          nequi: document.getElementById('cfg-mec-nequi').value.trim() || oldData.nequi || '',
+          davi: document.getElementById('cfg-mec-davi').value.trim() || oldData.davi || '',
+          banco: document.getElementById('cfg-mec-banco').value.trim() || oldData.banco || '',
+          proyDesc: document.getElementById('cfg-mec-proy-desc').value.trim() || oldData.proyDesc || '',
+          proyMedia: finalProyMedia,
+          muroVid: finalMuroVid,
+          muroMsg: document.getElementById('cfg-mec-muro-msg').value.trim() || oldData.muroMsg || '',
+          transparencia: document.getElementById('cfg-mec-transparencia').value.trim() || oldData.transparencia || '',
           updatedAt: new Date().toISOString()
         };
 
@@ -6911,7 +8383,7 @@
         if (oldData.muroVid !== newData.muroVid) cambios.push("Media Muro Honor");
         if (oldData.muroMsg !== newData.muroMsg) cambios.push("Mensaje Muro");
 
-        localStorage.setItem(KMEC_CFG, JSON.stringify([newData]));
+        if (!safeLocalSet(KMEC_CFG, JSON.stringify([newData]))) return;
         if (window.cloudSave) window.cloudSave('BandaMecenasConfig', 'config_v1', newData);
 
         if (cambios.length > 0) {
@@ -6920,30 +8392,15 @@
 
         rConfigMecenas(newData);
         alert("✅ Configuración actualizada con éxito.");
-      };
-
-      // Manejo de carga de archivos asíncrona
-      if (proyFile || muroFile) {
-        let proyData = null, muroData = null;
-        let pending = (proyFile ? 1 : 0) + (muroFile ? 1 : 0);
-
-        if (proyFile) {
-          const r = new FileReader();
-          r.onload = e => { proyData = e.target.result; pending--; if (pending === 0) finalize(proyData, muroData); };
-          r.readAsDataURL(proyFile);
-        }
-        if (muroFile) {
-          const r = new FileReader();
-          r.onload = e => { muroData = e.target.result; pending--; if (pending === 0) finalize(proyData, muroData); };
-          r.readAsDataURL(muroFile);
-        }
-      } else {
-        finalize(null, null);
+      } catch (err) {
+        console.error('Error guardando config mecenas:', err);
+        alert('❌ Error al guardar: ' + (err.message || err));
       }
     }
 
+
     // GESTIÓN DE DONANTES (MECENAS)
-    function guardarMecenasItem() {
+    async function guardarMecenasItem() {
       const id = document.getElementById('edit-mec-id').value;
       const nombre = document.getElementById('mec-don-nom').value.trim();
       const mensaje = document.getElementById('mec-don-msg').value.trim();
@@ -6951,7 +8408,13 @@
 
       if (!nombre) return alert("El nombre es obligatorio");
 
-      const save = (logoData) => {
+      try {
+        let logoData = null;
+        if (file) {
+          if (!checkSize(file)) return;
+          logoData = await comprimirImagen(file);
+        }
+
         let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
         const item = {
           id: id || Date.now(),
@@ -6967,7 +8430,7 @@
           list.unshift(item);
         }
 
-        localStorage.setItem(KMEC_LIST, JSON.stringify(list));
+        if (!safeLocalSet(KMEC_LIST, JSON.stringify(list))) return;
         if (window.cloudSave) window.cloudSave('BandaMecenasDonors', String(item.id), item);
 
         registrarCambioMecenas(id ? "Editar Donante" : "Nuevo Donante", nombre);
@@ -6980,16 +8443,12 @@
 
         rMecenasAdmin();
         rMecenasPublic();
-      };
-
-      if (file) {
-        const r = new FileReader();
-        r.onload = e => save(e.target.result);
-        r.readAsDataURL(file);
-      } else {
-        save(null);
+      } catch (err) {
+        console.error('Error guardando mecenas:', err);
+        alert('❌ Error al guardar mecenas: ' + (err.message || err));
       }
     }
+
 
     function rMecenasAdmin() {
       const c = document.getElementById('mecenas-list-admin');
@@ -7018,7 +8477,7 @@
         `).join('');
     }
 
-    window.editMecenasDonor = function (id) {
+    function editMecenasDonor(id) {
       let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
       const item = list.find(x => x.id == id);
       if (!item) return;
@@ -7028,18 +8487,36 @@
       document.getElementById('m-mecenas-donante').style.display = 'flex';
     }
 
-    function elimMecenasDonor(id) {
+    async function elimMecenasDonor(id) {
+      console.log('🗑️ elimMecenasDonor llamada con id:', id);
       if (!confirm("¿Eliminar este donante del muro de honor?")) return;
       let list = JSON.parse(localStorage.getItem(KMEC_LIST)) || [];
-      const item = list.find(x => x.id == id);
+      const item = list.find(x => String(x.id) === String(id));
       if (!item) return;
-      list = list.filter(x => x.id != id);
-      localStorage.setItem(KMEC_LIST, JSON.stringify(list));
 
-      // Sincronizar borrado (en una app real usarías deleteDoc, aquí marcamos como null o lo quitamos del sync)
+      // Marcar como eliminado para que onSnapshot no lo resucite
+      deletedDonorIds.add(String(id));
+
+      // Borrar de localStorage y actualizar UI inmediatamente
+      list = list.filter(x => String(x.id) !== String(id));
+      localStorage.setItem(KMEC_LIST, JSON.stringify(list));
       registrarCambioMecenas("Eliminar Donante", item.n);
       rMecenasAdmin();
       rMecenasPublic();
+
+      // Borrar de Firestore (en segundo plano)
+      if (db) {
+        try {
+          await deleteDoc(doc(db, 'BandaMecenasDonors', String(id)));
+          console.log('✅ Donante eliminado de la nube:', item.n);
+        } catch(e) {
+          console.error('❌ Error eliminando donante de nube:', e);
+          alert('⚠️ Error al eliminar en la nube. Intente de nuevo.');
+        }
+      }
+
+      // Limpiar la protección después de 30 segundos
+      setTimeout(() => deletedDonorIds.delete(String(id)), 30000);
     }
 
     function registrarCambioMecenas(accion, detalle) {
@@ -7107,7 +8584,7 @@
     }
 
     /* --- HERRAMIENTAS DE ALUMNOS (LÓGICA) --- */
-    let audioCtx = null;
+    // audioCtx ya declarado al inicio
 
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -7174,9 +8651,22 @@
     }
 
     // AFINADOR PRO (AGUJA Y VOCAL)
-    let tOsc = null, tGn = null;
+    // tOsc, tGn etc ya declarados al inicio
     let isTunerAguja = false, isTunerVocal = false;
     let tStream = null, tMic = null, tAn = null, tRaf = null;
+    let tunerSensitivity = 0.01;
+
+    function cambiarSensibilidad(v) {
+      tunerSensitivity = parseFloat(v);
+      const lbl = document.getElementById('sens-val-label');
+      if (lbl) {
+        if (v < 0.005) lbl.innerText = "Muy Alta";
+        else if (v < 0.015) lbl.innerText = "Media";
+        else if (v < 0.04) lbl.innerText = "Normal";
+        else if (v < 0.07) lbl.innerText = "Baja";
+        else lbl.innerText = "Muy Baja (Silencioso)";
+      }
+    }
     let tCanvasA = null, tCtxA = null;
     let tTranspo = 0; // Transposición en semitonos (0=C, -2=Bb, 3=Eb)
     const buflen = 2048, buf = new Float32Array(buflen);
@@ -7279,7 +8769,7 @@
       let SIZE = buf.length; let rms = 0;
       for (let i = 0; i < SIZE; i++) { let val = buf[i]; rms += val * val; }
       rms = Math.sqrt(rms / SIZE);
-      if (rms < 0.01) return -1;
+      if (rms < tunerSensitivity) return -1;
       let r1 = 0, r2 = SIZE - 1, thres = 0.2;
       for (let i = 0; i < SIZE / 2; i++) if (Math.abs(buf[i]) < thres) { r1 = i; break; }
       for (let i = 1; i < SIZE / 2; i++) if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
@@ -7464,13 +8954,7 @@
     }
 
     // MEMORIA AUDITIVA (SIMÓN DICE)
-    let memSec = [];
-    let memTurno = [];
-    let memNivel = 0;
-    let memPlayer = "";
-    let memStartTime = 0, memMistakes = 0, memTimerInt = null;
-    const memFreqs = [261.6, 329.6, 392.0, 523.2]; // Do, Mi, Sol, Do alto
-    const KSIMON_TOP = 'ens_simon_top5';
+    // Simon state y constantes ya declarados al inicio
 
     function initSimonUI() { }
 
@@ -7597,6 +9081,12 @@
         top.push({ n: nombre, s: nivel, t: tiempo });
       }
       localStorage.setItem(KSIMON_TOP, JSON.stringify(top));
+      if (window.cloudSave) {
+        // Guardar cada récord como un doc id=nombre para sincronizar
+        top.forEach(r => {
+          window.cloudSave('BandaSimonRecords', r.n, r);
+        });
+      }
       actualizarLeaderboard();
     }
 
@@ -7616,8 +9106,87 @@
       document.querySelectorAll('.m-pad').forEach(p => p.style.pointerEvents = b ? 'none' : 'auto');
     }
 
-    console.log('🎺 Módulo de la app completamente cargado.');
+    /* PWA INSTALLATION LOGIC */
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Mostrar el banner después de 5 segundos de navegación
+      setTimeout(() => {
+        const banner = document.getElementById('pwa-install-banner');
+        if (banner) banner.style.display = 'block';
+      }, 5000);
+    });
+
+    async function instalarAppPWA() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to install prompt: ${outcome}`);
+      deferredPrompt = null;
+      document.getElementById('pwa-install-banner').style.display = 'none';
+    }
+    window.instalarAppPWA = instalarAppPWA;
+
+    // REGISTRO DE SERVICE WORKER v12 (Network First)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=12')
+          .then(reg => {
+             console.log('✅ Service Worker v12 registrado', reg.scope);
+             reg.update(); 
+          })
+          .catch(err => console.error('❌ Error al registrar Service Worker:', err));
+      });
+
+      // Si el usuario vuelve a la app después de un tiempo, forzamos chequeo de versión
+      window.addEventListener('focus', () => {
+          navigator.serviceWorker.getRegistration().then(reg => {
+              if (reg) reg.update();
+          });
+      });
+    }
+
+    window.forzarActualizacionApp = async function() {
+        console.log('🔧 forzarActualizacionApp llamada');
+        if (!confirm("Se limpiará la memoria de la aplicación y se forzará la descarga de la última versión (v1.9). ¿Continuar?")) return;
+        try {
+            if ('serviceWorker' in navigator) {
+                const regs = await navigator.serviceWorker.getRegistrations();
+                for(let registration of regs) { await registration.unregister(); }
+            }
+            if ('caches' in window) {
+                const keys = await caches.keys();
+                for(let key of keys) { await caches.delete(key); }
+            }
+            localStorage.clear(); // Limpiamos todo para asegurar inicio limpio
+            alert("Memoria limpiada. La aplicación se reiniciará ahora.");
+            window.location.reload(true);
+        } catch(e) {
+            console.error("Error en forzarActualizacion:", e);
+            window.location.reload(true);
+        }
+    };
+
+    console.log('🎺 Módulo de la app v2.0 completamente cargado.');
   </script>
+
+  <!-- PWA Install Banner (hidden by default, shown by JS after 5s) -->
+  <div id="pwa-install-banner">
+    <div class="pwa-banner-content">
+      <div class="pwa-banner-icon">📲</div>
+      <div class="pwa-banner-text">
+        <strong>Instalar la App</strong>
+        <span>Acceso rápido desde tu pantalla de inicio</span>
+      </div>
+    </div>
+    <div class="pwa-banner-actions">
+      <button class="pwa-btn-dismiss" onclick="document.getElementById('pwa-install-banner').style.display='none'">Ahora
+        no</button>
+      <button class="pwa-btn-install" onclick="instalarAppPWA()">Instalar</button>
+    </div>
+  </div>
+
 </body>
 
 </html>
