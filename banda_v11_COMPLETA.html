@@ -3562,6 +3562,7 @@
     /* ESCALA 1-5 */
     function colV(v) { return v < 3 ? '#e74c3c' : v < 3.7 ? '#f39c12' : v < 4.7 ? '#3498db' : '#27ae60'; }
     function lblV(v) { return v < 3 ? 'BAJO' : v < 3.7 ? 'BÁSICO' : v < 4.7 ? 'ALTO' : 'SUPERIOR'; }
+    function letraV(v) { return v < 3 ? 'Bj' : v < 3.7 ? 'Bs' : v < 4.7 ? 'A' : 'S'; }
     function pct15(v) { return Math.max(0, Math.min(100, ((v - 1) / 4) * 100)).toFixed(1); }
 
     /* INIT */
@@ -4651,14 +4652,32 @@
       if (!vals.length) return null;
       return vals.reduce((a, b) => a + b, 0) / vals.length;
     }
-    function promGen(p) {
-      const arr = [];
-      const pe = promSec(p.escalas), pr = promSec(p.rep), pg = promSec(p.grupo);
-      if (pe !== null) arr.push(pe);
-      if (pr !== null) arr.push(pr);
-      if (pg !== null) arr.push(pg);
-      if (!arr.length) return null;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    function promGen(p, id) {
+      const pe = promSec(p.escalas);
+      const ppRep = promSec(p.rep);
+      const pg = promSec(p.grupo);
+      
+      // Cálculo de Asistencia
+      let faltas = 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      h.forEach(reg => {
+        const s = reg.d[id];
+        if (s == 'a' || s == 't') faltas++;
+      });
+      
+      let notaAsistencia = 5.0; // S
+      if (faltas >= 14) notaAsistencia = 2.0; // Bj
+      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
+      else if (faltas >= 3) notaAsistencia = 4.5; // A
+
+      // Si ninguna sección tiene datos, retornar null
+      if (pe === null && ppRep === null && pg === null) return null;
+      
+      // Cada sección SIN datos cuenta como 0 — SIEMPRE se divide entre 4 (asistencia, escalas, rep, grupo)
+      const valEsc = pe !== null ? pe : 0;
+      const valRep = ppRep !== null ? ppRep : 0;
+      const valGru = pg !== null ? pg : 0;
+      return (valEsc + valRep + valGru + notaAsistencia) / 4;
     }
     function rProc() {
       const c = document.getElementById('proc-lista');
@@ -4673,7 +4692,7 @@
         }
         const k = 'p' + pid;
         if (!pr[al.id][k]) pr[al.id][k] = { escalas: [], rep: [], grupo: [] };
-        const pg = promGen(pr[al.id][k]);
+        const pg = promGen(pr[al.id][k], al.id);
         const col = pg === null ? '#aaa' : colV(pg);
         const txt = pg === null ? 'Sin evaluar' : pg.toFixed(2) + ' / 5 — ' + lblV(pg);
         const w = pg === null ? 0 : pct15(pg);
@@ -4755,13 +4774,38 @@
       document.getElementById('pg-esc').innerText = pe !== null ? pe.toFixed(2) : '—';
       document.getElementById('pg-rep').innerText = pr !== null ? pr.toFixed(2) : '—';
       document.getElementById('pg-gru').innerText = pg !== null ? pg.toFixed(2) : '—';
-      const gen = promGen(p);
+      
+      const gen = promGen(p, aPr);
+      
+      // Calcular asistencia para mostrar
+      let faltas = 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      h.forEach(reg => {
+        const s = reg.d[aPr];
+        if (s == 'a' || s == 't') faltas++;
+      });
+      let notaAsistencia = 5.0; // S
+      if (faltas >= 14) notaAsistencia = 2.0; // Bj
+      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
+      else if (faltas >= 3) notaAsistencia = 4.5; // A
+      
       if (gen === null) {
         document.getElementById('pprom').innerText = '—';
         document.getElementById('pnivel').innerText = 'SIN EVALUAR';
       } else {
         document.getElementById('pprom').innerText = gen.toFixed(2);
-        document.getElementById('pnivel').innerText = lblV(gen) + ' (' + gen.toFixed(2) + ' / 5)';
+        
+        const vE = pe !== null ? pe.toFixed(1) : '0.0';
+        const vR = pr !== null ? pr.toFixed(1) : '0.0';
+        const vG = pg !== null ? pg.toFixed(1) : '0.0';
+        const vA = notaAsistencia.toFixed(1);
+
+        const strA = `Asist: ${vA}(${letraV(notaAsistencia)})`;
+        const strE = `Esc: ${vE}(${letraV(parseFloat(vE))})`;
+        const strR = `Rep: ${vR}(${letraV(parseFloat(vR))})`;
+        const strG = `Gru: ${vG}(${letraV(parseFloat(vG))})`;
+        
+        document.getElementById('pnivel').innerHTML = `${lblV(gen)} (${gen.toFixed(2)} / 5)<br><span style="font-size:11px; color:#555; display:block; margin-top:5px;">(${strA} + ${strE} + ${strR} + ${strG}) ÷ 4</span>`;
       }
     }
     function guardarCalificacion() {

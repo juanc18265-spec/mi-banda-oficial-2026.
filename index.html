@@ -5114,6 +5114,7 @@
     /* ESCALA 1-5 */
     function colV(v) { return v < 3 ? '#e74c3c' : v < 3.7 ? '#f39c12' : v < 4.7 ? '#3498db' : '#27ae60'; }
     function lblV(v) { return v < 3 ? 'BAJO' : v < 3.7 ? 'BÁSICO' : v < 4.7 ? 'ALTO' : 'SUPERIOR'; }
+    function letraV(v) { return v < 3 ? 'Bj' : v < 3.7 ? 'Bs' : v < 4.7 ? 'A' : 'S'; }
     function pct15(v) { return Math.max(0, Math.min(100, ((v - 1) / 4) * 100)).toFixed(1); }
 
     /* INIT */
@@ -6783,17 +6784,31 @@
       if (!vals.length) return null;
       return vals.reduce((a, b) => a + b, 0) / vals.length;
     }
-    function promGen(p) {
+    function promGen(p, id) {
       const pe = promSec(p.escalas);
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
+      
+      // Cálculo de Asistencia
+      let faltas = 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      h.forEach(reg => {
+        const s = reg.d[id];
+        if (s == 'a' || s == 't') faltas++;
+      });
+      
+      let notaAsistencia = 5.0; // S
+      if (faltas >= 14) notaAsistencia = 2.0; // Bj
+      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
+      else if (faltas >= 3) notaAsistencia = 4.5; // A
+
       // Si ninguna sección tiene datos, retornar null
       if (pe === null && ppRep === null && pg === null) return null;
-      // Cada sección SIN datos cuenta como 0 — SIEMPRE se divide entre 3
+      // Cada sección SIN datos cuenta como 0 — SIEMPRE se divide entre 4 (asistencia, escalas, rep, grupo)
       const valEsc = pe !== null ? pe : 0;
       const valRep = ppRep !== null ? ppRep : 0;
       const valGru = pg !== null ? pg : 0;
-      return (valEsc + valRep + valGru) / 3;
+      return (valEsc + valRep + valGru + notaAsistencia) / 4;
     }
     function rProc() {
       const c = document.getElementById('proc-lista');
@@ -6808,7 +6823,7 @@
         }
         const k = 'p' + pid;
         if (!pr[al.id][k]) pr[al.id][k] = { escalas: [], rep: [], grupo: [] };
-        const pg = promGen(pr[al.id][k]);
+        const pg = promGen(pr[al.id][k], al.id);
         const col = pg === null ? '#aaa' : colV(pg);
         const txt = pg === null ? 'Sin evaluar' : pg.toFixed(2) + ' / 5 — ' + lblV(pg);
         const w = pg === null ? 0 : pct15(pg);
@@ -6947,10 +6962,23 @@
       const pe = promSec(p.escalas);
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
+      
+      // Calcular asistencia para mostrar
+      let faltas = 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      h.forEach(reg => {
+        const s = reg.d[aPr];
+        if (s == 'a' || s == 't') faltas++;
+      });
+      let notaAsistencia = 5.0; // S
+      if (faltas >= 14) notaAsistencia = 2.0; // Bj
+      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
+      else if (faltas >= 3) notaAsistencia = 4.5; // A
+
       // Mostrar el box del promedio general
       const pgBox = document.getElementById('prom-gen-box');
       if (pgBox) pgBox.style.display = 'block';
-      const gen = promGen(p);
+      const gen = promGen(p, aPr);
       const formulaEl = document.getElementById('prom-formula');
       if (gen === null) {
         document.getElementById('pprom').innerText = '—';
@@ -6959,10 +6987,18 @@
       } else {
         document.getElementById('pprom').innerText = gen.toFixed(2);
         document.getElementById('pnivel').innerText = lblV(gen) + ' (' + gen.toFixed(2) + ' / 5)';
-        const vE = pe !== null ? pe.toFixed(1) : '0';
-        const vR = ppRep !== null ? ppRep.toFixed(1) : '0';
-        const vG = pg !== null ? pg.toFixed(1) : '0';
-        if (formulaEl) formulaEl.innerText = '(' + vE + ' + ' + vR + ' + ' + vG + ') ÷ 3 = ' + gen.toFixed(2);
+        
+        const vE = pe !== null ? pe.toFixed(1) : '0.0';
+        const vR = ppRep !== null ? ppRep.toFixed(1) : '0.0';
+        const vG = pg !== null ? pg.toFixed(1) : '0.0';
+        const vA = notaAsistencia.toFixed(1);
+
+        const strA = `Asist: ${vA}(${letraV(notaAsistencia)})`;
+        const strE = `Esc: ${vE}(${letraV(parseFloat(vE))})`;
+        const strR = `Rep: ${vR}(${letraV(parseFloat(vR))})`;
+        const strG = `Gru: ${vG}(${letraV(parseFloat(vG))})`;
+        
+        if (formulaEl) formulaEl.innerHTML = `<span style="font-size:12px; color:#555;">(${strA} + ${strE} + ${strR} + ${strG}) ÷ 4 = </span><strong style="color:var(--az);">${gen.toFixed(2)}</strong>`;
       }
       // Scroll suave hacia el promedio general
       if (pgBox) pgBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
