@@ -4268,6 +4268,10 @@
       </div>
       <div class="detalle-prom" style="background:#f8fafc;border-radius:14px;padding:14px;margin-bottom:14px;border:1px solid #e2e8f0;">
         <div style="font-size:13px;font-weight:900;color:#475569;margin-bottom:10px;text-align:center;">📊 PROMEDIOS POR SECCIÓN</div>
+        <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border-radius:10px;margin-bottom:6px;">
+          <span style="font-weight:800;color:#4a5568;font-size:13px;">📋 Asistencia</span>
+          <span class="dp-num" id="pg-asi" style="font-size:16px;font-weight:900;color:#ef4444;">—</span>
+        </div>
         <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#eef2ff,#e8eaff);border-radius:10px;margin-bottom:6px;">
           <span style="font-weight:800;color:#4a5568;font-size:13px;">🎹 Escalas</span>
           <span class="dp-num" id="pg-esc" style="font-size:16px;font-weight:900;color:#667eea;">—</span>
@@ -4288,7 +4292,7 @@
         <div style="font-size:12px;opacity:.85;margin-bottom:4px;">PROMEDIO GENERAL</div>
         <div class="promedio-num" id="pprom">—</div>
         <div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:8px;" id="pnivel">SIN EVALUAR</div>
-        <div id="prom-formula" style="font-size:11px;opacity:.8;margin-top:6px;font-weight:600;color:#cbd5e1;"></div>
+        <div id="prom-formula" style="font-size:11px;opacity:.9;margin-top:6px;font-weight:600;color:#e2e8f0;background:rgba(0,0,0,0.2);padding:6px;border-radius:6px;"></div>
         <div style="font-size:10px;opacity:.75;margin-top:8px;">1–2.9 BAJO | 3–3.6 BÁSICO | 3.7–4.6 ALTO | 4.7–5
           SUPERIOR</div>
       </div>
@@ -6804,11 +6808,15 @@
 
       // Si ninguna sección tiene datos, retornar null
       if (pe === null && ppRep === null && pg === null) return null;
-      // Cada sección SIN datos cuenta como 0 — SIEMPRE se divide entre 4 (asistencia, escalas, rep, grupo)
-      const valEsc = pe !== null ? pe : 0;
-      const valRep = ppRep !== null ? ppRep : 0;
-      const valGru = pg !== null ? pg : 0;
-      return (valEsc + valRep + valGru + notaAsistencia) / 4;
+      
+      let sum = notaAsistencia;
+      let divisor = 1; // Asistencia siempre cuenta
+      
+      if (pe !== null) { sum += pe; divisor++; }
+      if (ppRep !== null) { sum += ppRep; divisor++; }
+      if (pg !== null) { sum += pg; divisor++; }
+      
+      return sum / divisor;
     }
     function rProc() {
       const c = document.getElementById('proc-lista');
@@ -6940,9 +6948,25 @@
       const escTxt = pe !== null ? pe.toFixed(2) : '—';
       const repTxt = ppRep !== null ? ppRep.toFixed(2) : '—';
       const gruTxt = pg !== null ? pg.toFixed(2) : '—';
+      
+      // Calcular asistencia temporalmente para mostrarla en los promedios
+      let faltas = 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      h.forEach(reg => {
+        const s = reg.d[aPr];
+        if (s == 'a' || s == 't') faltas++;
+      });
+      let notaAsistencia = 5.0; // S
+      if (faltas >= 14) notaAsistencia = 2.0; // Bj
+      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
+      else if (faltas >= 3) notaAsistencia = 4.5; // A
+      
+      const pgAsi = document.getElementById('pg-asi');
       const pgEsc = document.getElementById('pg-esc');
       const pgRep = document.getElementById('pg-rep');
       const pgGru = document.getElementById('pg-gru');
+      
+      if (pgAsi) { pgAsi.innerText = notaAsistencia.toFixed(2); pgAsi.style.color = colV(notaAsistencia); }
       if (pgEsc) { pgEsc.innerText = escTxt; if (pe !== null) pgEsc.style.color = colV(pe); }
       if (pgRep) { pgRep.innerText = repTxt; if (ppRep !== null) pgRep.style.color = colV(ppRep); }
       if (pgGru) { pgGru.innerText = gruTxt; if (pg !== null) pgGru.style.color = colV(pg); }
@@ -6994,11 +7018,14 @@
         const vA = notaAsistencia.toFixed(1);
 
         const strA = `Asist: ${vA}(${letraV(notaAsistencia)})`;
-        const strE = `Esc: ${vE}(${letraV(parseFloat(vE))})`;
-        const strR = `Rep: ${vR}(${letraV(parseFloat(vR))})`;
-        const strG = `Gru: ${vG}(${letraV(parseFloat(vG))})`;
+        let divisorStr = 1;
+        let terms = [strA];
         
-        if (formulaEl) formulaEl.innerHTML = `<span style="font-size:12px; color:#555;">(${strA} + ${strE} + ${strR} + ${strG}) ÷ 4 = </span><strong style="color:var(--az);">${gen.toFixed(2)}</strong>`;
+        if (pe !== null) { terms.push(`Esc: ${vE}(${letraV(parseFloat(vE))})`); divisorStr++; }
+        if (ppRep !== null) { terms.push(`Rep: ${vR}(${letraV(parseFloat(vR))})`); divisorStr++; }
+        if (pg !== null) { terms.push(`Gru: ${vG}(${letraV(parseFloat(vG))})`); divisorStr++; }
+        
+        if (formulaEl) formulaEl.innerHTML = `<span style="font-size:12px; color:#f8fafc;">(${terms.join(' + ')}) ÷ ${divisorStr} = </span><strong style="color:#FFD700;font-size:14px;">${gen.toFixed(2)}</strong>`;
       }
       // Scroll suave hacia el promedio general
       if (pgBox) pgBox.scrollIntoView({ behavior: 'smooth', block: 'center' });

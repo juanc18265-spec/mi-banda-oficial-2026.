@@ -3196,6 +3196,7 @@
         <div class="promedio-num" id="pprom">—</div>
         <div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:8px;" id="pnivel">SIN EVALUAR</div>
         <div class="detalle-prom">
+          <div class="dp-item"><span class="dp-num" id="pg-asi" style="color:#ef4444">—</span>Asistencia</div>
           <div class="dp-item"><span class="dp-num" id="pg-esc">—</span>Escalas</div>
           <div class="dp-item"><span class="dp-num" id="pg-rep">—</span>Repertorio</div>
           <div class="dp-item"><span class="dp-num" id="pg-gru">—</span>Grupo</div>
@@ -4673,11 +4674,14 @@
       // Si ninguna sección tiene datos, retornar null
       if (pe === null && ppRep === null && pg === null) return null;
       
-      // Cada sección SIN datos cuenta como 0 — SIEMPRE se divide entre 4 (asistencia, escalas, rep, grupo)
-      const valEsc = pe !== null ? pe : 0;
-      const valRep = ppRep !== null ? ppRep : 0;
-      const valGru = pg !== null ? pg : 0;
-      return (valEsc + valRep + valGru + notaAsistencia) / 4;
+      let sum = notaAsistencia;
+      let divisor = 1; // Asistencia siempre cuenta
+      
+      if (pe !== null) { sum += pe; divisor++; }
+      if (ppRep !== null) { sum += ppRep; divisor++; }
+      if (pg !== null) { sum += pg; divisor++; }
+      
+      return sum / divisor;
     }
     function rProc() {
       const c = document.getElementById('proc-lista');
@@ -4771,12 +4775,6 @@
     }
     function actualizarProm(p) {
       const pe = promSec(p.escalas), pr = promSec(p.rep), pg = promSec(p.grupo);
-      document.getElementById('pg-esc').innerText = pe !== null ? pe.toFixed(2) : '—';
-      document.getElementById('pg-rep').innerText = pr !== null ? pr.toFixed(2) : '—';
-      document.getElementById('pg-gru').innerText = pg !== null ? pg.toFixed(2) : '—';
-      
-      const gen = promGen(p, aPr);
-      
       // Calcular asistencia para mostrar
       let faltas = 0;
       let h = JSON.parse(localStorage.getItem(KA)) || [];
@@ -4788,6 +4786,14 @@
       if (faltas >= 14) notaAsistencia = 2.0; // Bj
       else if (faltas >= 7) notaAsistencia = 3.5; // Bs
       else if (faltas >= 3) notaAsistencia = 4.5; // A
+
+      document.getElementById('pg-asi').innerText = notaAsistencia.toFixed(2);
+      document.getElementById('pg-asi').style.color = colV(notaAsistencia);
+      document.getElementById('pg-esc').innerText = pe !== null ? pe.toFixed(2) : '—';
+      document.getElementById('pg-rep').innerText = pr !== null ? pr.toFixed(2) : '—';
+      document.getElementById('pg-gru').innerText = pg !== null ? pg.toFixed(2) : '—';
+      
+      const gen = promGen(p, aPr);
       
       if (gen === null) {
         document.getElementById('pprom').innerText = '—';
@@ -4801,11 +4807,14 @@
         const vA = notaAsistencia.toFixed(1);
 
         const strA = `Asist: ${vA}(${letraV(notaAsistencia)})`;
-        const strE = `Esc: ${vE}(${letraV(parseFloat(vE))})`;
-        const strR = `Rep: ${vR}(${letraV(parseFloat(vR))})`;
-        const strG = `Gru: ${vG}(${letraV(parseFloat(vG))})`;
+        let divisorStr = 1;
+        let terms = [strA];
         
-        document.getElementById('pnivel').innerHTML = `${lblV(gen)} (${gen.toFixed(2)} / 5)<br><span style="font-size:11px; color:#555; display:block; margin-top:5px;">(${strA} + ${strE} + ${strR} + ${strG}) ÷ 4</span>`;
+        if (pe !== null) { terms.push(`Esc: ${vE}(${letraV(parseFloat(vE))})`); divisorStr++; }
+        if (pr !== null) { terms.push(`Rep: ${vR}(${letraV(parseFloat(vR))})`); divisorStr++; }
+        if (pg !== null) { terms.push(`Gru: ${vG}(${letraV(parseFloat(vG))})`); divisorStr++; }
+        
+        document.getElementById('pnivel').innerHTML = `${lblV(gen)} <strong style="color:#FFD700;">(${gen.toFixed(2)} / 5)</strong><br><span style="font-size:11px; color:#e2e8f0; display:block; margin-top:5px; background:rgba(0,0,0,0.2); padding:6px; border-radius:6px;">(${terms.join(' + ')}) ÷ ${divisorStr}</span>`;
       }
     }
     function guardarCalificacion() {
