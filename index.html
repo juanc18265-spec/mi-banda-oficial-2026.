@@ -6865,8 +6865,8 @@
       if (secEscalas) secEscalas.classList.add('act');
 
       procSyncBlocked = true; // Bloquear sync mientras editas
+      procCache = getPr(id); // Cargar datos en cache de memoria
       renderProc();
-      actualizarProm(getPr(id));
       // Ocultar promedio general hasta que el usuario lo calcule manualmente
       const pgBox = document.getElementById('prom-gen-box');
       if (pgBox) pgBox.style.display = 'none';
@@ -6874,11 +6874,11 @@
       if (mProc) mProc.style.display = 'flex';
     }
     function renderProc() {
-      const p = getPr(aPr);
-      renderSec(p.escalas, 'ps-escalas-list', 'escalas');
-      renderSec(p.rep, 'ps-rep-list', 'rep');
-      renderSec(p.grupo, 'ps-grupo-list', 'grupo');
-      actualizarProm(p);
+      if (!procCache) procCache = getPr(aPr);
+      renderSec(procCache.escalas, 'ps-escalas-list', 'escalas');
+      renderSec(procCache.rep, 'ps-rep-list', 'rep');
+      renderSec(procCache.grupo, 'ps-grupo-list', 'grupo');
+      actualizarProm(procCache);
     }
     function verProcTab(sec, el) {
       document.querySelectorAll('.proc-tab-btn').forEach(b => b.classList.remove('act'));
@@ -6903,40 +6903,42 @@
       c.innerHTML = h;
     }
     let procSyncBlocked = false; // Bloquear sync mientras se edita
+    let procCache = null; // Cache en memoria para evitar re-leer localStorage
     function cambVal(tipo, idx, v, slider) {
       procSyncBlocked = true; // Bloquear sync mientras editas
       v = Math.round(v * 10) / 10;
-      const p = getPr(aPr);
-      p[tipo][idx].v = v;
-      savePr(aPr, p);
+      // Usar cache en memoria en vez de re-leer localStorage
+      if (!procCache) procCache = getPr(aPr);
+      procCache[tipo][idx].v = v;
+      savePr(aPr, procCache);
       const col = colV(v), pt = pct15(v);
       slider.style.background = `linear-gradient(to right,${col} ${pt}%,#ddd ${pt}%)`;
       const pv = document.getElementById(`pv-${tipo}-${idx}`);
       if (pv) pv.innerHTML = `<span style="font-size:28px;font-weight:900;color:${col};">${v.toFixed(1)}</span><span style="font-size:12px;font-weight:900;color:${col};margin-left:8px;">/ 5.0</span><span style="display:block;font-size:13px;font-weight:900;color:${col};margin-top:2px;">${lblV(v)}</span>`;
-      actualizarProm(getPr(aPr));
+      actualizarProm(procCache);
       // Ocultar promedio general si se cambia algo (debe recalcularse manualmente)
       const pgBox = document.getElementById('prom-gen-box');
       if (pgBox) pgBox.style.display = 'none';
     }
     window.cambVal = cambVal;
     function cambNombre(tipo, idx, nombre) {
-      const p = getPr(aPr);
-      p[tipo][idx].n = nombre;
-      savePr(aPr, p);
+      if (!procCache) procCache = getPr(aPr);
+      procCache[tipo][idx].n = nombre;
+      savePr(aPr, procCache);
     }
     window.cambNombre = cambNombre;
     function agregarItem(tipo) {
-      const p = getPr(aPr);
+      if (!procCache) procCache = getPr(aPr);
       const noms = { escalas: 'Nueva Escala', rep: 'Nueva Obra', grupo: 'Nueva Pieza' };
-      p[tipo].push({ n: noms[tipo], v: 3.0 });
-      savePr(aPr, p);
+      procCache[tipo].push({ n: noms[tipo], v: 3.0 });
+      savePr(aPr, procCache);
       renderProc();
     }
     function elimItem(tipo, idx) {
       if (!confirm('¿Eliminar?')) return;
-      const p = getPr(aPr);
-      p[tipo].splice(idx, 1);
-      savePr(aPr, p);
+      if (!procCache) procCache = getPr(aPr);
+      procCache[tipo].splice(idx, 1);
+      savePr(aPr, procCache);
       renderProc();
       rProc();
     }
@@ -7031,8 +7033,9 @@
       if (pgBox) pgBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     function guardarCalificacion() {
+      if (procCache) savePr(aPr, procCache); // Guardar cache final
+      procCache = null; // Limpiar cache
       procSyncBlocked = false; // Re-habilitar sync
-      savePr(aPr, getPr(aPr)); // Asegurar guardado final
       alert('✅ Calificación guardada correctamente');
       rProc();
     }
