@@ -5459,6 +5459,7 @@
       const selVal = parseInt(document.getElementById('ap-periodo-sel').value) || 0;
       _renderAsistenciaPadresFiltrada(_padresAlumnoId, selVal);
     }
+    window.filtrarAsistenciaPorPeriodo = filtrarAsistenciaPorPeriodo;
 
     function _renderAsistenciaPadresFiltrada(id, periodoNum) {
       let h = JSON.parse(localStorage.getItem(KA)) || [];
