@@ -3430,6 +3430,18 @@
           style="text-align:center;font-size:24px;font-weight:900;color:var(--az);margin-bottom:4px;"></p>
         <p id="ap-estudiante-inst" style="text-align:center;font-size:11px;color:#888;margin-bottom:16px;"></p>
 
+        <!-- SELECTOR DE PERIODO -->
+        <div style="background:white;padding:12px;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.08);margin-bottom:15px;">
+          <label style="display:block;font-size:11px;font-weight:900;color:var(--az);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">📅 Filtrar por Periodo</label>
+          <select id="ap-periodo-sel" onchange="filtrarAsistenciaPorPeriodo()" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:11px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;background:#f9f9f9;color:#333;outline:none;cursor:pointer;">
+            <option value="0">📊 Todo el Año (Acumulado)</option>
+            <option value="1">📘 Periodo 1 (Ene 19 - Mar 29)</option>
+            <option value="2">📗 Periodo 2 (Abr 6 - Jun 14)</option>
+            <option value="3">📙 Periodo 3 (Jul 6 - Oct 11)</option>
+            <option value="4">📕 Periodo 4 (Oct 12 - Nov 29)</option>
+          </select>
+        </div>
+
         <div id="ap-stats" class="sg" style="margin-bottom:20px;">
           <div class="sb" style="background:var(--ve);"><span id="ap-sp"
               style="font-size:24px;display:block;">0</span><small>Presente</small></div>
@@ -5404,9 +5416,14 @@
       }
     }
 
+    // Variable global para guardar el alumno actual en vista padres
+    let _padresAlumnoId = null;
+
     function rAsistenciaPadres(id) {
       const al = banda.find(x => x.id == id);
       if (!al) return alert('Error: Alumno no encontrado');
+
+      _padresAlumnoId = id; // Guardar para filtrado por periodo
 
       // Reutilizamos el modal de stats público pero adaptado
       document.getElementById('ap-estudiante-nom').innerHTML = al.n + "<div style='font-size:10px;color:#00CED1;margin-top:4px;'>VISTA PADRES</div>";
@@ -5427,11 +5444,38 @@
       }
       logoutBtn.style.display = 'block';
 
+      // Resetear selector de periodo a "Todo el año"
+      const selPer = document.getElementById('ap-periodo-sel');
+      if (selPer) selPer.value = '0';
+
+      // Renderizar con filtro (0 = todo)
+      _renderAsistenciaPadresFiltrada(id, 0);
+
+      vT('asistencia-publico', -1);
+    }
+
+    function filtrarAsistenciaPorPeriodo() {
+      if (_padresAlumnoId === null) return;
+      const selVal = parseInt(document.getElementById('ap-periodo-sel').value) || 0;
+      _renderAsistenciaPadresFiltrada(_padresAlumnoId, selVal);
+    }
+
+    function _renderAsistenciaPadresFiltrada(id, periodoNum) {
       let h = JSON.parse(localStorage.getItem(KA)) || [];
       let p = 0, au = 0, t = 0, e = 0, listaHtml = '';
 
-      // Filtrado por periodo opcional? Por ahora histórico completo
-      h.forEach(reg => {
+      // Filtrar por periodo si se seleccionó uno
+      let registros = h;
+      if (periodoNum > 0 && PER[periodoNum]) {
+        const per = PER[periodoNum];
+        registros = h.filter(r => {
+          const partes = r.f.split('/');
+          const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
+          return fecha >= new Date(per.i) && fecha <= new Date(per.f);
+        });
+      }
+
+      registros.forEach(reg => {
         const s = reg.d[id];
         if (!s) return;
         let icon = '', label = '', color = '';
@@ -5451,13 +5495,9 @@
       document.getElementById('ap-st').innerText = t;
       document.getElementById('ap-se').innerText = e;
       document.getElementById('ap-inasistencias').innerText = au + t;
-      document.getElementById('ap-total').innerText = (p + au + t + e) + ' Clases';
-      document.getElementById('ap-lista').innerHTML = listaHtml || '<p style="text-align:center;color:#bbb;font-size:12px;padding:20px;">Sin registros.</p>';
-
-      // Ocultar botón de "Volver" estandard si estamos en modo padres para forzar el Logout? 
-      // No, el botón volver solo cierra el modal (vT(-1)). El logout es para cerrar la sesión persistente.
-
-      vT('asistencia-publico', -1);
+      const periodoLabel = periodoNum > 0 ? PER[periodoNum].n : 'Acumulado';
+      document.getElementById('ap-total').innerText = (p + au + t + e) + ' Clases (' + periodoLabel + ')';
+      document.getElementById('ap-lista').innerHTML = listaHtml || '<p style="text-align:center;color:#bbb;font-size:12px;padding:20px;">Sin registros en este periodo.</p>';
     }
 
     function rPadresGeneral() {
@@ -7061,7 +7101,8 @@
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
       const nowLimit = new Date();
       nowLimit.setHours(nowLimit.getHours() - 12);
-      const prox = ev.filter(e => !e.archived && new Date(e.f) >= nowLimit);
+      const prox = ev.filter(e => !e.archived && new Date(e.f) >= nowLimit)
+        .sort((a, b) => new Date(a.f) - new Date(b.f)); // Más próximo primero
       if (!prox.length) {
         c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:25px;font-size:13px;">No hay eventos próximos</p>';
         return;
@@ -7073,12 +7114,13 @@
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
       const nowLimit = new Date();
       nowLimit.setHours(nowLimit.getHours() - 12);
-      const hist = [...ev].filter(e => !e.archived && new Date(e.f) < nowLimit).reverse();
+      const hist = ev.filter(e => !e.archived && new Date(e.f) < nowLimit)
+        .sort((a, b) => new Date(b.f) - new Date(a.f)); // Más reciente primero
       if (!hist.length) {
         c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:25px;font-size:13px;">Sin eventos pasados</p>';
         return;
       }
-      c.innerHTML = '<p style="font-size:11px;color:#aaa;text-align:center;margin-bottom:12px;">Eventos pasados automáticamente</p>' + hist.map(e => evCard(e, true)).join('');
+      c.innerHTML = '<p style="font-size:11px;color:#aaa;text-align:center;margin-bottom:12px;">Eventos pasados — más recientes primero</p>' + hist.map(e => evCard(e, true)).join('');
     }
     function evCard(ev, past) {
       const f = new Date(ev.f).toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });

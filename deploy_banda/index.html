@@ -3430,6 +3430,18 @@
           style="text-align:center;font-size:24px;font-weight:900;color:var(--az);margin-bottom:4px;"></p>
         <p id="ap-estudiante-inst" style="text-align:center;font-size:11px;color:#888;margin-bottom:16px;"></p>
 
+        <!-- SELECTOR DE PERIODO -->
+        <div style="background:white;padding:12px;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.08);margin-bottom:15px;">
+          <label style="display:block;font-size:11px;font-weight:900;color:var(--az);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">📅 Filtrar por Periodo</label>
+          <select id="ap-periodo-sel" onchange="filtrarAsistenciaPorPeriodo()" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:11px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;background:#f9f9f9;color:#333;outline:none;cursor:pointer;">
+            <option value="0">📊 Todo el Año (Acumulado)</option>
+            <option value="1">📘 Periodo 1 (Ene 19 - Mar 29)</option>
+            <option value="2">📗 Periodo 2 (Abr 6 - Jun 14)</option>
+            <option value="3">📙 Periodo 3 (Jul 6 - Oct 11)</option>
+            <option value="4">📕 Periodo 4 (Oct 12 - Nov 29)</option>
+          </select>
+        </div>
+
         <div id="ap-stats" class="sg" style="margin-bottom:20px;">
           <div class="sb" style="background:var(--ve);"><span id="ap-sp"
               style="font-size:24px;display:block;">0</span><small>Presente</small></div>
@@ -4268,6 +4280,10 @@
       </div>
       <div class="detalle-prom" style="background:#f8fafc;border-radius:14px;padding:14px;margin-bottom:14px;border:1px solid #e2e8f0;">
         <div style="font-size:13px;font-weight:900;color:#475569;margin-bottom:10px;text-align:center;">📊 PROMEDIOS POR SECCIÓN</div>
+        <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border-radius:10px;margin-bottom:6px;">
+          <span style="font-weight:800;color:#4a5568;font-size:13px;">📋 Asistencia</span>
+          <span class="dp-num" id="pg-asi" style="font-size:16px;font-weight:900;color:#ef4444;">—</span>
+        </div>
         <div class="dp-item" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,#eef2ff,#e8eaff);border-radius:10px;margin-bottom:6px;">
           <span style="font-weight:800;color:#4a5568;font-size:13px;">🎹 Escalas</span>
           <span class="dp-num" id="pg-esc" style="font-size:16px;font-weight:900;color:#667eea;">—</span>
@@ -4288,7 +4304,7 @@
         <div style="font-size:12px;opacity:.85;margin-bottom:4px;">PROMEDIO GENERAL</div>
         <div class="promedio-num" id="pprom">—</div>
         <div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:8px;" id="pnivel">SIN EVALUAR</div>
-        <div id="prom-formula" style="font-size:11px;opacity:.8;margin-top:6px;font-weight:600;color:#cbd5e1;"></div>
+        <div id="prom-formula" style="font-size:11px;opacity:.9;margin-top:6px;font-weight:600;color:#e2e8f0;background:rgba(0,0,0,0.2);padding:6px;border-radius:6px;"></div>
         <div style="font-size:10px;opacity:.75;margin-top:8px;">1–2.9 BAJO | 3–3.6 BÁSICO | 3.7–4.6 ALTO | 4.7–5
           SUPERIOR</div>
       </div>
@@ -5114,6 +5130,7 @@
     /* ESCALA 1-5 */
     function colV(v) { return v < 3 ? '#e74c3c' : v < 3.7 ? '#f39c12' : v < 4.7 ? '#3498db' : '#27ae60'; }
     function lblV(v) { return v < 3 ? 'BAJO' : v < 3.7 ? 'BÁSICO' : v < 4.7 ? 'ALTO' : 'SUPERIOR'; }
+    function letraV(v) { return v < 3 ? 'Bj' : v < 3.7 ? 'Bs' : v < 4.7 ? 'A' : 'S'; }
     function pct15(v) { return Math.max(0, Math.min(100, ((v - 1) / 4) * 100)).toFixed(1); }
 
     /* INIT */
@@ -5399,9 +5416,14 @@
       }
     }
 
+    // Variable global para guardar el alumno actual en vista padres
+    let _padresAlumnoId = null;
+
     function rAsistenciaPadres(id) {
       const al = banda.find(x => x.id == id);
       if (!al) return alert('Error: Alumno no encontrado');
+
+      _padresAlumnoId = id; // Guardar para filtrado por periodo
 
       // Reutilizamos el modal de stats público pero adaptado
       document.getElementById('ap-estudiante-nom').innerHTML = al.n + "<div style='font-size:10px;color:#00CED1;margin-top:4px;'>VISTA PADRES</div>";
@@ -5422,11 +5444,38 @@
       }
       logoutBtn.style.display = 'block';
 
+      // Resetear selector de periodo a "Todo el año"
+      const selPer = document.getElementById('ap-periodo-sel');
+      if (selPer) selPer.value = '0';
+
+      // Renderizar con filtro (0 = todo)
+      _renderAsistenciaPadresFiltrada(id, 0);
+
+      vT('asistencia-publico', -1);
+    }
+
+    function filtrarAsistenciaPorPeriodo() {
+      if (_padresAlumnoId === null) return;
+      const selVal = parseInt(document.getElementById('ap-periodo-sel').value) || 0;
+      _renderAsistenciaPadresFiltrada(_padresAlumnoId, selVal);
+    }
+
+    function _renderAsistenciaPadresFiltrada(id, periodoNum) {
       let h = JSON.parse(localStorage.getItem(KA)) || [];
       let p = 0, au = 0, t = 0, e = 0, listaHtml = '';
 
-      // Filtrado por periodo opcional? Por ahora histórico completo
-      h.forEach(reg => {
+      // Filtrar por periodo si se seleccionó uno
+      let registros = h;
+      if (periodoNum > 0 && PER[periodoNum]) {
+        const per = PER[periodoNum];
+        registros = h.filter(r => {
+          const partes = r.f.split('/');
+          const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
+          return fecha >= new Date(per.i) && fecha <= new Date(per.f);
+        });
+      }
+
+      registros.forEach(reg => {
         const s = reg.d[id];
         if (!s) return;
         let icon = '', label = '', color = '';
@@ -5446,13 +5495,9 @@
       document.getElementById('ap-st').innerText = t;
       document.getElementById('ap-se').innerText = e;
       document.getElementById('ap-inasistencias').innerText = au + t;
-      document.getElementById('ap-total').innerText = (p + au + t + e) + ' Clases';
-      document.getElementById('ap-lista').innerHTML = listaHtml || '<p style="text-align:center;color:#bbb;font-size:12px;padding:20px;">Sin registros.</p>';
-
-      // Ocultar botón de "Volver" estandard si estamos en modo padres para forzar el Logout? 
-      // No, el botón volver solo cierra el modal (vT(-1)). El logout es para cerrar la sesión persistente.
-
-      vT('asistencia-publico', -1);
+      const periodoLabel = periodoNum > 0 ? PER[periodoNum].n : 'Acumulado';
+      document.getElementById('ap-total').innerText = (p + au + t + e) + ' Clases (' + periodoLabel + ')';
+      document.getElementById('ap-lista').innerHTML = listaHtml || '<p style="text-align:center;color:#bbb;font-size:12px;padding:20px;">Sin registros en este periodo.</p>';
     }
 
     function rPadresGeneral() {
@@ -6783,17 +6828,35 @@
       if (!vals.length) return null;
       return vals.reduce((a, b) => a + b, 0) / vals.length;
     }
-    function promGen(p) {
+    function promGen(p, id) {
       const pe = promSec(p.escalas);
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
+      
+      // Cálculo de Asistencia
+      let faltas = 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      h.forEach(reg => {
+        const s = reg.d[id];
+        if (s == 'a' || s == 't') faltas++;
+      });
+      
+      let notaAsistencia = 5.0; // S
+      if (faltas >= 14) notaAsistencia = 2.0; // Bj
+      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
+      else if (faltas >= 3) notaAsistencia = 4.5; // A
+
       // Si ninguna sección tiene datos, retornar null
       if (pe === null && ppRep === null && pg === null) return null;
-      // Cada sección SIN datos cuenta como 0 — SIEMPRE se divide entre 3
-      const valEsc = pe !== null ? pe : 0;
-      const valRep = ppRep !== null ? ppRep : 0;
-      const valGru = pg !== null ? pg : 0;
-      return (valEsc + valRep + valGru) / 3;
+      
+      let sum = notaAsistencia;
+      let divisor = 1; // Asistencia siempre cuenta
+      
+      if (pe !== null) { sum += pe; divisor++; }
+      if (ppRep !== null) { sum += ppRep; divisor++; }
+      if (pg !== null) { sum += pg; divisor++; }
+      
+      return sum / divisor;
     }
     function rProc() {
       const c = document.getElementById('proc-lista');
@@ -6808,7 +6871,7 @@
         }
         const k = 'p' + pid;
         if (!pr[al.id][k]) pr[al.id][k] = { escalas: [], rep: [], grupo: [] };
-        const pg = promGen(pr[al.id][k]);
+        const pg = promGen(pr[al.id][k], al.id);
         const col = pg === null ? '#aaa' : colV(pg);
         const txt = pg === null ? 'Sin evaluar' : pg.toFixed(2) + ' / 5 — ' + lblV(pg);
         const w = pg === null ? 0 : pct15(pg);
@@ -6842,8 +6905,8 @@
       if (secEscalas) secEscalas.classList.add('act');
 
       procSyncBlocked = true; // Bloquear sync mientras editas
+      procCache = getPr(id); // Cargar datos en cache de memoria
       renderProc();
-      actualizarProm(getPr(id));
       // Ocultar promedio general hasta que el usuario lo calcule manualmente
       const pgBox = document.getElementById('prom-gen-box');
       if (pgBox) pgBox.style.display = 'none';
@@ -6851,11 +6914,11 @@
       if (mProc) mProc.style.display = 'flex';
     }
     function renderProc() {
-      const p = getPr(aPr);
-      renderSec(p.escalas, 'ps-escalas-list', 'escalas');
-      renderSec(p.rep, 'ps-rep-list', 'rep');
-      renderSec(p.grupo, 'ps-grupo-list', 'grupo');
-      actualizarProm(p);
+      if (!procCache) procCache = getPr(aPr);
+      renderSec(procCache.escalas, 'ps-escalas-list', 'escalas');
+      renderSec(procCache.rep, 'ps-rep-list', 'rep');
+      renderSec(procCache.grupo, 'ps-grupo-list', 'grupo');
+      actualizarProm(procCache);
     }
     function verProcTab(sec, el) {
       document.querySelectorAll('.proc-tab-btn').forEach(b => b.classList.remove('act'));
@@ -6880,40 +6943,42 @@
       c.innerHTML = h;
     }
     let procSyncBlocked = false; // Bloquear sync mientras se edita
+    let procCache = null; // Cache en memoria para evitar re-leer localStorage
     function cambVal(tipo, idx, v, slider) {
       procSyncBlocked = true; // Bloquear sync mientras editas
       v = Math.round(v * 10) / 10;
-      const p = getPr(aPr);
-      p[tipo][idx].v = v;
-      savePr(aPr, p);
+      // Usar cache en memoria en vez de re-leer localStorage
+      if (!procCache) procCache = getPr(aPr);
+      procCache[tipo][idx].v = v;
+      savePr(aPr, procCache);
       const col = colV(v), pt = pct15(v);
       slider.style.background = `linear-gradient(to right,${col} ${pt}%,#ddd ${pt}%)`;
       const pv = document.getElementById(`pv-${tipo}-${idx}`);
       if (pv) pv.innerHTML = `<span style="font-size:28px;font-weight:900;color:${col};">${v.toFixed(1)}</span><span style="font-size:12px;font-weight:900;color:${col};margin-left:8px;">/ 5.0</span><span style="display:block;font-size:13px;font-weight:900;color:${col};margin-top:2px;">${lblV(v)}</span>`;
-      actualizarProm(getPr(aPr));
+      actualizarProm(procCache);
       // Ocultar promedio general si se cambia algo (debe recalcularse manualmente)
       const pgBox = document.getElementById('prom-gen-box');
       if (pgBox) pgBox.style.display = 'none';
     }
     window.cambVal = cambVal;
     function cambNombre(tipo, idx, nombre) {
-      const p = getPr(aPr);
-      p[tipo][idx].n = nombre;
-      savePr(aPr, p);
+      if (!procCache) procCache = getPr(aPr);
+      procCache[tipo][idx].n = nombre;
+      savePr(aPr, procCache);
     }
     window.cambNombre = cambNombre;
     function agregarItem(tipo) {
-      const p = getPr(aPr);
+      if (!procCache) procCache = getPr(aPr);
       const noms = { escalas: 'Nueva Escala', rep: 'Nueva Obra', grupo: 'Nueva Pieza' };
-      p[tipo].push({ n: noms[tipo], v: 3.0 });
-      savePr(aPr, p);
+      procCache[tipo].push({ n: noms[tipo], v: 3.0 });
+      savePr(aPr, procCache);
       renderProc();
     }
     function elimItem(tipo, idx) {
       if (!confirm('¿Eliminar?')) return;
-      const p = getPr(aPr);
-      p[tipo].splice(idx, 1);
-      savePr(aPr, p);
+      if (!procCache) procCache = getPr(aPr);
+      procCache[tipo].splice(idx, 1);
+      savePr(aPr, procCache);
       renderProc();
       rProc();
     }
@@ -6925,9 +6990,25 @@
       const escTxt = pe !== null ? pe.toFixed(2) : '—';
       const repTxt = ppRep !== null ? ppRep.toFixed(2) : '—';
       const gruTxt = pg !== null ? pg.toFixed(2) : '—';
+      
+      // Calcular asistencia temporalmente para mostrarla en los promedios
+      let faltas = 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      h.forEach(reg => {
+        const s = reg.d[aPr];
+        if (s == 'a' || s == 't') faltas++;
+      });
+      let notaAsistencia = 5.0; // S
+      if (faltas >= 14) notaAsistencia = 2.0; // Bj
+      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
+      else if (faltas >= 3) notaAsistencia = 4.5; // A
+      
+      const pgAsi = document.getElementById('pg-asi');
       const pgEsc = document.getElementById('pg-esc');
       const pgRep = document.getElementById('pg-rep');
       const pgGru = document.getElementById('pg-gru');
+      
+      if (pgAsi) { pgAsi.innerText = notaAsistencia.toFixed(2); pgAsi.style.color = colV(notaAsistencia); }
       if (pgEsc) { pgEsc.innerText = escTxt; if (pe !== null) pgEsc.style.color = colV(pe); }
       if (pgRep) { pgRep.innerText = repTxt; if (ppRep !== null) pgRep.style.color = colV(ppRep); }
       if (pgGru) { pgGru.innerText = gruTxt; if (pg !== null) pgGru.style.color = colV(pg); }
@@ -6947,10 +7028,23 @@
       const pe = promSec(p.escalas);
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
+      
+      // Calcular asistencia para mostrar
+      let faltas = 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      h.forEach(reg => {
+        const s = reg.d[aPr];
+        if (s == 'a' || s == 't') faltas++;
+      });
+      let notaAsistencia = 5.0; // S
+      if (faltas >= 14) notaAsistencia = 2.0; // Bj
+      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
+      else if (faltas >= 3) notaAsistencia = 4.5; // A
+
       // Mostrar el box del promedio general
       const pgBox = document.getElementById('prom-gen-box');
       if (pgBox) pgBox.style.display = 'block';
-      const gen = promGen(p);
+      const gen = promGen(p, aPr);
       const formulaEl = document.getElementById('prom-formula');
       if (gen === null) {
         document.getElementById('pprom').innerText = '—';
@@ -6959,17 +7053,29 @@
       } else {
         document.getElementById('pprom').innerText = gen.toFixed(2);
         document.getElementById('pnivel').innerText = lblV(gen) + ' (' + gen.toFixed(2) + ' / 5)';
-        const vE = pe !== null ? pe.toFixed(1) : '0';
-        const vR = ppRep !== null ? ppRep.toFixed(1) : '0';
-        const vG = pg !== null ? pg.toFixed(1) : '0';
-        if (formulaEl) formulaEl.innerText = '(' + vE + ' + ' + vR + ' + ' + vG + ') ÷ 3 = ' + gen.toFixed(2);
+        
+        const vE = pe !== null ? pe.toFixed(1) : '0.0';
+        const vR = ppRep !== null ? ppRep.toFixed(1) : '0.0';
+        const vG = pg !== null ? pg.toFixed(1) : '0.0';
+        const vA = notaAsistencia.toFixed(1);
+
+        const strA = `Asist: ${vA}(${letraV(notaAsistencia)})`;
+        let divisorStr = 1;
+        let terms = [strA];
+        
+        if (pe !== null) { terms.push(`Esc: ${vE}(${letraV(parseFloat(vE))})`); divisorStr++; }
+        if (ppRep !== null) { terms.push(`Rep: ${vR}(${letraV(parseFloat(vR))})`); divisorStr++; }
+        if (pg !== null) { terms.push(`Gru: ${vG}(${letraV(parseFloat(vG))})`); divisorStr++; }
+        
+        if (formulaEl) formulaEl.innerHTML = `<span style="font-size:12px; color:#f8fafc;">(${terms.join(' + ')}) ÷ ${divisorStr} = </span><strong style="color:#FFD700;font-size:14px;">${gen.toFixed(2)}</strong>`;
       }
       // Scroll suave hacia el promedio general
       if (pgBox) pgBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     function guardarCalificacion() {
+      if (procCache) savePr(aPr, procCache); // Guardar cache final
+      procCache = null; // Limpiar cache
       procSyncBlocked = false; // Re-habilitar sync
-      savePr(aPr, getPr(aPr)); // Asegurar guardado final
       alert('✅ Calificación guardada correctamente');
       rProc();
     }
@@ -6995,7 +7101,8 @@
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
       const nowLimit = new Date();
       nowLimit.setHours(nowLimit.getHours() - 12);
-      const prox = ev.filter(e => !e.archived && new Date(e.f) >= nowLimit);
+      const prox = ev.filter(e => !e.archived && new Date(e.f) >= nowLimit)
+        .sort((a, b) => new Date(a.f) - new Date(b.f)); // Más próximo primero
       if (!prox.length) {
         c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:25px;font-size:13px;">No hay eventos próximos</p>';
         return;
@@ -7007,12 +7114,13 @@
       let ev = JSON.parse(localStorage.getItem(KEV)) || [];
       const nowLimit = new Date();
       nowLimit.setHours(nowLimit.getHours() - 12);
-      const hist = [...ev].filter(e => !e.archived && new Date(e.f) < nowLimit).reverse();
+      const hist = ev.filter(e => !e.archived && new Date(e.f) < nowLimit)
+        .sort((a, b) => new Date(b.f) - new Date(a.f)); // Más reciente primero
       if (!hist.length) {
         c.innerHTML = '<p style="text-align:center;color:#aaa;margin-top:25px;font-size:13px;">Sin eventos pasados</p>';
         return;
       }
-      c.innerHTML = '<p style="font-size:11px;color:#aaa;text-align:center;margin-bottom:12px;">Eventos pasados automáticamente</p>' + hist.map(e => evCard(e, true)).join('');
+      c.innerHTML = '<p style="font-size:11px;color:#aaa;text-align:center;margin-bottom:12px;">Eventos pasados — más recientes primero</p>' + hist.map(e => evCard(e, true)).join('');
     }
     function evCard(ev, past) {
       const f = new Date(ev.f).toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
