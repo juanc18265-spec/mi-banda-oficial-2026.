@@ -6828,23 +6828,38 @@
       if (!vals.length) return null;
       return vals.reduce((a, b) => a + b, 0) / vals.length;
     }
+    // Helper: Contar faltas (ausencias+tardes) SOLO del periodo seleccionado
+    function contarFaltasPorPeriodo(id) {
+      const periodoNum = parseInt(document.getElementById('proc-per').value) || 1;
+      const per = PER[periodoNum];
+      if (!per) return 0;
+      let h = JSON.parse(localStorage.getItem(KA)) || [];
+      let faltas = 0;
+      h.forEach(reg => {
+        // Filtrar por fechas del periodo
+        const partes = reg.f.split('/');
+        const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
+        if (fecha >= new Date(per.i) && fecha <= new Date(per.f)) {
+          const s = reg.d[id];
+          if (s == 'a' || s == 't') faltas++;
+        }
+      });
+      return faltas;
+    }
+    function notaDesdefaltas(faltas) {
+      if (faltas >= 14) return 2.0;
+      if (faltas >= 7) return 3.5;
+      if (faltas >= 3) return 4.5;
+      return 5.0;
+    }
     function promGen(p, id) {
       const pe = promSec(p.escalas);
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
       
-      // Cálculo de Asistencia
-      let faltas = 0;
-      let h = JSON.parse(localStorage.getItem(KA)) || [];
-      h.forEach(reg => {
-        const s = reg.d[id];
-        if (s == 'a' || s == 't') faltas++;
-      });
-      
-      let notaAsistencia = 5.0; // S
-      if (faltas >= 14) notaAsistencia = 2.0; // Bj
-      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
-      else if (faltas >= 3) notaAsistencia = 4.5; // A
+      // Cálculo de Asistencia FILTRADO POR PERIODO
+      const faltas = contarFaltasPorPeriodo(id);
+      const notaAsistencia = notaDesdefaltas(faltas);
 
       // Si ninguna sección tiene datos, retornar null
       if (pe === null && ppRep === null && pg === null) return null;
@@ -6991,17 +7006,9 @@
       const repTxt = ppRep !== null ? ppRep.toFixed(2) : '—';
       const gruTxt = pg !== null ? pg.toFixed(2) : '—';
       
-      // Calcular asistencia temporalmente para mostrarla en los promedios
-      let faltas = 0;
-      let h = JSON.parse(localStorage.getItem(KA)) || [];
-      h.forEach(reg => {
-        const s = reg.d[aPr];
-        if (s == 'a' || s == 't') faltas++;
-      });
-      let notaAsistencia = 5.0; // S
-      if (faltas >= 14) notaAsistencia = 2.0; // Bj
-      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
-      else if (faltas >= 3) notaAsistencia = 4.5; // A
+      // Calcular asistencia FILTRADA POR PERIODO SELECCIONADO
+      const faltas = contarFaltasPorPeriodo(aPr);
+      const notaAsistencia = notaDesdefaltas(faltas);
       
       const pgAsi = document.getElementById('pg-asi');
       const pgEsc = document.getElementById('pg-esc');
@@ -7029,17 +7036,9 @@
       const ppRep = promSec(p.rep);
       const pg = promSec(p.grupo);
       
-      // Calcular asistencia para mostrar
-      let faltas = 0;
-      let h = JSON.parse(localStorage.getItem(KA)) || [];
-      h.forEach(reg => {
-        const s = reg.d[aPr];
-        if (s == 'a' || s == 't') faltas++;
-      });
-      let notaAsistencia = 5.0; // S
-      if (faltas >= 14) notaAsistencia = 2.0; // Bj
-      else if (faltas >= 7) notaAsistencia = 3.5; // Bs
-      else if (faltas >= 3) notaAsistencia = 4.5; // A
+      // Calcular asistencia FILTRADA POR PERIODO SELECCIONADO
+      const faltas = contarFaltasPorPeriodo(aPr);
+      const notaAsistencia = notaDesdefaltas(faltas);
 
       // Mostrar el box del promedio general
       const pgBox = document.getElementById('prom-gen-box');
