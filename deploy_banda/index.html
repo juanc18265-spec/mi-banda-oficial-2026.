@@ -3435,10 +3435,10 @@
           <label style="display:block;font-size:11px;font-weight:900;color:var(--az);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">📅 Filtrar por Periodo</label>
           <select id="ap-periodo-sel" onchange="filtrarAsistenciaPorPeriodo()" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:11px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;background:#f9f9f9;color:#333;outline:none;cursor:pointer;">
             <option value="0">📊 Todo el Año (Acumulado)</option>
-            <option value="1">📘 Periodo 1 (Ene 19 - Mar 29)</option>
-            <option value="2">📗 Periodo 2 (Abr 6 - Jun 14)</option>
-            <option value="3">📙 Periodo 3 (Jul 6 - Oct 11)</option>
-            <option value="4">📕 Periodo 4 (Oct 12 - Nov 29)</option>
+            <option value="1">📘 Periodo 1 (Ene 19 - Abr 17)</option>
+            <option value="2">📗 Periodo 2 (Abr 20 - Jun 12)</option>
+            <option value="3">📙 Periodo 3 (Jul 6 - Sep 4)</option>
+            <option value="4">📕 Periodo 4 (Sep 7 - Nov 27)</option>
           </select>
         </div>
 
@@ -3554,10 +3554,10 @@
           style="background:white;padding:18px;border-radius:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);">
           <div class="fg"><label>Periodo 2026:</label>
             <select id="sel-periodo">
-              <option value="1">Periodo 1 — 19 Ene → 29 Mar</option>
-              <option value="2">Periodo 2 — 6 Abr → 14 Jun</option>
-              <option value="3">Periodo 3 — 6 Jul → 11 Oct</option>
-              <option value="4">Periodo 4 — 12 Oct → 29 Nov</option>
+              <option value="1">Periodo 1 — 19 Ene → 17 Abr</option>
+              <option value="2">Periodo 2 — 20 Abr → 12 Jun</option>
+              <option value="3">Periodo 3 — 6 Jul → 4 Sep</option>
+              <option value="4">Periodo 4 — 7 Sep → 27 Nov</option>
             </select>
           </div>
           <button class="bbp bf" onclick="generarReporte()"><i class="fas fa-chart-bar"></i> GENERAR
@@ -3577,10 +3577,10 @@
             Académico:</label>
           <select id="proc-per" onchange="rProc()"
             style="width:100%;padding:11px;border:2px solid #eee;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;">
-            <option value="1">Periodo 1 (19 Ene - 29 Mar)</option>
-            <option value="2">Periodo 2 (6 Abr - 14 Jun)</option>
-            <option value="3">Periodo 3 (6 Jul - 11 Oct)</option>
-            <option value="4">Periodo 4 (12 Oct - 29 Nov)</option>
+            <option value="1">Periodo 1 (19 Ene - 17 Abr)</option>
+            <option value="2">Periodo 2 (20 Abr - 12 Jun)</option>
+            <option value="3">Periodo 3 (6 Jul - 4 Sep)</option>
+            <option value="4">Periodo 4 (7 Sep - 27 Nov)</option>
           </select>
         </div>
         <p style="text-align:center;font-size:12px;color:#aaa;margin-bottom:13px;">Selecciona un estudiante</p>
@@ -4772,7 +4772,7 @@
       return new Date(ts).toLocaleDateString();
     }
     
-    const PER = { 1: { n: 'Periodo 1', i: '2026-01-19', f: '2026-03-29' }, 2: { n: 'Periodo 2', i: '2026-04-06', f: '2026-06-14' }, 3: { n: 'Periodo 3', i: '2026-07-06', f: '2026-10-11' }, 4: { n: 'Periodo 4', i: '2026-10-12', f: '2026-11-29' } };
+    const PER = { 1: { n: 'Periodo 1', i: '2026-01-19', f: '2026-04-17' }, 2: { n: 'Periodo 2', i: '2026-04-20', f: '2026-06-12' }, 3: { n: 'Periodo 3', i: '2026-07-06', f: '2026-09-04' }, 4: { n: 'Periodo 4', i: '2026-09-07', f: '2026-11-27' } };
 
     // Audio State
     let audioCtx = null, tOsc = null, tGn = null, tAgujaInt = null, tVocalInt = null, tTrans = 0;
