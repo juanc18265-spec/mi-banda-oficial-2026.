@@ -5128,9 +5128,9 @@
     }
 
     /* ESCALA 1-5 */
-    function colV(v) { return v < 3 ? '#e74c3c' : v < 3.7 ? '#f39c12' : v < 4.7 ? '#3498db' : '#27ae60'; }
-    function lblV(v) { return v < 3 ? 'BAJO' : v < 3.7 ? 'BÁSICO' : v < 4.7 ? 'ALTO' : 'SUPERIOR'; }
-    function letraV(v) { return v < 3 ? 'Bj' : v < 3.7 ? 'Bs' : v < 4.7 ? 'A' : 'S'; }
+    function colV(v) { return v < 2.9 ? '#e74c3c' : v < 4.2 ? '#f39c12' : v < 4.7 ? '#3498db' : '#27ae60'; }
+    function lblV(v) { return v < 2.9 ? 'BAJO' : v < 4.2 ? 'BÁSICO' : v < 4.7 ? 'ALTO' : 'SUPERIOR'; }
+    function letraV(v) { return v < 2.9 ? 'Bj' : v < 4.2 ? 'Bs' : v < 4.7 ? 'A' : 'S'; }
     function pct15(v) { return Math.max(0, Math.min(100, ((v - 1) / 4) * 100)).toFixed(1); }
 
     /* INIT */
@@ -6848,10 +6848,10 @@
       return faltas;
     }
     function notaDesdefaltas(faltas) {
-      if (faltas >= 14) return 2.0;
-      if (faltas >= 7) return 3.5;
-      if (faltas >= 3) return 4.5;
-      return 5.0;
+      // Tabla oficial: 0 faltas = 5.0 (S), hasta 14 = 2.9 (Bs), 15+ = 1.0 (Bj)
+      const tabla = [5.0, 4.8, 4.6, 4.5, 4.3, 4.2, 4.0, 3.9, 3.7, 3.6, 3.4, 3.3, 3.1, 3.0, 2.9];
+      if (faltas >= 15) return 1.0; // Bj automático
+      return tabla[Math.max(0, Math.min(faltas, 14))];
     }
     function promGen(p, id) {
       const pe = promSec(p.escalas);
