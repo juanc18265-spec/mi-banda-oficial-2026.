@@ -1,4 +1,4 @@
-const CACHE_NAME = 'banda-ens-v19';
+const CACHE_NAME = 'banda-ens-v20';
 const ASSETS = [
     './',
     './manifest.json',

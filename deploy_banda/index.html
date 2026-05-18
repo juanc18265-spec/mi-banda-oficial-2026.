@@ -3553,7 +3553,7 @@
         <div
           style="background:white;padding:18px;border-radius:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);">
           <div class="fg"><label>Periodo 2026:</label>
-            <select id="sel-periodo">
+            <select id="sel-periodo" onchange="localStorage.setItem('ens_periodo_sel',this.value)">
               <option value="1">Periodo 1 — 19 Ene → 17 Abr</option>
               <option value="2">Periodo 2 — 20 Abr → 12 Jun</option>
               <option value="3">Periodo 3 — 6 Jul → 4 Sep</option>
@@ -6194,7 +6194,11 @@
 
     /* REPORTES */
     function generarReporte() {
-      const pid = document.getElementById('sel-periodo').value;
+      // Restaurar periodo guardado
+      const savedPer = localStorage.getItem('ens_periodo_sel');
+      const selPer = document.getElementById('sel-periodo');
+      if (savedPer && selPer && selPer.value !== savedPer) selPer.value = savedPer;
+      const pid = selPer ? selPer.value : '1';
       const per = PER[pid];
       const c = document.getElementById('rep-result');
       if (!c) return;
