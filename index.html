@@ -3575,7 +3575,7 @@
           style="background:white;padding:13px;border-radius:13px;margin-bottom:13px;box-shadow:0 2px 8px rgba(0,0,0,.07);">
           <label style="font-size:11px;font-weight:700;color:#666;display:block;margin-bottom:5px;">📅 Periodo
             Académico:</label>
-          <select id="proc-per" onchange="rProc()"
+          <select id="proc-per" onchange="localStorage.setItem('ens_periodo_sel',this.value);rProc()"
             style="width:100%;padding:11px;border:2px solid #eee;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;">
             <option value="1">Periodo 1 (19 Ene - 17 Abr)</option>
             <option value="2">Periodo 2 (20 Abr - 12 Jun)</option>
@@ -6877,7 +6877,11 @@
     function rProc() {
       const c = document.getElementById('proc-lista');
       if (!c) return;
-      const pid = document.getElementById('proc-per').value;
+      // Restaurar periodo guardado
+      const savedPer = localStorage.getItem('ens_periodo_sel');
+      const selPer = document.getElementById('proc-per');
+      if (savedPer && selPer && selPer.value !== savedPer) selPer.value = savedPer;
+      const pid = selPer ? selPer.value : '1';
       let html = '';
       banda.forEach(al => {
         let pr = JSON.parse(localStorage.getItem(KPR)) || {};
