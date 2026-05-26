@@ -7117,10 +7117,12 @@
         .sort((a, b) => new Date(a.f) - new Date(b.f)); // Más próximo primero
       if (!prox.length) {
         c.innerHTML = `
-          <div style="text-align:center; padding: 30px 20px; background: white; border-radius: 20px; margin: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px dashed #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadein .25s;">
-            <img src="img/banda_caricatura.png" alt="Banda Sinfónica" style="width: 100%; max-width: 280px; height: auto; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); filter: contrast(1.05) brightness(1.02);">
+          <div style="text-align:center; padding: 40px 20px; background: white; border-radius: 20px; margin: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px dashed #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadein .25s;">
+            <div style="width: 60px; height: 60px; border-radius: 50%; background: #f8fafc; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; color: #a855f7; box-shadow: 0 8px 20px rgba(168, 85, 247, 0.15);">
+              <i class="far fa-calendar-alt" style="font-size: 26px;"></i>
+            </div>
             <h4 style="margin: 0 0 8px 0; color: #1e293b; font-weight: 800; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">¡Próximamente más música!</h4>
-            <p style="margin: 0; color: #64748b; font-size: 12px; max-width: 260px; line-height: 1.5; font-weight: 600;">No hay eventos agendados en este momento. Mantente atento para próximos conciertos y ensayos.</p>
+            <p style="margin: 0; color: #64748b; font-size: 12px; max-width: 250px; line-height: 1.5; font-weight: 600;">No hay eventos agendados en este momento. Mantente atento para próximos conciertos y ensayos.</p>
           </div>`;
         return;
       }
@@ -7135,10 +7137,12 @@
         .sort((a, b) => new Date(b.f) - new Date(a.f)); // Más reciente primero
       if (!hist.length) {
         c.innerHTML = `
-          <div style="text-align:center; padding: 30px 20px; background: white; border-radius: 20px; margin: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px dashed #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadein .25s;">
-            <img src="img/banda_caricatura.png" alt="Banda Sinfónica" style="width: 100%; max-width: 280px; height: auto; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); filter: grayscale(0.2) opacity(0.85);">
+          <div style="text-align:center; padding: 40px 20px; background: white; border-radius: 20px; margin: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px dashed #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadein .25s;">
+            <div style="width: 60px; height: 60px; border-radius: 50%; background: #f8fafc; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; color: #64748b; box-shadow: 0 8px 20px rgba(100, 116, 139, 0.15);">
+              <i class="fas fa-history" style="font-size: 26px;"></i>
+            </div>
             <h4 style="margin: 0 0 8px 0; color: #1e293b; font-weight: 800; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Historial Vacío</h4>
-            <p style="margin: 0; color: #64748b; font-size: 12px; max-width: 260px; line-height: 1.5; font-weight: 600;">No se registran eventos pasados en la plataforma.</p>
+            <p style="margin: 0; color: #64748b; font-size: 12px; max-width: 250px; line-height: 1.5; font-weight: 600;">No se registran eventos pasados en la plataforma.</p>
           </div>`;
         return;
       }
