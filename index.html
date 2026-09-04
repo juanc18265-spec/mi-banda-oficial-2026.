@@ -1646,6 +1646,10 @@
       background: linear-gradient(135deg, #06b6d4, #0582a0);
     }
 
+    .atab-concursos.act {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
     .atab:active {
       transform: scale(.93);
     }
@@ -3105,6 +3109,7 @@
           <div class="atab atab-fotos act" onclick="vAlbum('fotos',this)">📷 Fotos</div>
           <div class="atab atab-videos" onclick="vAlbum('videos',this)">🎬 Videos</div>
           <div class="atab atab-exalumnos" onclick="vAlbum('exalumnos',this)">🎓 Egresados</div>
+          <div class="atab atab-concursos" onclick="vAlbum('concursos',this)">🏆 Concursos</div>
         </div>
         <div class="anio-select" id="anio-tabs"></div>
         <div id="me-render"></div>
@@ -4212,6 +4217,7 @@
           <option value="fotos">📷 Fotos Banda</option>
           <option value="videos">🎬 Videos Banda</option>
           <option value="exalumnos">🎓 Egresados</option>
+          <option value="concursos">🏆 Concursos y Participaciones</option>
         </select>
       </div>
       <div class="fg"><label>📅 Año:</label><input type="number" id="me-anio" value="2026" min="2000" max="2099">
