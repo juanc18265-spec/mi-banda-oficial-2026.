@@ -5123,38 +5123,59 @@
             abrirAccesoAsistencia();
           });
         }
-        // === SEED: Precarga de videos de Concursos ===
-        (function seedConcursos() {
-          const SEED_KEY = 'ens_concursos_seed_v1';
-          if (localStorage.getItem(SEED_KEY)) return; // Ya se sembraron
-          const videos = [
-            { id: 1700000001, url: 'https://youtu.be/lUZpZoX4x70', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Arráao - Banda Sinfónica Juvenil Normal Superior Riosucio Caldas' },
-            { id: 1700000002, url: 'https://youtu.be/kufm3e0lCxs', t: 'url', alb: 'concursos', anio: '2017', fecha: '3/9/2026', comentario: 'Banda Infantil ENS Riosucio - Mejor Banda, Mejor Director - Paipa 2017' },
-            { id: 1700000003, url: 'https://youtu.be/YTUgu5p9KhQ', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Fundación HOPE - Banda Sinfónica ENS Sagrado Corazón Riosucio Caldas' },
-            { id: 1700000004, url: 'https://youtu.be/a0g2ilW0UkQ', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Sinfónica Normal Superior Riosucio - Presentación' },
-            { id: 1700000005, url: 'https://youtu.be/AKf3RXTm8T0', t: 'url', alb: 'concursos', anio: '2019', fecha: '3/9/2026', comentario: 'Banda Infantil Normal Sagrado Corazón - Show Ganador Viterbo Caldas 2019' },
-            { id: 1700000006, url: 'https://youtu.be/vMR1vjjjXkA', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Persis - Banda Sinfónica Riosucio, Escuela Normal' },
-            { id: 1700000007, url: 'https://youtube.com/watch?v=SAiL2VxYXWw', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Concierto Capitolio Nacional - Banda ENS Riosucio' },
-            { id: 1700000008, url: 'https://youtu.be/qCOsBs0m_Tg', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Desfile en Viterbo - Banda Normal Riosucio' },
-            { id: 1700000009, url: 'https://youtu.be/LypBLviDdLU', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Sinfónica Escuela Normal Riosucio - Participación' },
-            { id: 1700000010, url: 'https://youtu.be/gTT21dVPSC4', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Video Infantil - Escuela Normal Riosucio' }
-          ];
-          let m = JSON.parse(localStorage.getItem(KME)) || [];
-          const existingIds = new Set(m.map(x => x.id));
-          let added = 0;
-          videos.forEach(v => {
-            if (!existingIds.has(v.id)) {
-              m.push(v);
-              if (window.cloudSave) window.cloudSave('BandaMultimedia', String(v.id), v);
-              added++;
-            }
-          });
-          if (added > 0) {
-            localStorage.setItem(KME, JSON.stringify(m));
-            console.log('🏆 Concursos: ' + added + ' videos precargados');
+    // === SEED: Precarga y unificación de videos de Concursos ===
+    function seedConcursos() {
+      const SEED_KEY = 'ens_concursos_seed_v2';
+      const videos = [
+        { id: 1700000001, url: 'https://youtu.be/lUZpZoX4x70', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Arráao - Banda Sinfónica Juvenil Normal Superior Riosucio Caldas' },
+        { id: 1700000002, url: 'https://youtu.be/kufm3e0lCxs', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Infantil ENS Riosucio - Mejor Banda, Mejor Director - Paipa 2017' },
+        { id: 1700000003, url: 'https://youtu.be/YTUgu5p9KhQ', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Fundación HOPE - Banda Sinfónica ENS Sagrado Corazón Riosucio Caldas' },
+        { id: 1700000004, url: 'https://youtu.be/a0g2ilW0UkQ', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Sinfónica Normal Superior Riosucio - Presentación' },
+        { id: 1700000005, url: 'https://youtu.be/AKf3RXTm8T0', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Infantil Normal Sagrado Corazón - Show Ganador Viterbo Caldas 2019' },
+        { id: 1700000006, url: 'https://youtu.be/vMR1vjjjXkA', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Persis - Banda Sinfónica Riosucio, Escuela Normal' },
+        { id: 1700000007, url: 'https://youtube.com/watch?v=SAiL2VxYXWw', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Concierto Capitolio Nacional - Banda ENS Riosucio' },
+        { id: 1700000008, url: 'https://youtu.be/qCOsBs0m_Tg', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Desfile en Viterbo - Banda Normal Riosucio' },
+        { id: 1700000009, url: 'https://youtu.be/LypBLviDdLU', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Sinfónica Escuela Normal Riosucio - Participación' },
+        { id: 1700000010, url: 'https://youtu.be/gTT21dVPSC4', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Video Infantil - Escuela Normal Riosucio' }
+      ];
+      let m = JSON.parse(localStorage.getItem(KME)) || [];
+      let changed = false;
+      // Actualizar los que ya existen a año 2026 para que se vean todos juntos
+      m.forEach(x => {
+        if (x && (x.alb === 'concursos' || (x.id >= 1700000001 && x.id <= 1700000010))) {
+          if (x.anio !== '2026') {
+            x.anio = '2026';
+            changed = true;
           }
-          localStorage.setItem(SEED_KEY, '1');
-        })();
+        }
+      });
+      // Agregar los que falten
+      const existingIds = new Set(m.map(x => x.id));
+      videos.forEach(v => {
+        if (!existingIds.has(v.id)) {
+          m.push(v);
+          if (window.cloudSave) window.cloudSave('BandaMultimedia', String(v.id), v);
+          changed = true;
+        }
+      });
+      if (changed) {
+        localStorage.setItem(KME, JSON.stringify(m));
+        console.log('🏆 Concursos: 10 videos unificados en año 2026');
+      }
+      localStorage.setItem(SEED_KEY, '1');
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => {
+        const b = document.getElementById('btn-asistencia-menu');
+        if (b) {
+          b.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            abrirAccesoAsistencia();
+          });
+        }
+        seedConcursos();
         init(); rEv(); rAv(); rMe(); rProyectos(); rConfigMecenas(); rMiBanda(); poblarNombres();
       });
     } else {
@@ -5166,38 +5187,7 @@
           abrirAccesoAsistencia();
         });
       }
-      // === SEED: Precarga de videos de Concursos (else branch) ===
-      (function seedConcursos() {
-        const SEED_KEY = 'ens_concursos_seed_v1';
-        if (localStorage.getItem(SEED_KEY)) return;
-        const videos = [
-          { id: 1700000001, url: 'https://youtu.be/lUZpZoX4x70', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Arráao - Banda Sinfónica Juvenil Normal Superior Riosucio Caldas' },
-          { id: 1700000002, url: 'https://youtu.be/kufm3e0lCxs', t: 'url', alb: 'concursos', anio: '2017', fecha: '3/9/2026', comentario: 'Banda Infantil ENS Riosucio - Mejor Banda, Mejor Director - Paipa 2017' },
-          { id: 1700000003, url: 'https://youtu.be/YTUgu5p9KhQ', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Fundación HOPE - Banda Sinfónica ENS Sagrado Corazón Riosucio Caldas' },
-          { id: 1700000004, url: 'https://youtu.be/a0g2ilW0UkQ', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Sinfónica Normal Superior Riosucio - Presentación' },
-          { id: 1700000005, url: 'https://youtu.be/AKf3RXTm8T0', t: 'url', alb: 'concursos', anio: '2019', fecha: '3/9/2026', comentario: 'Banda Infantil Normal Sagrado Corazón - Show Ganador Viterbo Caldas 2019' },
-          { id: 1700000006, url: 'https://youtu.be/vMR1vjjjXkA', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Persis - Banda Sinfónica Riosucio, Escuela Normal' },
-          { id: 1700000007, url: 'https://youtube.com/watch?v=SAiL2VxYXWw', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Concierto Capitolio Nacional - Banda ENS Riosucio' },
-          { id: 1700000008, url: 'https://youtu.be/qCOsBs0m_Tg', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Desfile en Viterbo - Banda Normal Riosucio' },
-          { id: 1700000009, url: 'https://youtu.be/LypBLviDdLU', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Sinfónica Escuela Normal Riosucio - Participación' },
-          { id: 1700000010, url: 'https://youtu.be/gTT21dVPSC4', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Video Infantil - Escuela Normal Riosucio' }
-        ];
-        let m = JSON.parse(localStorage.getItem(KME)) || [];
-        const existingIds = new Set(m.map(x => x.id));
-        let added = 0;
-        videos.forEach(v => {
-          if (!existingIds.has(v.id)) {
-            m.push(v);
-            if (window.cloudSave) window.cloudSave('BandaMultimedia', String(v.id), v);
-            added++;
-          }
-        });
-        if (added > 0) {
-          localStorage.setItem(KME, JSON.stringify(m));
-          console.log('🏆 Concursos: ' + added + ' videos precargados');
-        }
-        localStorage.setItem(SEED_KEY, '1');
-      })();
+      seedConcursos();
       init(); rEv(); rAv(); rMe(); rProyectos(); rConfigMecenas(); rMiBanda(); poblarNombres();
     }
 
@@ -7445,12 +7435,15 @@
       const filtered = m.filter(x => !x.archived && x.destino !== 'mibanda' && (albumActual === 'TODO' || x.alb === albumActual));
       const anios = [...new Set(filtered.map(x => x.anio || '2026'))].sort().reverse();
       const at = document.getElementById('anio-tabs');
-      if (anios.length) {
-        // Si el año actual no está en la lista (o es 'todos'), seleccionar el primero (más reciente)
-        if (anioActual === 'todos' || !anios.includes(anioActual)) {
-          anioActual = anios[0];
+      if (anios.length > 1) {
+        if (!anios.includes(anioActual) && anioActual !== 'todos') {
+          anioActual = 'todos';
         }
-        at.innerHTML = anios.map(a => `<button class="anio-btn ${anioActual === a ? 'act' : ''}" onclick="vAnio('${a}',this)">${a}</button>`).join('');
+        at.innerHTML = `<button class="anio-btn ${anioActual === 'todos' ? 'act' : ''}" onclick="vAnio('todos',this)">Todos</button>` +
+          anios.map(a => `<button class="anio-btn ${anioActual === a ? 'act' : ''}" onclick="vAnio('${a}',this)">${a}</button>`).join('');
+      } else if (anios.length === 1) {
+        anioActual = anios[0];
+        at.innerHTML = anios.map(a => `<button class="anio-btn act" onclick="vAnio('${a}',this)">${a}</button>`).join('');
       } else at.innerHTML = '';
       renderGaleria();
     }
