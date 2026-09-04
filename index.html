@@ -5113,19 +5113,10 @@
     // PER movido al inicio
     // banda, albumActual, etc. movidos al inicio
 
-    if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', () => {
-        const b = document.getElementById('btn-asistencia-menu');
-        if (b) {
-          b.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            abrirAccesoAsistencia();
-          });
-        }
-    // === SEED: Precarga y unificación de videos de Concursos ===
+    // === SEED: Precarga de videos de Concursos ===
     function seedConcursos() {
       const SEED_KEY = 'ens_concursos_seed_v2';
+      if (localStorage.getItem(SEED_KEY)) return;
       const videos = [
         { id: 1700000001, url: 'https://youtu.be/lUZpZoX4x70', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Arráao - Banda Sinfónica Juvenil Normal Superior Riosucio Caldas' },
         { id: 1700000002, url: 'https://youtu.be/kufm3e0lCxs', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Banda Infantil ENS Riosucio - Mejor Banda, Mejor Director - Paipa 2017' },
@@ -5139,29 +5130,12 @@
         { id: 1700000010, url: 'https://youtu.be/gTT21dVPSC4', t: 'url', alb: 'concursos', anio: '2026', fecha: '3/9/2026', comentario: 'Video Infantil - Escuela Normal Riosucio' }
       ];
       let m = JSON.parse(localStorage.getItem(KME)) || [];
-      let changed = false;
-      // Actualizar los que ya existen a año 2026 para que se vean todos juntos
-      m.forEach(x => {
-        if (x && (x.alb === 'concursos' || (x.id >= 1700000001 && x.id <= 1700000010))) {
-          if (x.anio !== '2026') {
-            x.anio = '2026';
-            changed = true;
-          }
-        }
-      });
-      // Agregar los que falten
       const existingIds = new Set(m.map(x => x.id));
+      let added = 0;
       videos.forEach(v => {
-        if (!existingIds.has(v.id)) {
-          m.push(v);
-          if (window.cloudSave) window.cloudSave('BandaMultimedia', String(v.id), v);
-          changed = true;
-        }
+        if (!existingIds.has(v.id)) { m.push(v); added++; if (window.cloudSave) window.cloudSave('BandaMultimedia', String(v.id), v); }
       });
-      if (changed) {
-        localStorage.setItem(KME, JSON.stringify(m));
-        console.log('🏆 Concursos: 10 videos unificados en año 2026');
-      }
+      if (added > 0) localStorage.setItem(KME, JSON.stringify(m));
       localStorage.setItem(SEED_KEY, '1');
     }
 
@@ -7435,15 +7409,12 @@
       const filtered = m.filter(x => !x.archived && x.destino !== 'mibanda' && (albumActual === 'TODO' || x.alb === albumActual));
       const anios = [...new Set(filtered.map(x => x.anio || '2026'))].sort().reverse();
       const at = document.getElementById('anio-tabs');
-      if (anios.length > 1) {
-        if (!anios.includes(anioActual) && anioActual !== 'todos') {
-          anioActual = 'todos';
+      if (anios.length) {
+        // Si el año actual no está en la lista (o es 'todos'), seleccionar el primero (más reciente)
+        if (anioActual === 'todos' || !anios.includes(anioActual)) {
+          anioActual = anios[0];
         }
-        at.innerHTML = `<button class="anio-btn ${anioActual === 'todos' ? 'act' : ''}" onclick="vAnio('todos',this)">Todos</button>` +
-          anios.map(a => `<button class="anio-btn ${anioActual === a ? 'act' : ''}" onclick="vAnio('${a}',this)">${a}</button>`).join('');
-      } else if (anios.length === 1) {
-        anioActual = anios[0];
-        at.innerHTML = anios.map(a => `<button class="anio-btn act" onclick="vAnio('${a}',this)">${a}</button>`).join('');
+        at.innerHTML = anios.map(a => `<button class="anio-btn ${anioActual === a ? 'act' : ''}" onclick="vAnio('${a}',this)">${a}</button>`).join('');
       } else at.innerHTML = '';
       renderGaleria();
     }
